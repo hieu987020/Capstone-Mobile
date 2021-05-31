@@ -39,7 +39,10 @@ class ManagerCardHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         HeaderText(_text),
-        StatusDropdown(),
+        Container(
+          child: StatusDropdown(),
+          margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+        )
       ],
     );
   }
@@ -52,16 +55,30 @@ class ManagerCardAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 70,
-      height: 70,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        image: DecorationImage(
-          fit: BoxFit.fill,
-          image: NetworkImage(_assetPath),
+    if (_assetPath == null) {
+      return Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: NetworkImage('https://i.stack.imgur.com/l60Hf.png'),
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: NetworkImage(_assetPath),
+          ),
+        ),
+      );
+    }
   }
 }

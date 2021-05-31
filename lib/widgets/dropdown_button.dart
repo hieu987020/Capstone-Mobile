@@ -24,9 +24,9 @@ class _StatusDropdownState extends State<StatusDropdown> {
         height: 1,
         color: Colors.black,
       ),
-      onChanged: (String? newValue) {
+      onChanged: (String newValue) {
         setState(() {
-          dropdownValue = newValue!;
+          dropdownValue = newValue;
         });
       },
       items: <String>['All', 'Active', 'Pending', 'Inactive']

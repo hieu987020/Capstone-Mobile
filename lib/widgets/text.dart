@@ -61,17 +61,31 @@ class StoreText extends StatelessWidget {
   StoreText(this._text);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(left: 5),
-      child: new Text(
-        _text,
-        style: TextStyle(
-          color: Color.fromRGBO(24, 34, 76, 1),
-          fontSize: 15,
-          //fontWeight: FontWeight.bold,
+    if (this._text == null) {
+      return Container(
+        padding: EdgeInsets.only(left: 5),
+        child: new Text(
+          "No Store Available",
+          style: TextStyle(
+            color: Color.fromRGBO(24, 34, 76, 1),
+            fontSize: 15,
+            //fontWeight: FontWeight.bold,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Container(
+        padding: EdgeInsets.only(left: 5),
+        child: new Text(
+          _text,
+          style: TextStyle(
+            color: Color.fromRGBO(24, 34, 76, 1),
+            fontSize: 15,
+            //fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
   }
 }
 
@@ -80,22 +94,58 @@ class StatusText extends StatelessWidget {
   StatusText(this._text);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10),
-      padding: EdgeInsets.all(5),
-      color: Color.fromRGBO(235, 255, 241, 1),
-      child: new Center(
-        child: Text(
-          _text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Color.fromRGBO(17, 156, 43, 1),
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
+    if (this._text == "Active") {
+      return Container(
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.all(5),
+        color: Color.fromRGBO(235, 255, 241, 1),
+        child: new Center(
+          child: Text(
+            _text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color.fromRGBO(17, 156, 43, 1),
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else if (this._text == "Pending") {
+      return Container(
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.all(5),
+        color: Color.fromRGBO(248, 221, 78, 1),
+        child: new Center(
+          child: Text(
+            _text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color.fromRGBO(131, 81, 1, 1),
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.all(5),
+        color: Color.fromRGBO(255, 239, 235, 1),
+        child: new Center(
+          child: Text(
+            _text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color.fromRGBO(204, 9, 5, 1),
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import 'package:capstone/screens/screen.dart';
+import 'package:capstone/screens/screens.dart';
 
 class Routes {
   static const String manager = ScreenManager.routeName;
