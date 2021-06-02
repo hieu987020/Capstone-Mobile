@@ -43,7 +43,7 @@ class ManagerText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 5),
+      //padding: EdgeInsets.only(left: 5),
       child: new Text(
         _text,
         style: TextStyle(
@@ -63,7 +63,7 @@ class StoreText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (this._text == null) {
       return Container(
-        padding: EdgeInsets.only(left: 5),
+        //padding: EdgeInsets.only(left: 5),
         child: new Text(
           "No Store Available",
           style: TextStyle(
@@ -96,9 +96,14 @@ class StatusText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (this._text == "Active") {
       return Container(
+        height: 30,
+        width: 60,
         margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(5),
-        color: Color.fromRGBO(235, 255, 241, 1),
+        //padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(235, 255, 241, 1),
+          borderRadius: BorderRadius.circular(5),
+        ),
         child: new Center(
           child: Text(
             _text,
@@ -113,9 +118,14 @@ class StatusText extends StatelessWidget {
       );
     } else if (this._text == "Pending") {
       return Container(
+        height: 30,
+        width: 60,
         margin: EdgeInsets.all(10),
         padding: EdgeInsets.all(5),
-        color: Color.fromRGBO(248, 221, 78, 1),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(248, 221, 78, 1),
+          borderRadius: BorderRadius.circular(5),
+        ),
         child: new Center(
           child: Text(
             _text,
@@ -130,9 +140,14 @@ class StatusText extends StatelessWidget {
       );
     } else {
       return Container(
+        height: 30,
+        width: 60,
         margin: EdgeInsets.all(10),
         padding: EdgeInsets.all(5),
-        color: Color.fromRGBO(255, 239, 235, 1),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(255, 239, 235, 1),
+          borderRadius: BorderRadius.circular(5),
+        ),
         child: new Center(
           child: Text(
             _text,
@@ -156,6 +171,7 @@ class CardText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ManagerText(_managerText),

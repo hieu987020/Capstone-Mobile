@@ -1,8 +1,7 @@
+import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:capstone/widgets/widgets.dart';
 
 class ScreenDashboard extends StatelessWidget {
-  static const String routeName = '/dashboard';
   @override
   Widget build(BuildContext context) {
     return Scaffold(

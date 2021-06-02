@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:capstone/screens/screens.dart';
 
 class NavigatorButton extends StatelessWidget {
   @override
@@ -17,31 +16,31 @@ class NavigatorButton extends StatelessWidget {
           ListTile(
             title: Text('Dashboard'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, Routes.dashboard);
+              Navigator.pushReplacementNamed(context, "/");
             },
           ),
           ListTile(
             title: Text('Store'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, Routes.store);
+              Navigator.pushReplacementNamed(context, "/store");
             },
           ),
           ListTile(
             title: Text('Manager'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, Routes.manager);
+              Navigator.pushReplacementNamed(context, "/manager");
             },
           ),
           ListTile(
             title: Text('Product'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, Routes.product);
+              Navigator.pushReplacementNamed(context, "/product");
             },
           ),
           ListTile(
             title: Text('Camera'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, Routes.camera);
+              Navigator.pushReplacementNamed(context, "/camera");
             },
           ),
         ],

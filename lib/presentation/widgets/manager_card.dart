@@ -1,33 +1,5 @@
-import 'package:capstone/widgets/widgets.dart';
+import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-
-class ListManagerCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView();
-  }
-}
-
-class ManagerCard extends StatelessWidget {
-  final String _avatar;
-  final String _managerName;
-  final String _storeName;
-  final String _status;
-  ManagerCard(this._avatar, this._managerName, this._storeName, this._status);
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        ManagerCardAvatar(_avatar),
-        Expanded(
-          child: CardText(_managerName, _storeName),
-        ),
-        StatusText(_status),
-      ],
-    );
-  }
-}
 
 class ManagerCardHeader extends StatelessWidget {
   final String _text;
@@ -57,8 +29,8 @@ class ManagerCardAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (_assetPath == null) {
       return Container(
-        width: 70,
-        height: 70,
+        width: 50,
+        height: 50,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(
@@ -69,8 +41,8 @@ class ManagerCardAvatar extends StatelessWidget {
       );
     } else {
       return Container(
-        width: 70,
-        height: 70,
+        width: 50,
+        height: 50,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(

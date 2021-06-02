@@ -1,8 +1,7 @@
+import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:capstone/widgets/widgets.dart';
 
 class ScreenStore extends StatelessWidget {
-  static const String routeName = '/store';
   @override
   Widget build(BuildContext context) {
     return Scaffold(

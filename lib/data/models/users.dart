@@ -56,8 +56,31 @@ class Users {
     this.storeId,
   });
 
-  factory Users.fromJson(Map<String, dynamic> json) {
+  factory Users.jsonToUser(Map<String, dynamic> json) {
     var users = Users(
+      userId: json["userId"],
+      fullName: json["fullName"],
+      userName: json["userName"],
+      imageURL: json["imageURL"],
+      gender: json["gender"],
+      birthDate: json["birthDate"],
+      identifyCard: json["identifyCard"],
+      phone: json["phone"],
+      email: json["email"],
+      storeId: json["storeId"],
+      storeName: json["storeName"],
+      address: json["address"],
+      cityName: json["cityName"],
+      districtName: json["districtName"],
+      createdTime: json["createdTime"],
+      updatedTime: json["updatedTime"],
+      reasonInactive: json["reasonInactive"],
+      status: json["status"],
+    );
+    return users;
+  }
+  factory Users.jsonToUsers(Map<String, dynamic> json) {
+    var usersLst = Users(
       fullName: json['managerName'],
       userId: json['userId'],
       userName: json['userName'],
@@ -66,6 +89,6 @@ class Users {
       status: json['status'],
       imageURL: json['imageURL'],
     );
-    return users;
+    return usersLst;
   }
 }
