@@ -1,0 +1,35 @@
+[ {
+  "cityId" : "1",
+  "cityName" : "Ho Chi Minh",
+  "districts" : {
+    "11" : "District 11",
+    "1" : "District 1",
+    "12" : "District 12",
+    "2" : "District 2",
+    "3" : "District 3",
+    "4" : "District 4",
+    "5" : "District 5",
+    "6" : "District 6",
+    "7" : "District 7",
+    "8" : "District 8",
+    "9" : "District 9",
+    "10" : "District 10"
+  }
+}, {
+  "cityId" : "2",
+  "cityName" : "Ha Noi",
+  "districts" : {
+    "22" : "Nam Tu Liem District",
+    "23" : "Tay Ho District",
+    "13" : "Ba Dinh District",
+    "24" : "Thanh Xuan District",
+    "14" : "Bac Tu Liem District",
+    "15" : "Cau giay District",
+    "16" : "Dong Da District",
+    "17" : "Ha Dong District",
+    "18" : "Hai Ba Trung District",
+    "19" : "Hoan Kiem District",
+    "20" : "Hoan Mai District",
+    "21" : "Long Bien District"
+  }
+} ]

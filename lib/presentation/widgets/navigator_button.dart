@@ -1,6 +1,248 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-class NavigatorButton extends StatelessWidget {
+import 'package:capstone/business_logic/bloc/bloc.dart';
+import 'package:capstone/data/data_providers/const_common.dart';
+import 'package:capstone/data/models/models.dart';
+import 'package:capstone/presentation/widgets/constants.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class AdminNavigator extends StatelessWidget {
+  final Size size;
+  final String selectedIndex;
+
+  const AdminNavigator({Key key, this.size, this.selectedIndex})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    LoginModel loginModel;
+    var state = BlocProvider.of<LoginBloc>(context).state;
+    if (state is LoginAdminLoaded) {
+      log(state.loginModel.toString());
+      loginModel = state.loginModel;
+    } else if (state is LoginManagerLoaded) {
+      loginModel = state.loginModel;
+    }
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          Container(
+            height: size.width * 0.9,
+            child: DrawerHeader(
+              duration: const Duration(milliseconds: 500),
+              decoration: BoxDecoration(
+                color: kPrimaryColor,
+              ),
+              curve: Curves.fastLinearToSlowEaseIn,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.all(kDefaultPadding),
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundImage: NetworkImage(loginModel.imageURL),
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.all(kDefaultPadding * 0.6),
+                        child: Text(
+                          loginModel.fullName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          DrawerItem(
+            selectedIndex: selectedIndex,
+            size: size,
+            indexName: 'Dashboard',
+            iconAsset: 'assets/icons/dashboard.png',
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/admin_dashboard");
+            },
+          ),
+          DrawerItem(
+            selectedIndex: selectedIndex,
+            size: size,
+            indexName: 'Store',
+            iconAsset: 'assets/icons/store.png',
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/store");
+              BlocProvider.of<StoreBloc>(context)
+                  .add(StoreFetchEvent(StatusIntBase.All));
+            },
+          ),
+          DrawerItem(
+            selectedIndex: selectedIndex,
+            size: size,
+            indexName: 'Manager',
+            iconAsset: 'assets/icons/manager.png',
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/manager");
+              BlocProvider.of<UserBloc>(context)
+                  .add(UserFetchEvent(StatusIntBase.All));
+            },
+          ),
+          DrawerItem(
+            selectedIndex: selectedIndex,
+            size: size,
+            indexName: 'Category',
+            iconAsset: 'assets/icons/category.png',
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/category");
+              BlocProvider.of<CategoryBloc>(context)
+                  .add(CategoryFetchEvent(StatusIntBase.All));
+            },
+          ),
+          DrawerItem(
+            selectedIndex: selectedIndex,
+            size: size,
+            indexName: 'Product',
+            iconAsset: 'assets/icons/product.png',
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/product");
+              BlocProvider.of<ProductBloc>(context)
+                  .add(ProductFetchEvent(StatusIntBase.All));
+            },
+          ),
+          DrawerItem(
+            selectedIndex: selectedIndex,
+            size: size,
+            indexName: 'Camera',
+            iconAsset: 'assets/icons/camera.png',
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/camera");
+              BlocProvider.of<CameraBloc>(context)
+                  .add(CameraFetchEvent(StatusIntBase.All));
+            },
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Divider(
+            height: 1,
+            color: kPrimaryColor.withOpacity(0.6),
+          ),
+          ListTile(
+            title: Container(
+              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+              child: Text(
+                'Sign Out',
+                style: TextStyle(
+                  // fontFamily: AppTheme.fontName,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: kTextColor,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+            trailing: Icon(
+              Icons.power_settings_new,
+              color: Colors.red,
+            ),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/");
+              BlocProvider.of<LoginBloc>(context).add(LoginInitialEvent());
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DrawerItem extends StatelessWidget {
+  const DrawerItem({
+    Key key,
+    @required this.selectedIndex,
+    @required this.size,
+    @required this.indexName,
+    @required this.iconAsset,
+    @required this.onTap,
+  }) : super(key: key);
+
+  final String selectedIndex;
+  final Size size;
+
+  final String indexName;
+  final String iconAsset;
+  final Function onTap;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            decoration: selectedIndex == indexName
+                ? BoxDecoration(
+                    color: kPrimaryColor.withOpacity(0.4),
+                    borderRadius: new BorderRadius.only(
+                      topLeft: Radius.circular(0),
+                      topRight: Radius.circular(28),
+                      bottomLeft: Radius.circular(0),
+                      bottomRight: Radius.circular(28),
+                    ),
+                  )
+                : BoxDecoration(),
+            height: 60,
+            width: size.width * 0.6,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 25,
+                ),
+                Image.asset(
+                  iconAsset,
+                  color:
+                      selectedIndex == indexName ? kPrimaryColor : kTextColor,
+                  height: 25,
+                ),
+                Container(
+                  margin: EdgeInsets.all(kDefaultPadding),
+                  child: Text(
+                    indexName,
+                    style: TextStyle(
+                      color: selectedIndex == indexName
+                          ? kPrimaryColor
+                          : kTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ManagerNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -11,40 +253,60 @@ class NavigatorButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
+            curve: Curves.fastLinearToSlowEaseIn,
             child: Text('CFFA System'),
           ),
           ListTile(
             title: Text('Dashboard'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, "/");
+              Navigator.pushReplacementNamed(context, "/manager_dashboard");
             },
           ),
           ListTile(
-            title: Text('Store'),
+            title: Text('Shelf'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, "/store");
+              BlocProvider.of<ShelfBloc>(context)
+                  .add(ShelfFetchEvent(StatusIntBase.All));
+              Navigator.pushReplacementNamed(context, "/shelf");
             },
           ),
           ListTile(
-            title: Text('Manager'),
+            title: Text('Video'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, "/manager");
+              Navigator.pushReplacementNamed(context, "/video");
             },
           ),
           ListTile(
             title: Text('Product'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, "/product");
+              BlocProvider.of<ProductBloc>(context)
+                  .add(ProductFetchEvent(StatusIntBase.All));
+              Navigator.pushReplacementNamed(context, "/manager_product");
             },
           ),
           ListTile(
             title: Text('Camera'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, "/camera");
+              BlocProvider.of<CameraBloc>(context)
+                  .add(CameraFetchEvent(StatusIntBase.All));
+              Navigator.pushReplacementNamed(context, "/manager_camera");
+            },
+          ),
+          ListTile(
+            title: Text('Logout'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "/");
+              BlocProvider.of<LoginBloc>(context).add(LoginInitialEvent());
+              removeToken();
             },
           ),
         ],
       ),
     );
   }
+}
+
+removeToken() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
 }
