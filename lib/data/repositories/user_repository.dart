@@ -18,9 +18,7 @@ class UserRepository {
         searchValue, searchField, pageNum, fetchNext, statusId);
 
     var jsonResponse = json.decode(rawBody);
-    if (jsonResponse
-        .toString()
-        .contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
       return null;
     }
 

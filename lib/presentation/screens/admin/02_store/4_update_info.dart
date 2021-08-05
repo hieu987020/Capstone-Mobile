@@ -8,11 +8,8 @@ class ScreenStoreUpdateInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Update Information'),
-        backgroundColor: Colors.grey[200],
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
+      resizeToAvoidBottomInset: true,
+      appBar: buildNormalAppbar('Update Store'),
       body: BlocListener<StoreUpdateBloc, StoreUpdateState>(
         listener: (context, state) {
           if (state is StoreUpdateLoaded) {
@@ -23,7 +20,7 @@ class ScreenStoreUpdateInformation extends StatelessWidget {
             loadingCommon(context);
           }
         },
-        child: StoreUpdateForm(),
+        child: MyScrollView(listWidget: [StoreUpdateForm()]),
       ),
     );
   }
@@ -93,10 +90,6 @@ class StoreUpdateFormState extends State<StoreUpdateForm> {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Text('Update Store'),
-                ),
                 SizedBox(height: 15.0),
                 StoreTextField(
                   hintText: "Store Name",
@@ -107,15 +100,11 @@ class StoreUpdateFormState extends State<StoreUpdateForm> {
                   hintText: "Address",
                   controller: _address,
                 ),
-                // SizedBox(height: 15.0),
-                // StoreTextField(
-                //   hintText: "City",
-                //   controller: _cityId,
-                // ),
                 SizedBox(height: 15.0),
-                StoreTextField(
-                  hintText: "District",
+                StaticDropDown(
                   controller: _districtId,
+                  defaultCity: store.cityName,
+                  defaultDistrict: store.districtName,
                 ),
                 SizedBox(height: 15.0),
                 PrimaryButton(

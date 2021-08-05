@@ -17,6 +17,9 @@ class CategoryRepository {
     final String rawBody = await _api.getCategories(
         searchValue, searchField, pageNum, fetchNext, statusId);
     var jsonResponse = json.decode(rawBody);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
     return (jsonResponse['categories'] as List)
         .map((e) => Category.fromJsonLst(e))
         .toList();

@@ -4,7 +4,7 @@ import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenManagerInactive extends StatelessWidget {
+class ScreenCameraInactive extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,18 +14,18 @@ class ScreenManagerInactive extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: MyScrollView(
-        listWidget: [ManagerReasonForm()],
+        listWidget: [CameraReasonForm()],
       ),
     );
   }
 }
 
-class ManagerReasonForm extends StatefulWidget {
+class CameraReasonForm extends StatefulWidget {
   @override
-  _ManagerReasonFormState createState() => _ManagerReasonFormState();
+  _CameraReasonFormState createState() => _CameraReasonFormState();
 }
 
-class _ManagerReasonFormState extends State<ManagerReasonForm> {
+class _CameraReasonFormState extends State<CameraReasonForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
   @override
@@ -45,14 +45,14 @@ class _ManagerReasonFormState extends State<ManagerReasonForm> {
               text: "Save",
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  String userName;
-                  var state = BlocProvider.of<UserDetailBloc>(context).state;
-                  if (state is UserDetailLoaded) {
-                    userName = state.user.userName;
+                  String cameraId;
+                  var state = BlocProvider.of<CameraDetailBloc>(context).state;
+                  if (state is CameraDetailLoaded) {
+                    cameraId = state.camera.cameraId;
                   }
-                  BlocProvider.of<UserUpdateInsideBloc>(context).add(
-                      UserChangeStatus(
-                          userName, StatusIntBase.Inactive, _controller.text));
+                  BlocProvider.of<CameraUpdateInsideBloc>(context).add(
+                      CameraChangeStatus(
+                          cameraId, StatusIntBase.Inactive, _controller.text));
                   Navigator.pop(context);
                 }
               },

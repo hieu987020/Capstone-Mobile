@@ -16,3 +16,7 @@ export 'gender_ratio.dart';
 export 'detail_view.dart';
 export 'loading_container.dart';
 export 'update_image_container.dart';
+export 'static_dropdown.dart';
+export 'scroll_view.dart';
+export 'camera_type_ratio.dart';
+export 'custome_popup.dart';

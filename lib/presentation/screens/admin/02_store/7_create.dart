@@ -14,33 +14,22 @@ class ScreenStoreCreate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Create Store'),
-        backgroundColor: kPrimaryColor,
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[200],
+      resizeToAvoidBottomInset: true,
+      appBar: buildNormalAppbar('Create Store'),
       body: BlocListener<StoreCreateBloc, StoreCreateState>(
         listener: (context, state) {
           if (state is StoreCreateLoaded) {
             _storeCreateLoaded(context, state);
           } else if (state is StoreCreateError) {
             _storeCreateError(context, state);
+          } else if (state is StoreCreateLoading) {
+            loadingCommon(context);
+          } else if (state is StoreDuplicatedName) {
+            Navigator.pop(context);
           }
         },
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  StoreCreateForm(),
-                ],
-              ),
-            ),
-          ),
+        child: MyScrollView(
+          listWidget: [StoreCreateForm()],
         ),
       ),
     );
@@ -48,20 +37,19 @@ class ScreenStoreCreate extends StatelessWidget {
 }
 
 _storeCreateLoaded(BuildContext context, StoreCreateLoaded state) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => ScreenStore()),
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (BuildContext context) => ScreenStore()),
+    ModalRoute.withName('/'),
   );
-  BlocProvider.of<StoreBloc>(context).add(StoreFetchEvent(StatusIntBase.All));
   BlocProvider.of<StoreCreateBloc>(context).add(StoreCreateInitialEvent());
+  BlocProvider.of<StoreBloc>(context).add(StoreFetchEvent(StatusIntBase.All));
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text("Create Successfully"),
-    duration: Duration(milliseconds: 5000),
+    duration: Duration(milliseconds: 2000),
   ));
 }
 
 _storeCreateError(BuildContext context, StoreCreateError state) {
-  print("STORE KAC KAC KAC KAC ");
   showDialog<String>(
     context: context,
     builder: (BuildContext context) {
@@ -70,7 +58,10 @@ _storeCreateError(BuildContext context, StoreCreateError state) {
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
             child: const Text('Back'),
           ),
         ],
@@ -91,7 +82,6 @@ class StoreCreateFormState extends State<StoreCreateForm> {
   final _storeName = TextEditingController();
   final _address = TextEditingController();
   final _districtId = TextEditingController();
-  final _cityId = TextEditingController();
   File _image;
   final picker = ImagePicker();
 
@@ -169,20 +159,24 @@ class StoreCreateFormState extends State<StoreCreateForm> {
                   hintText: "Store Name",
                   controller: _storeName,
                 ),
+                BlocBuilder<StoreCreateBloc, StoreCreateState>(
+                  builder: (context, state) {
+                    if (state is StoreDuplicatedName) {
+                      return DuplicateField(state.message);
+                    }
+                    return Text("");
+                  },
+                ),
                 SizedBox(height: 15.0),
                 StoreTextField(
                   hintText: "Address",
                   controller: _address,
                 ),
                 SizedBox(height: 15.0),
-                StoreTextField(
-                  hintText: "City",
-                  controller: _cityId,
-                ),
-                SizedBox(height: 15.0),
-                StoreTextField(
-                  hintText: "District",
+                StaticDropDown(
                   controller: _districtId,
+                  defaultCity: "Ho Chi Minh",
+                  defaultDistrict: "District 1",
                 ),
                 SizedBox(height: 15.0),
                 PrimaryButton(
@@ -195,9 +189,7 @@ class StoreCreateFormState extends State<StoreCreateForm> {
                         address: _address.text,
                         districtId: int.parse(_districtId.text),
                       );
-                      StoreCreateBloc storeCreateBloc =
-                          BlocProvider.of<StoreCreateBloc>(context);
-                      storeCreateBloc
+                      BlocProvider.of<StoreCreateBloc>(context)
                           .add(StoreCreateSubmitEvent(_store, _image));
                     }
                   },

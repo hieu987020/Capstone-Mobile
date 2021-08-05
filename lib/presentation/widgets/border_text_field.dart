@@ -123,7 +123,7 @@ class ManagerTextField extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 18.0),
       width: double.infinity,
-      height: 50,
+      height: 70,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(this.borderRadius),
@@ -140,6 +140,10 @@ class ManagerTextField extends StatelessWidget {
         obscureText: this.obscureText,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         controller: controller,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
         decoration: InputDecoration(
           prefixIcon: this.prefixIcon,
           prefixIconConstraints: BoxConstraints(minWidth: 0.0),
@@ -228,6 +232,10 @@ class ProductTextField extends StatelessWidget {
         obscureText: this.obscureText,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         controller: controller,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
         decoration: InputDecoration(
           prefixIcon: this.prefixIcon,
           prefixIconConstraints: BoxConstraints(minWidth: 0.0),
@@ -304,6 +312,10 @@ class CameraTextField extends StatelessWidget {
         obscureText: this.obscureText,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         controller: controller,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
         decoration: InputDecoration(
           prefixIcon: this.prefixIcon,
           prefixIconConstraints: BoxConstraints(minWidth: 0.0),
@@ -323,18 +335,23 @@ class CameraTextField extends StatelessWidget {
               }
               break;
             case 'IP Address':
-              if (value.length < 2 || value.length > 250) {
+              if (!RegExp(
+                      r'^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$')
+                  .hasMatch(value)) {
                 return "IP Address must be x.x.x.x format (x is number between 0 to 255)";
               }
               break;
             case 'RTSP String':
-              if (value.length < 2 || value.length > 250) {
+              if (!RegExp(
+                      r'^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$')
+                  .hasMatch(value)) {
                 return "RTSP String must be x.x.x.x format (x is number between 0 to 255)";
               }
               break;
             case 'MAC Address':
-              if (value.length < 2 || value.length > 250) {
-                return "MAC address is not in the correct format";
+              if (!RegExp(r'^([0-9A-Fa-f]{2}[-]){5}([0-9A-Fa-f]{2})$')
+                  .hasMatch(value)) {
+                return "MAC address exp: 1A-2B-3C-4D-5E-6F";
               }
               break;
             default:
@@ -385,6 +402,10 @@ class StoreTextField extends StatelessWidget {
         obscureText: this.obscureText,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         controller: controller,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
         decoration: InputDecoration(
           prefixIcon: this.prefixIcon,
           prefixIconConstraints: BoxConstraints(minWidth: 0.0),
@@ -530,6 +551,36 @@ class _DateTextFieldState extends State<DateTextField> {
           return null;
         },
       ),
+    );
+  }
+}
+
+class ReasonTextField extends StatelessWidget {
+  ReasonTextField(this._validate, this._labelText, this._controller);
+
+  final String _validate;
+  final String _labelText;
+  final TextEditingController _controller;
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: _controller,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      decoration: InputDecoration(
+        labelText: _labelText,
+        contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
+      ),
+      validator: (value) {
+        switch (_labelText) {
+          case 'Reason':
+            if (value.isEmpty) {
+              return _validate;
+            }
+            break;
+          default:
+        }
+        return null;
+      },
     );
   }
 }

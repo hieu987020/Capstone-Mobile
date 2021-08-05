@@ -6,22 +6,39 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class StatusDropdown extends StatefulWidget {
   final Function onChange;
   final String model;
-  StatusDropdown({this.onChange, this.model});
+  final String defaultValue;
+  StatusDropdown({this.onChange, this.model, this.defaultValue});
 
   @override
-  State<StatusDropdown> createState() => StatusDropdownState(onChange, model);
+  State<StatusDropdown> createState() =>
+      StatusDropdownState(onChange, model, defaultValue);
 }
 
 class StatusDropdownState extends State<StatusDropdown> {
   final Function onChanged;
   final String model;
-  String dropdownValue = "All";
+  final String defaultValue;
+  String selectedValue = "";
+  var _menu1 = ['All', 'Active', 'Pending', 'Inactive'];
 
-  StatusDropdownState(this.onChanged, this.model);
+  @override
+  void initState() {
+    if (defaultValue.isEmpty || defaultValue == null) {
+      selectedValue = "All";
+    } else {
+      selectedValue = defaultValue;
+    }
+    super.initState();
+  }
+
+  StatusDropdownState(this.onChanged, this.model, this.defaultValue);
   @override
   Widget build(BuildContext context) {
+    if (model == 'product' || model == 'category') {
+      _menu1 = ['All', 'Active', 'Inactive'];
+    }
     return DropdownButton<String>(
-      value: dropdownValue,
+      value: selectedValue,
       icon: const Icon(Icons.arrow_downward),
       iconSize: 15,
       iconEnabledColor: Colors.black,
@@ -33,7 +50,7 @@ class StatusDropdownState extends State<StatusDropdown> {
       ),
       onChanged: (String newValue) {
         setState(() {
-          dropdownValue = newValue;
+          selectedValue = newValue;
         });
         if (model == 'manager') {
           if (newValue == "Active") {
@@ -79,8 +96,8 @@ class StatusDropdownState extends State<StatusDropdown> {
             BlocProvider.of<CameraBloc>(context)
                 .add(CameraFetchEvent(StatusIntBase.Active));
           } else if (newValue == "Pending") {
-            // BlocProvider.of<CameraBloc>(context)
-            //     .add(CameraFetchEvent(StatusIntBase.Pending));
+            BlocProvider.of<CameraBloc>(context)
+                .add(CameraFetchEvent(StatusIntBase.Pending));
           } else if (newValue == "Inactive") {
             BlocProvider.of<CameraBloc>(context)
                 .add(CameraFetchEvent(StatusIntBase.Inactive));
@@ -104,8 +121,7 @@ class StatusDropdownState extends State<StatusDropdown> {
           }
         }
       },
-      items: <String>['All', 'Active', 'Pending', 'Inactive']
-          .map<DropdownMenuItem<String>>((String value) {
+      items: _menu1.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),

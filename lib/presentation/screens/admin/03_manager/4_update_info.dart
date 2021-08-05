@@ -9,6 +9,7 @@ class ScreenManagerUpdateInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: buildNormalAppbar('Update Manager'),
       body: BlocListener<UserUpdateBloc, UserUpdateState>(
         listener: (context, state) {
@@ -24,19 +25,7 @@ class ScreenManagerUpdateInformation extends StatelessWidget {
             Navigator.of(context).pop();
           }
         },
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ManagerUpdateForm(),
-                ],
-              ),
-            ),
-          ),
-        ),
+        child: MyScrollView(listWidget: [ManagerUpdateForm()]),
       ),
     );
   }
@@ -75,7 +64,6 @@ _userUpdateError(BuildContext context, UserUpdateError state) {
   );
 }
 
-//! Manager Update : Form
 class ManagerUpdateForm extends StatefulWidget {
   @override
   ManagerUpdateFormState createState() {
@@ -83,7 +71,6 @@ class ManagerUpdateForm extends StatefulWidget {
   }
 }
 
-//! Manager Update : Form View
 class ManagerUpdateFormState extends State<ManagerUpdateForm> {
   @override
   Widget build(BuildContext context) {
@@ -170,9 +157,7 @@ class ManagerUpdateFormState extends State<ManagerUpdateForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ManagerTextField(
                   hintText: "Email",
                   controller: _email,
@@ -205,9 +190,7 @@ class ManagerUpdateFormState extends State<ManagerUpdateForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ManagerTextField(
                   hintText: "Address",
                   controller: _address,
@@ -220,39 +203,13 @@ class ManagerUpdateFormState extends State<ManagerUpdateForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
-                // ManagerTextField(
-                //   hintText: "City",
-                //   controller: _cityId,
-                //   prefixIcon: Container(
-                //     margin: EdgeInsets.only(right: 10),
-                //     child: Image.asset(
-                //       'assets/icons/district.png',
-                //       color: kPrimaryColor,
-                //       height: 25,
-                //     ),
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 15.0,
-                // ),
-                ManagerTextField(
-                  hintText: "Dictrict",
+                SizedBox(height: 15.0),
+                StaticDropDown(
                   controller: _districtId,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/district.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  defaultCity: user.cityName,
+                  defaultDistrict: user.districtName,
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 PrimaryButton(
                   text: "Save",
                   onPressed: () {

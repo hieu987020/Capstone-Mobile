@@ -28,7 +28,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           PageNumBase.Default,
           FetchNextBase.Default,
           statusId);
-
       yield ProductLoaded(products);
     } catch (e) {
       yield ProductError();

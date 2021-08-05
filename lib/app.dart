@@ -57,6 +57,9 @@ class App extends StatelessWidget {
         BlocProvider<StoreUpdateImageBloc>(
           create: (context) => StoreUpdateImageBloc(),
         ),
+        BlocProvider<StoreUpdateInsideBloc>(
+          create: (context) => StoreUpdateInsideBloc(),
+        ),
 //! Product
         BlocProvider<ProductBloc>(
           create: (context) => ProductBloc(),
@@ -92,6 +95,9 @@ class App extends StatelessWidget {
         ),
         BlocProvider<CameraUpdateImageBloc>(
           create: (context) => CameraUpdateImageBloc(),
+        ),
+        BlocProvider<CameraUpdateInsideBloc>(
+          create: (context) => CameraUpdateInsideBloc(),
         ),
 //! Shelf
         BlocProvider<ShelfBloc>(

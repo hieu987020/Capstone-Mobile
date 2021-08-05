@@ -16,8 +16,9 @@ class UserUpdateInsideBloc
     if (event is UserMapStoreEvent) {
       yield* _userChooseStore(event.managerId, event.storeId, event.active);
     }
-    if (event is UserChangeToPending) {
-      yield* _userChangeToPending(event.userName, event.statusId);
+    if (event is UserChangeStatus) {
+      yield* _userChangeToPending(
+          event.userName, event.statusId, event.reasonInactive);
     }
   }
 
@@ -38,11 +39,11 @@ class UserUpdateInsideBloc
   }
 
   Stream<UserUpdateInsideState> _userChangeToPending(
-      String userName, int statusId) async* {
+      String userName, int statusId, String reasonInactive) async* {
     try {
       yield UserUpdateInsideLoading();
-      String response =
-          await _userRepository.changeStatus(userName, statusId, null);
+      String response = await _userRepository.changeStatus(
+          userName, statusId, reasonInactive);
       if (response == 'true') {
         yield UserUpdateInsideLoaded();
       } else {

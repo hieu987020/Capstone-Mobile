@@ -14,12 +14,8 @@ class ScreenProductCreate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Create Product'),
-        backgroundColor: kPrimaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
+      appBar: buildNormalAppbar('Create Product'),
       backgroundColor: Colors.grey[200],
       body: BlocListener<ProductCreateBloc, ProductCreateState>(
         listener: (context, state) {
@@ -29,18 +25,8 @@ class ScreenProductCreate extends StatelessWidget {
             _productCreateError(context, state);
           }
         },
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ProductCreateForm(),
-                ],
-              ),
-            ),
-          ),
+        child: MyScrollView(
+          listWidget: [ProductCreateForm()],
         ),
       ),
     );
@@ -73,7 +59,10 @@ _productCreateError(BuildContext context, ProductCreateError state) {
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
             child: const Text('Back'),
           ),
         ],
@@ -129,9 +118,7 @@ class ProductCreateFormState extends State<ProductCreateForm> {
                         color: kTextColor,
                       ),
                     ),
-                    SizedBox(
-                      width: 20,
-                    ),
+                    SizedBox(width: 20),
                     InkWell(
                       onTap: getImage,
                       child: _image == null
@@ -170,30 +157,22 @@ class ProductCreateFormState extends State<ProductCreateForm> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ProductTextField(
                   hintText: "Product Name",
                   controller: _productName,
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ProductTextField(
                   hintText: "Description",
                   controller: _description,
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ProductTextField(
                   hintText: "Category",
                   controller: _category,
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 PrimaryButton(
                   text: "Create",
                   onPressed: () {
@@ -210,54 +189,6 @@ class ProductCreateFormState extends State<ProductCreateForm> {
                     }
                   },
                 ),
-                // //! fullname
-                // ProductCreateTextField(
-                //     '1 - 100 characters', 'Product Name', _productName),
-                // //! address
-                // ProductCreateTextField(
-                //     '1 - 250 characters', 'Description', _description),
-                // //! image view
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                //     Container(
-                //       child: _image == null
-                //           ? Text('No image selected.')
-                //           : Container(
-                //               height: 80,
-                //               child: Image.file(_image),
-                //             ),
-                //     ),
-                //   ],
-                // ),
-                // //! image button
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                //     Container(
-                //       child: ElevatedButton(
-                //         style: TextButton.styleFrom(
-                //           primary: Colors.white,
-                //           backgroundColor: kPrimaryColor,
-                //         ),
-                //         onPressed: getImage,
-                //         child: Icon(Icons.add_a_photo),
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                //     ProductCreateSubmitButton(
-                //       this._formKey,
-                //       this._productName,
-                //       this._description,
-                //       this._districtId,
-                //       this._image,
-                //     ),
-                //   ],
-                // ),
               ],
             ),
           ),
@@ -271,94 +202,7 @@ class ProductCreateFormState extends State<ProductCreateForm> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        print('tao thay roi ' + pickedFile.path.toString());
-      } else {
-        print('No image selected.');
       }
     });
-  }
-}
-
-class ProductCreateSubmitButton extends StatelessWidget {
-  final _formKey;
-  ProductCreateSubmitButton(
-    this._formKey,
-    this._productName,
-    this._description,
-    this._category,
-    this._image,
-  );
-  final TextEditingController _productName;
-  final TextEditingController _description;
-  final TextEditingController _category;
-  final File _image;
-  @override
-  Widget build(BuildContext context) {
-    ProductCreateBloc productCreateBloc =
-        BlocProvider.of<ProductCreateBloc>(context);
-    return Container(
-      width: 150,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: Colors.white,
-          backgroundColor: kPrimaryColor,
-        ),
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            Product _product = new Product(
-              productName: _productName.text,
-              imageUrl: "",
-              description: _description.text,
-            );
-            productCreateBloc.add(ProductCreateSubmitEvent(_product, _image));
-          }
-        },
-        child: Text('Submit'),
-      ),
-    );
-  }
-}
-
-class ProductCreateTextField extends StatelessWidget {
-  ProductCreateTextField(this._validate, this._labelText, this._controller);
-  final String _validate;
-  final String _labelText;
-  final TextEditingController _controller;
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      alignment: Alignment.topLeft,
-      widthFactor: 0.5,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 5),
-        child: TextFormField(
-          controller: _controller,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: _labelText,
-            contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
-          ),
-          validator: (value) {
-            switch (_labelText) {
-              case 'Product Name':
-                if (value.length < 2 || value.length > 100) {
-                  return _validate;
-                }
-                break;
-
-              case 'Description':
-                if (value.isEmpty) {
-                  return _validate;
-                }
-                break;
-
-              default:
-            }
-            return null;
-          },
-        ),
-      ),
-    );
   }
 }

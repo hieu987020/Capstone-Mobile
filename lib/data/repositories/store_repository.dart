@@ -17,14 +17,35 @@ class StoreRepository {
     final String rawBody = await _api.getStores(
         searchValue, searchField, pageNum, fetchNext, statusId);
     var jsonResponse = json.decode(rawBody);
-    if (jsonResponse
-        .toString()
-        .contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
       return null;
     }
     return (jsonResponse['stores'] as List)
         .map((e) => Store.fromJsonLst(e))
         .toList();
+  }
+
+  Future<String> changeStatus(
+      String storeId, int statusId, String reasonInactive) async {
+    Map<String, dynamic> jsonChangeStatus;
+    if (reasonInactive == null) {
+      jsonChangeStatus = {
+        "storeId": storeId,
+        "statusId": statusId,
+      };
+    } else {
+      jsonChangeStatus = {
+        "storeId": storeId,
+        "statusId": statusId,
+        "reasonInactive": reasonInactive,
+      };
+    }
+    var userCreateJson = jsonEncode(jsonChangeStatus);
+    final String response = await _api.changeStatus(userCreateJson);
+    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return response;
+    }
+    return 'true';
   }
 
   Future<List<Store>> getStoresByStoreName(String storeName) async {

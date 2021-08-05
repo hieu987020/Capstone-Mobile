@@ -1,4 +1,6 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
+import 'package:capstone/data/data_providers/const_common.dart';
+import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
@@ -9,47 +11,43 @@ class ScreenManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: buildAppBar(),
-      drawer: AdminNavigator(
-        size: size,
-        selectedIndex: 'Manager',
-      ),
-      floatingActionButton: AddFloatingButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ScreenManagerCreate()));
-        },
-      ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                HeaderWithSearchBox(size),
-                TitleWithMoreBtn(
-                  title: 'List Manager',
-                  model: 'manager',
-                ),
-                BlocBuilder<UserBloc, UserState>(
-                  // ignore: missing_return
-                  builder: (context, state) {
-                    if (state is UserLoaded) {
-                      return ManagerContent();
-                    } else if (state is UserError) {
-                      return FailureStateWidget();
-                    } else if (state is UserLoading) {
-                      return LoadingWidget();
-                    }
-                  },
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () async => outApp(context),
+      child: Scaffold(
+        appBar: buildAppBar(),
+        drawer: AdminNavigator(
+          size: size,
+          selectedIndex: 'Manager',
+        ),
+        floatingActionButton: AddFloatingButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ScreenManagerCreate()));
+          },
+        ),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterFloat,
+        body: MyScrollView(
+          listWidget: [
+            HeaderWithSearchBox(size),
+            TitleWithMoreBtn(
+              title: 'List Manager',
+              model: 'manager',
+              defaultStatus: StatusStringBase.All,
             ),
-          ),
+            BlocBuilder<UserBloc, UserState>(
+              // ignore: missing_return
+              builder: (context, state) {
+                if (state is UserLoaded) {
+                  return ManagerContent();
+                } else if (state is UserError) {
+                  return FailureStateWidget();
+                } else if (state is UserLoading) {
+                  return LoadingWidget();
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -99,7 +97,7 @@ class ManagerContent extends StatelessWidget {
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
@@ -20,7 +18,6 @@ class AdminNavigator extends StatelessWidget {
     LoginModel loginModel;
     var state = BlocProvider.of<LoginBloc>(context).state;
     if (state is LoginAdminLoaded) {
-      log(state.loginModel.toString());
       loginModel = state.loginModel;
     } else if (state is LoginManagerLoaded) {
       loginModel = state.loginModel;

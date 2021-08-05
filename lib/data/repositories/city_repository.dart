@@ -8,6 +8,9 @@ class CityRepository {
 
   Future<List<City>> getCity() async {
     final String rawBody = await _api.getCity();
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
     var jsonResponse = json.decode(rawBody);
     return (jsonResponse as List).map((e) => City.fromJson(e)).toList();
   }

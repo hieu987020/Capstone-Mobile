@@ -8,11 +8,8 @@ class ScreenProductUpdateInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Update Information'),
-        backgroundColor: Colors.grey[200],
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
+      resizeToAvoidBottomInset: true,
+      appBar: buildNormalAppbar('Update product'),
       body: BlocListener<ProductUpdateBloc, ProductUpdateState>(
         listener: (context, state) {
           if (state is ProductUpdateLoaded) {
@@ -23,7 +20,11 @@ class ScreenProductUpdateInformation extends StatelessWidget {
             _productUpdateLoading(context);
           }
         },
-        child: ProductUpdateForm(),
+        child: MyScrollView(
+          listWidget: [
+            ProductUpdateForm(),
+          ],
+        ),
       ),
     );
   }
@@ -70,7 +71,6 @@ _productUpdateLoading(BuildContext context) {
   );
 }
 
-//! Product Update : Form
 class ProductUpdateForm extends StatefulWidget {
   @override
   ProductUpdateFormState createState() {
@@ -78,7 +78,6 @@ class ProductUpdateForm extends StatefulWidget {
   }
 }
 
-//! Product Update : Form View
 class ProductUpdateFormState extends State<ProductUpdateForm> {
   @override
   Widget build(BuildContext context) {
@@ -92,148 +91,53 @@ class ProductUpdateFormState extends State<ProductUpdateForm> {
         TextEditingController(text: product.productName);
     final TextEditingController _description =
         TextEditingController(text: product.description);
-    return Container(
-      width: MediaQuery.of(context).size.width * 1,
-      height: 3000,
+    return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text('Update Product'),
-              ),
-              ProductUpdateTextField(
-                  '1 - 100 characters', 'Product Name', _productName),
-              ProductUpdateTextField(
-                  '1 - 250 characters', 'Description', _description),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ProductUploadCancelButton(),
-                  ProductUpdateSaveButton(
-                    _formKey,
-                    product.productId,
-                    _productName,
-                    _description,
-                    product.imageUrl,
-                  ),
-                ],
-              ),
-            ],
+        padding: const EdgeInsets.all(kDefaultPadding),
+        child: Container(
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                SizedBox(height: 15.0),
+                ProductTextField(
+                  hintText: "Product Name",
+                  controller: _productName,
+                ),
+                SizedBox(height: 15.0),
+                ProductTextField(
+                  hintText: "Description",
+                  controller: _description,
+                ),
+                SizedBox(height: 15.0),
+                // ProductTextField(
+                //   hintText: "Category",
+                //   controller: _category,
+                // ),
+                // SizedBox(height: 15.0),
+                PrimaryButton(
+                  text: "Save",
+                  onPressed: () {
+                    ProductUpdateBloc productCreateBloc =
+                        BlocProvider.of<ProductUpdateBloc>(context);
+                    if (_formKey.currentState.validate()) {
+                      Product _product = new Product(
+                        productId: product.productId,
+                        productName: _productName.text,
+                        imageUrl: product.imageUrl,
+                        description: _description.text,
+                        categories: product.categories,
+                      );
+                      productCreateBloc.add(ProductUpdateSubmit(_product));
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-//! Product Update : Text Field + Validate
-class ProductUpdateTextField extends StatelessWidget {
-  ProductUpdateTextField(this._validate, this._labelText, this._controller);
-  final String _validate;
-  final String _labelText;
-  final TextEditingController _controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      alignment: Alignment.topLeft,
-      widthFactor: 1,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
-        child: TextFormField(
-          controller: _controller,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: _labelText,
-            contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
-          ),
-          validator: (value) {
-            switch (_labelText) {
-              case 'Product Name':
-                if (value.length < 2 || value.length > 100) {
-                  return _validate;
-                }
-                break;
-
-              case 'Description':
-                if (value.isEmpty) {
-                  return _validate;
-                }
-                break;
-
-              default:
-            }
-            return null;
-          },
-        ),
-      ),
-    );
-  }
-}
-
-//! Product Update : Save button
-class ProductUpdateSaveButton extends StatelessWidget {
-  ProductUpdateSaveButton(
-    this._formKey,
-    this._productId,
-    this._productName,
-    this._description,
-    this._image,
-  );
-  final _formKey;
-  final String _productId;
-  final TextEditingController _productName;
-  final TextEditingController _description;
-  final String _image;
-  @override
-  Widget build(BuildContext context) {
-    ProductUpdateBloc productCreateBloc =
-        BlocProvider.of<ProductUpdateBloc>(context);
-    return Container(
-      width: 100,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: Colors.white,
-          backgroundColor: Colors.blue,
-        ),
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            Product _product = new Product(
-              productId: _productId,
-              productName: _productName.text,
-              imageUrl: _image,
-              description: _description.text,
-//              categories: ,
-            );
-            productCreateBloc.add(ProductUpdateSubmit(_product));
-          }
-        },
-        child: Text('Save'),
-      ),
-    );
-  }
-}
-
-//! Product Update : Cancel button
-class ProductUploadCancelButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: Colors.white,
-          backgroundColor: Colors.grey,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: const Text('Cancel'),
       ),
     );
   }

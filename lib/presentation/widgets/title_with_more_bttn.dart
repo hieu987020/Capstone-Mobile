@@ -6,9 +6,11 @@ class TitleWithMoreBtn extends StatelessWidget {
     Key key,
     this.title,
     this.model,
+    this.defaultStatus,
   }) : super(key: key);
   final String title;
   final String model;
+  final String defaultStatus;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -19,24 +21,8 @@ class TitleWithMoreBtn extends StatelessWidget {
           Spacer(),
           StatusDropdown(
             model: model,
+            defaultValue: defaultStatus,
           ),
-          // ElevatedButton(
-          //   style: ElevatedButton.styleFrom(
-          //     shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(20)),
-          //     primary: kPrimaryColor,
-          //   ),
-          //   onPressed: () {
-          //     Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) => ScreenManagerCreate()));
-          //   },
-          //   child: Text(
-          //     "New",
-          //     style: TextStyle(color: Colors.white),
-          //   ),
-          // ),
         ],
       ),
     );

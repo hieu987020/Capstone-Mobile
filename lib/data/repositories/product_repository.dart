@@ -17,6 +17,9 @@ class ProductRepository {
       int pageNum, int fetchNext, int statusId) async {
     final String rawBody = await _api.getProducts(
         searchValue, searchField, pageNum, fetchNext, statusId);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
     var jsonResponse = json.decode(rawBody);
     return (jsonResponse['products'] as List)
         .map((e) => Product.fromJsonLst(e))
@@ -34,6 +37,29 @@ class ProductRepository {
     return (jsonResponse['products'] as List)
         .map((e) => Product.fromJsonLst(e))
         .toList();
+  }
+
+  Future<String> changeStatus(
+      String userName, int statusId, String reasonInactive) async {
+    Map<String, dynamic> jsonChangeStatus;
+    if (reasonInactive == null) {
+      jsonChangeStatus = {
+        "userName": userName,
+        "statusId": statusId,
+      };
+    } else {
+      jsonChangeStatus = {
+        "userName": userName,
+        "statusId": statusId,
+        "reasonInactive": reasonInactive,
+      };
+    }
+    var userCreateJson = jsonEncode(jsonChangeStatus);
+    final String response = await _api.changeStatus(userCreateJson);
+    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return response;
+    }
+    return 'true';
   }
 
   Future<String> updateProduct(Product product) async {

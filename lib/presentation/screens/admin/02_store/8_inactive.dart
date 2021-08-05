@@ -4,7 +4,7 @@ import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenManagerInactive extends StatelessWidget {
+class ScreenStoreInactive extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,18 +14,18 @@ class ScreenManagerInactive extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: MyScrollView(
-        listWidget: [ManagerReasonForm()],
+        listWidget: [StoreReasonForm()],
       ),
     );
   }
 }
 
-class ManagerReasonForm extends StatefulWidget {
+class StoreReasonForm extends StatefulWidget {
   @override
-  _ManagerReasonFormState createState() => _ManagerReasonFormState();
+  _StoreReasonFormState createState() => _StoreReasonFormState();
 }
 
-class _ManagerReasonFormState extends State<ManagerReasonForm> {
+class _StoreReasonFormState extends State<StoreReasonForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
   @override
@@ -45,14 +45,14 @@ class _ManagerReasonFormState extends State<ManagerReasonForm> {
               text: "Save",
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  String userName;
-                  var state = BlocProvider.of<UserDetailBloc>(context).state;
-                  if (state is UserDetailLoaded) {
-                    userName = state.user.userName;
+                  String storeId;
+                  var state = BlocProvider.of<StoreDetailBloc>(context).state;
+                  if (state is StoreDetailLoaded) {
+                    storeId = state.store.storeId;
                   }
-                  BlocProvider.of<UserUpdateInsideBloc>(context).add(
-                      UserChangeStatus(
-                          userName, StatusIntBase.Inactive, _controller.text));
+                  BlocProvider.of<StoreUpdateInsideBloc>(context).add(
+                      StoreChangeStatus(
+                          storeId, StatusIntBase.Inactive, _controller.text));
                   Navigator.pop(context);
                 }
               },

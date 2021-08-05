@@ -16,10 +16,36 @@ class CameraRepository {
       int statusId, int pageNum, int fetchNext) async {
     final String rawBody = await _api.getCameras(
         storeId, cameraName, statusId, pageNum, fetchNext);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
     var jsonResponse = json.decode(rawBody);
     return (jsonResponse['cameras'] as List)
         .map((e) => Camera.fromJsonLst(e))
         .toList();
+  }
+
+  Future<String> changeStatus(
+      String cameraId, int statusId, String reasonInactive) async {
+    Map<String, dynamic> jsonChangeStatus;
+    if (reasonInactive == null) {
+      jsonChangeStatus = {
+        "cameraId": cameraId,
+        "statusId": statusId,
+      };
+    } else {
+      jsonChangeStatus = {
+        "cameraId": cameraId,
+        "statusId": statusId,
+        "reasonInactive": reasonInactive,
+      };
+    }
+    var userCreateJson = jsonEncode(jsonChangeStatus);
+    final String response = await _api.changeStatus(userCreateJson);
+    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return response;
+    }
+    return 'true';
   }
 
   Future<String> updateCamera(Camera camera) async {

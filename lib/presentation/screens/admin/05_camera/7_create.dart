@@ -15,13 +15,8 @@ class ScreenCameraCreate extends StatelessWidget {
   Widget build(BuildContext context) {
     BlocProvider.of<CameraCreateBloc>(context).add(CameraCreateInitialEvent());
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Create Camera'),
-        backgroundColor: kPrimaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
+      appBar: buildNormalAppbar('Create Camera'),
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[200],
       body: BlocListener<CameraCreateBloc, CameraCreateState>(
         listener: (context, state) {
           if (state is CameraCreateLoaded) {
@@ -36,18 +31,10 @@ class ScreenCameraCreate extends StatelessWidget {
             Navigator.of(context).pop();
           }
         },
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CameraCreateForm(),
-                ],
-              ),
-            ),
-          ),
+        child: MyScrollView(
+          listWidget: [
+            CameraCreateForm(),
+          ],
         ),
       ),
     );
@@ -107,6 +94,7 @@ class CameraCreateFormState extends State<CameraCreateForm> {
   final _ipAddress = TextEditingController();
   final _rtspString = TextEditingController();
   final _macAddress = TextEditingController();
+  final _type = TextEditingController(text: '1');
   File _image;
   final picker = ImagePicker();
 
@@ -137,9 +125,7 @@ class CameraCreateFormState extends State<CameraCreateForm> {
                       color: kTextColor,
                     ),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
+                  SizedBox(width: 20),
                   InkWell(
                     onTap: getImage,
                     child: _image == null
@@ -177,24 +163,18 @@ class CameraCreateFormState extends State<CameraCreateForm> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 15.0,
-              ),
-              ProductTextField(
+              SizedBox(height: 15.0),
+              CameraTextField(
                 hintText: "Camera Name",
                 controller: _cameraName,
               ),
-              SizedBox(
-                height: 15.0,
-              ),
-              ProductTextField(
+              SizedBox(height: 15.0),
+              CameraTextField(
                 hintText: "MAC Address",
                 controller: _macAddress,
               ),
-              SizedBox(
-                height: 15.0,
-              ),
-              ProductTextField(
+              SizedBox(height: 15.0),
+              CameraTextField(
                 hintText: "IP Address",
                 controller: _ipAddress,
               ),
@@ -206,7 +186,7 @@ class CameraCreateFormState extends State<CameraCreateForm> {
                   return Text("");
                 },
               ),
-              ProductTextField(
+              CameraTextField(
                 hintText: "RTSP String",
                 controller: _rtspString,
               ),
@@ -218,9 +198,8 @@ class CameraCreateFormState extends State<CameraCreateForm> {
                   return Text("");
                 },
               ),
-              SizedBox(
-                height: 15.0,
-              ),
+              CameraTypeRatio(controller: _type, defaultValue: 'Hotspot'),
+              SizedBox(height: 15.0),
               PrimaryButton(
                 text: "Create",
                 onPressed: () {
@@ -231,11 +210,9 @@ class CameraCreateFormState extends State<CameraCreateForm> {
                       macAddress: _macAddress.text,
                       ipAddress: _ipAddress.text,
                       rtspString: _rtspString.text,
-                      typeDetect: 1,
+                      typeDetect: int.parse(_type.text),
                     );
-                    CameraCreateBloc cameraCreateBloc =
-                        BlocProvider.of<CameraCreateBloc>(context);
-                    cameraCreateBloc
+                    BlocProvider.of<CameraCreateBloc>(context)
                         .add(CameraCreateSubmitEvent(_camera, _image));
                   }
                 },
@@ -257,97 +234,5 @@ class CameraCreateFormState extends State<CameraCreateForm> {
         print('No image selected.');
       }
     });
-  }
-}
-
-class CameraCreateSubmitButton extends StatelessWidget {
-  final _formKey;
-  CameraCreateSubmitButton(
-    this._formKey,
-    this._cameraName,
-    this._ipAddress,
-    this._rtspString,
-    this._image,
-  );
-  final TextEditingController _cameraName;
-  final TextEditingController _ipAddress;
-  final TextEditingController _rtspString;
-  final File _image;
-  @override
-  Widget build(BuildContext context) {
-    CameraCreateBloc cameraCreateBloc =
-        BlocProvider.of<CameraCreateBloc>(context);
-    return Container(
-      width: 150,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: Colors.white,
-          backgroundColor: kPrimaryColor,
-        ),
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            Camera _camera = new Camera(
-              cameraName: _cameraName.text,
-              imageUrl: "",
-              ipAddress: _ipAddress.text,
-              rtspString: _rtspString.text,
-              typeDetect: 1,
-            );
-            cameraCreateBloc.add(CameraCreateSubmitEvent(_camera, _image));
-          }
-        },
-        child: Text('Submit'),
-      ),
-    );
-  }
-}
-
-class CameraCreateTextField extends StatelessWidget {
-  CameraCreateTextField(this._validate, this._labelText, this._controller);
-  final String _validate;
-  final String _labelText;
-  final TextEditingController _controller;
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      alignment: Alignment.topLeft,
-      widthFactor: 0.5,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 5),
-        child: TextFormField(
-          controller: _controller,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: _labelText,
-            contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
-          ),
-          validator: (value) {
-            switch (_labelText) {
-              case 'Camera Name':
-                if (value.length < 2 || value.length > 100) {
-                  return _validate;
-                }
-                break;
-
-              case 'IP Address':
-                if (value.isEmpty) {
-                  return _validate;
-                }
-                break;
-
-              case 'RTSP String':
-                if (value.isEmpty) {
-                  return _validate;
-                }
-                break;
-
-              default:
-            }
-            return null;
-          },
-        ),
-      ),
-    );
   }
 }

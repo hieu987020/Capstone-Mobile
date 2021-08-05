@@ -14,8 +14,9 @@ class UserMapStoreEvent extends UserUpdateInsideEvent {
   UserMapStoreEvent(this.storeId, this.managerId, this.active);
 }
 
-class UserChangeToPending extends UserUpdateInsideEvent {
+class UserChangeStatus extends UserUpdateInsideEvent {
   final String userName;
   final int statusId;
-  UserChangeToPending(this.userName, this.statusId);
+  final String reasonInactive;
+  UserChangeStatus(this.userName, this.statusId, this.reasonInactive);
 }

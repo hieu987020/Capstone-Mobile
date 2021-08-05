@@ -18,22 +18,22 @@ class ScreenManagerDetail extends StatelessWidget {
         actions: [ManagerMenu()],
       ),
       body: BlocListener<UserUpdateInsideBloc, UserUpdateInsideState>(
-        listener: (context, state) {
-          if (state is UserUpdateInsideLoading) {
-            loadingCommon(context);
-          } else if (state is UserUpdateInsideError) {
-            _userUpdateInsideError(context, state);
-          } else if (state is UserUpdateInsideLoaded) {
-            _userUpdateInsideLoaded(context, state);
-          }
-        },
-        child: DetailView(
-          size: size,
-          header: ManagerDetailHeader(),
-          info: ManagerDetailInformation(size: size),
-          footer: ManagerDetailFooterWidget(size: size),
-        ),
-      ),
+          listener: (context, state) {
+            if (state is UserUpdateInsideLoading) {
+              loadingCommon(context);
+            } else if (state is UserUpdateInsideError) {
+              _userUpdateInsideError(context, state);
+            } else if (state is UserUpdateInsideLoaded) {
+              _userUpdateInsideLoaded(context, state);
+            }
+          },
+          child: MyScrollView(
+            listWidget: [
+              ManagerDetailHeader(),
+              ManagerDetailInformation(size: size),
+              ManagerDetailFooterWidget(size: size),
+            ],
+          )),
     );
   }
 }
@@ -76,7 +76,7 @@ _userChangeStatusDialog(BuildContext context, int statusId) {
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('hange to Pending'),
+        title: Text('Change to Pending'),
         content: Text('The status will change to Pending, are you sure?'),
         actions: <Widget>[
           TextButton(
@@ -93,7 +93,7 @@ _userChangeStatusDialog(BuildContext context, int statusId) {
                 userName = state.user.userName;
               }
               BlocProvider.of<UserUpdateInsideBloc>(context)
-                  .add(UserChangeToPending(userName, statusId));
+                  .add(UserChangeStatus(userName, statusId, null));
               Navigator.pop(context);
             },
             child: const Text('Yes'),
@@ -102,30 +102,6 @@ _userChangeStatusDialog(BuildContext context, int statusId) {
       );
     },
   );
-  // return AlertDialog(
-  //   title: Text('Change to Pending'),
-  //   content: Text("The status will change , are you sure?"),
-  //   actions: <Widget>[
-  //     TextButton(
-  //       onPressed: () {
-  //         Navigator.pop(context);
-  //       },
-  //       child: const Text('No'),
-  //     ),
-  //     TextButton(
-  //       onPressed: () {
-  //         String userName;
-  //         var state = BlocProvider.of<UserDetailBloc>(context).state;
-  //         if (state is UserDetailLoaded) {
-  //           userName = state.user.userName;
-  //         }
-  //         BlocProvider.of<UserUpdateInsideBloc>(context)
-  //             .add(UserChangeToPending(userName, statusId));
-  //       },
-  //       child: const Text('Yes'),
-  //     ),
-  //   ],
-  // );
 }
 
 _userRemoveStoreDialog(BuildContext context, User user) {
@@ -178,11 +154,8 @@ class ManagerMenu extends StatelessWidget {
                   builder: (context) => ScreenManagerUpdateImage()));
           break;
         case 'Change to Inactive':
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ScreenManagerReasonInactive()));
-          //_userChangeStatusDialog(context, StatusIntBase.Inactive);
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ScreenManagerInactive()));
           break;
         case 'Change to Pending':
           _userChangeStatusDialog(context, StatusIntBase.Pending);
@@ -225,12 +198,27 @@ class ManagerMenu extends StatelessWidget {
                 }).toList();
               },
             );
+          } else if (state.user.status.contains(StatusStringBase.Active)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                  'Change Avatar',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
           }
         }
         return PopupMenuButton<String>(
           onSelected: _handleClick,
           itemBuilder: (BuildContext context) {
-            return {'Update Information', 'Change Avatar'}.map((String choice) {
+            return {''}.map((String choice) {
               return PopupMenuItem<String>(
                 value: choice,
                 child: Text(choice),
@@ -243,7 +231,6 @@ class ManagerMenu extends StatelessWidget {
   }
 }
 
-//! Header
 class ManagerDetailHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -267,7 +254,6 @@ class ManagerDetailHeader extends StatelessWidget {
   }
 }
 
-//! Information
 class ManagerDetailInformation extends StatelessWidget {
   final Size size;
   ManagerDetailInformation({this.size});
@@ -337,6 +323,15 @@ class ManagerDetailInformation extends StatelessWidget {
                   fieldName: 'Address',
                   fieldValue: user.address,
                 ),
+                (user.reasonInactive == null)
+                    ? SizedBox(height: 0)
+                    : DetailDivider(size: size),
+                (user.reasonInactive == null)
+                    ? SizedBox(height: 0)
+                    : DetailFieldContainer(
+                        fieldName: 'Reason Inactive',
+                        fieldValue: user.reasonInactive,
+                      ),
                 DetailDivider(size: size),
               ],
             ),
@@ -350,7 +345,6 @@ class ManagerDetailInformation extends StatelessWidget {
   }
 }
 
-//! Footer
 class ManagerDetailFooterWidget extends StatelessWidget {
   final Size size;
 
@@ -373,14 +367,17 @@ class ManagerDetailFooterWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 15),
-                  PrimaryButton(
-                    text: "Choose Store",
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ScreenManagerMapStore()));
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(kDefaultPadding),
+                    child: PrimaryButton(
+                      text: "Choose Store",
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ScreenManagerMapStore()));
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -417,7 +414,7 @@ class ManagerDetailFooterWidget extends StatelessWidget {
         } else if (state is UserDetailError) {
           return FailureStateWidget();
         }
-        return UnmappedStateWidget();
+        return LoadingContainer();
       },
     );
   }

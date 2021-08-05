@@ -8,11 +8,8 @@ class ScreenCameraUpdateInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Update Information'),
-        backgroundColor: Colors.grey[200],
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
+      resizeToAvoidBottomInset: false,
+      appBar: buildNormalAppbar('Update Camera'),
       body: BlocListener<CameraUpdateBloc, CameraUpdateState>(
         listener: (context, state) {
           if (state is CameraUpdateLoaded) {
@@ -27,7 +24,9 @@ class ScreenCameraUpdateInformation extends StatelessWidget {
             Navigator.of(context).pop();
           }
         },
-        child: CameraUpdateForm(),
+        child: MyScrollView(
+          listWidget: [CameraUpdateForm()],
+        ),
       ),
     );
   }
@@ -74,7 +73,6 @@ _cameraUpdateLoading(BuildContext context) {
   );
 }
 
-//! Camera Update : Form
 class CameraUpdateForm extends StatefulWidget {
   @override
   CameraUpdateFormState createState() {
@@ -82,7 +80,6 @@ class CameraUpdateForm extends StatefulWidget {
   }
 }
 
-//! Camera Update : Form View
 class CameraUpdateFormState extends State<CameraUpdateForm> {
   @override
   Widget build(BuildContext context) {
@@ -91,30 +88,41 @@ class CameraUpdateFormState extends State<CameraUpdateForm> {
     if (state is CameraDetailLoaded) {
       camera = state.camera;
     }
+
     final _formKey = GlobalKey<FormState>();
     final TextEditingController _cameraName =
         TextEditingController(text: camera.cameraName);
+    final TextEditingController _macAddress =
+        TextEditingController(text: camera.macAddress);
     final TextEditingController _ipAddress =
         TextEditingController(text: camera.ipAddress);
     final TextEditingController _rtspString =
         TextEditingController(text: camera.rtspString);
-    return Container(
-      width: MediaQuery.of(context).size.width * 1,
-      height: 3000,
+
+    return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(kDefaultPadding),
         child: Form(
           key: _formKey,
           child: ListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
             children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text('Update Camera'),
+              SizedBox(height: 15.0),
+              ProductTextField(
+                hintText: "Camera Name",
+                controller: _cameraName,
               ),
-              CameraUpdateTextField(
-                  '1 - 100 characters', 'Camera Name', _cameraName),
-              CameraUpdateTextField(
-                  '1 - 250 characters', 'IP Address', _ipAddress),
+              SizedBox(height: 15.0),
+              ProductTextField(
+                hintText: "MAC Address",
+                controller: _macAddress,
+              ),
+              SizedBox(height: 15.0),
+              ProductTextField(
+                hintText: "IP Address",
+                controller: _ipAddress,
+              ),
               BlocBuilder<CameraUpdateBloc, CameraUpdateState>(
                 builder: (context, state) {
                   if (state is CameraUpdateDuplicatedIPAddress) {
@@ -123,7 +131,10 @@ class CameraUpdateFormState extends State<CameraUpdateForm> {
                   return Text("");
                 },
               ),
-              CameraUpdateTextField('1', 'RTSP String', _rtspString),
+              ProductTextField(
+                hintText: "RTSP String",
+                controller: _rtspString,
+              ),
               BlocBuilder<CameraUpdateBloc, CameraUpdateState>(
                 builder: (context, state) {
                   if (state is CameraUpdateDuplicatedRTSPString) {
@@ -132,139 +143,28 @@ class CameraUpdateFormState extends State<CameraUpdateForm> {
                   return Text("");
                 },
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CameraUploadCancelButton(),
-                  CameraUpdateSaveButton(
-                    _formKey,
-                    camera.cameraId,
-                    _cameraName,
-                    _ipAddress,
-                    _rtspString,
-                    camera.imageUrl,
-                  ),
-                ],
+              SizedBox(height: 15.0),
+              PrimaryButton(
+                text: "Save",
+                onPressed: () {
+                  CameraUpdateBloc cameraCreateBloc =
+                      BlocProvider.of<CameraUpdateBloc>(context);
+                  if (_formKey.currentState.validate()) {
+                    Camera _camera = new Camera(
+                      cameraId: camera.cameraId,
+                      cameraName: _cameraName.text,
+                      imageUrl: camera.imageUrl,
+                      macAddress: _macAddress.text,
+                      ipAddress: _ipAddress.text,
+                      rtspString: _rtspString.text,
+                    );
+                    cameraCreateBloc.add(CameraUpdateSubmit(_camera));
+                  }
+                },
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-//! Camera Update : Text Field + Validate
-class CameraUpdateTextField extends StatelessWidget {
-  CameraUpdateTextField(this._validate, this._labelText, this._controller);
-  final String _validate;
-  final String _labelText;
-  final TextEditingController _controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      alignment: Alignment.topLeft,
-      widthFactor: 1,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
-        child: TextFormField(
-          controller: _controller,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: _labelText,
-            contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
-          ),
-          validator: (value) {
-            switch (_labelText) {
-              case 'Camera Name':
-                if (value.length < 2 || value.length > 100) {
-                  return _validate;
-                }
-                break;
-              case 'Address':
-                if (value.isEmpty) {
-                  return _validate;
-                }
-                break;
-
-              case 'District':
-                if (value.isEmpty) {
-                  return _validate;
-                }
-                break;
-
-              default:
-            }
-            return null;
-          },
-        ),
-      ),
-    );
-  }
-}
-
-//! Camera Update : Save button
-class CameraUpdateSaveButton extends StatelessWidget {
-  CameraUpdateSaveButton(
-    this._formKey,
-    this._cameraId,
-    this._cameraName,
-    this._ipAddress,
-    this._rtspString,
-    this._image,
-  );
-  final _formKey;
-  final String _cameraId;
-  final TextEditingController _cameraName;
-  final TextEditingController _ipAddress;
-  final TextEditingController _rtspString;
-  final String _image;
-  @override
-  Widget build(BuildContext context) {
-    CameraUpdateBloc cameraCreateBloc =
-        BlocProvider.of<CameraUpdateBloc>(context);
-    return Container(
-      width: 100,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: Colors.white,
-          backgroundColor: Colors.blue,
-        ),
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            Camera _camera = new Camera(
-              cameraId: _cameraId,
-              cameraName: _cameraName.text,
-              imageUrl: _image,
-              ipAddress: _ipAddress.text,
-              rtspString: _rtspString.text,
-            );
-            cameraCreateBloc.add(CameraUpdateSubmit(_camera));
-          }
-        },
-        child: Text('Save'),
-      ),
-    );
-  }
-}
-
-//! Camera Update : Cancel button
-class CameraUploadCancelButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: Colors.white,
-          backgroundColor: Colors.grey,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: const Text('Cancel'),
       ),
     );
   }

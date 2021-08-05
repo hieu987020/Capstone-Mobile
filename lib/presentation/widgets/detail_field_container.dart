@@ -15,7 +15,7 @@ class DetailDivider extends StatelessWidget {
       alignment: Alignment.center,
       child: Divider(
         height: 1,
-        color: kPrimaryColor.withOpacity(0.6),
+        color: kPrimaryColor.withOpacity(0.4),
       ),
     );
   }

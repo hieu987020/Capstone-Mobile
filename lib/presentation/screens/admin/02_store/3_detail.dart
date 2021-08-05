@@ -1,5 +1,7 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/data/data_providers/const_common.dart';
+import 'package:capstone/data/data_providers/data_providers.dart';
+import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenStoreDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // It will provie us total height  and width of our screen
     Size size = MediaQuery.of(context).size;
-    // it enable scrolling on small device
     return Scaffold(
       appBar: AppBar(
         title: AppBarText('Store Detail'),
@@ -20,15 +20,121 @@ class ScreenStoreDetail extends StatelessWidget {
           StoreMenu(),
         ],
       ),
-      body: DetailView(
-        size: size,
-        header: StoreDetailHeader(),
-        info: StoreDetailInformation(size: size),
-        footer: StoreDetailFooterWidget(size: size),
+      body: BlocListener<StoreUpdateInsideBloc, StoreUpdateInsideState>(
+        listener: (context, state) {
+          if (state is StoreUpdateInsideLoading) {
+            loadingCommon(context);
+          } else if (state is StoreUpdateInsideError) {
+            _storeUpdateInsideError(context, state);
+          } else if (state is StoreUpdateInsideLoaded) {
+            _storeUpdateInsideLoaded(context, state);
+          }
+        },
+        child: MyScrollView(
+          listWidget: [
+            StoreDetailHeader(),
+            StoreDetailInformation(size: size),
+            StoreDetailFooterWidget(size: size),
+          ],
+        ),
       ),
-      backgroundColor: Colors.grey[200],
     );
   }
+}
+
+_storeUpdateInsideLoaded(BuildContext context, StoreUpdateInsideLoaded state) {
+  String storeId;
+  var stateDetail = BlocProvider.of<StoreDetailBloc>(context).state;
+  if (stateDetail is StoreDetailLoaded) {
+    storeId = stateDetail.store.storeId;
+  }
+  BlocProvider.of<StoreDetailBloc>(context).add(StoreDetailFetchEvent(storeId));
+  Navigator.pop(context);
+}
+
+_storeUpdateInsideError(BuildContext context, StoreUpdateInsideError state) {
+  showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Update Fail'),
+        content: Text(state.message),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('Back'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+_storeChangeStatusDialog(BuildContext context, int statusId) {
+  showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Change to Pending'),
+        content: Text('The status will change to Pending, are you sure?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              String storeId;
+              var state = BlocProvider.of<StoreDetailBloc>(context).state;
+              if (state is StoreDetailLoaded) {
+                storeId = state.store.storeId;
+              }
+              BlocProvider.of<StoreUpdateInsideBloc>(context)
+                  .add(StoreChangeStatus(storeId, statusId, null));
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+_storeRemoveManagerDialog(BuildContext context, Store store) {
+  showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Remove Store'),
+        content: Text('Are you sure to remove this store?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              BlocProvider.of<StoreUpdateInsideBloc>(context)
+                  .add(StoreMapManagerEvent(store.storeId, store.managerId, 2));
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 class StoreMenu extends StatelessWidget {
@@ -42,7 +148,6 @@ class StoreMenu extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => ScreenStoreUpdateInformation()));
           break;
-
         case 'Change Image':
           Navigator.push(
               context,
@@ -50,16 +155,11 @@ class StoreMenu extends StatelessWidget {
                   builder: (context) => ScreenStoreUpdateImage()));
           break;
         case 'Change to Inactive':
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ScreenStoreUpdateImage()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ScreenStoreInactive()));
           break;
         case 'Change to Pending':
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ScreenStoreUpdateImage()));
+          _storeChangeStatusDialog(context, StatusIntBase.Pending);
           break;
       }
     }
@@ -100,15 +200,27 @@ class StoreMenu extends StatelessWidget {
                 }).toList();
               },
             );
+          } else if (state.store.statusName.contains(StatusStringBase.Active)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                  'Change Image',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
           }
         }
         return PopupMenuButton<String>(
           onSelected: _handleClick,
           itemBuilder: (BuildContext context) {
-            return {
-              'Update Information',
-              'Change Image',
-            }.map((String choice) {
+            return {""}.map((String choice) {
               return PopupMenuItem<String>(
                 value: choice,
                 child: Text(choice),
@@ -121,7 +233,6 @@ class StoreMenu extends StatelessWidget {
   }
 }
 
-//! Header
 class StoreDetailHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -145,7 +256,6 @@ class StoreDetailHeader extends StatelessWidget {
   }
 }
 
-//! Information
 class StoreDetailInformation extends StatelessWidget {
   final Size size;
   StoreDetailInformation({this.size});
@@ -183,6 +293,15 @@ class StoreDetailInformation extends StatelessWidget {
                   fieldName: 'District',
                   fieldValue: store.districtName,
                 ),
+                (store.reasonInactive == null)
+                    ? SizedBox(height: 0)
+                    : DetailDivider(size: size),
+                (store.reasonInactive == null)
+                    ? SizedBox(height: 0)
+                    : DetailFieldContainer(
+                        fieldName: 'Reason Inactive',
+                        fieldValue: store.reasonInactive,
+                      ),
                 DetailDivider(size: size),
               ],
             ),
@@ -196,7 +315,6 @@ class StoreDetailInformation extends StatelessWidget {
   }
 }
 
-//! User Information
 class StoreDetailFooterWidget extends StatelessWidget {
   final Size size;
   StoreDetailFooterWidget({this.size});
@@ -218,14 +336,17 @@ class StoreDetailFooterWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 15),
-                  PrimaryButton(
-                    text: "Choose Manager",
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ScreenStoreMapManager()));
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(kDefaultPadding),
+                    child: PrimaryButton(
+                      text: "Choose Manager",
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ScreenStoreMapManager()));
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -241,18 +362,18 @@ class StoreDetailFooterWidget extends StatelessWidget {
                 children: [
                   DetailDivider(size: size),
                   DetailFieldContainer(
-                    fieldName: 'Store Name',
+                    fieldName: 'Manager Name',
                     fieldValue: store.managerUsername,
                   ),
                   DetailDivider(size: size),
-                  PrimaryButton(
-                    text: "Remove Manager",
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ScreenStoreMapManager()));
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(kDefaultPadding),
+                    child: PrimaryButton(
+                      text: "Remove Manager",
+                      onPressed: () {
+                        _storeRemoveManagerDialog(context, store);
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -261,7 +382,7 @@ class StoreDetailFooterWidget extends StatelessWidget {
         } else if (state is StoreDetailError) {
           return FailureStateWidget();
         }
-        return UnmappedStateWidget();
+        return Text("");
       },
     );
   }

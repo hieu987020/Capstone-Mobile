@@ -8,46 +8,46 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenStoreMapManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // It will provie us total height  and width of our screen
-    //Size size = MediaQuery.of(context).size;
-    // it enable scrolling on small device
     BlocProvider.of<UserBloc>(context)
         .add(UserFetchEvent(StatusIntBase.Pending));
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Store Map Manager'),
-        backgroundColor: kPrimaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          TitleWithNothing(
-            title: 'List Managers',
-          ),
-          BlocBuilder<UserBloc, UserState>(
-            // ignore: missing_return
-            builder: (context, state) {
-              if (state is UserLoaded) {
-                return MapManagerContent();
-              } else if (state is UserError) {
-                return FailureStateWidget();
-              } else if (state is UserLoading) {
-                return LoadingWidget();
-              }
-            },
-          ),
-        ],
+      appBar: buildNormalAppbar('Choose Manager'),
+      body: BlocListener<StoreUpdateInsideBloc, StoreUpdateInsideState>(
+        listener: (context, state) {
+          if (state is StoreUpdateInsideLoading) {
+            loadingCommon(context);
+          } else if (state is StoreUpdateInsideError) {
+            _storeMapManagerError(context, state);
+          } else if (state is StoreUpdateInsideLoaded) {
+            _storeMapManagerLoaded(context);
+          }
+        },
+        child: MyScrollView(
+          listWidget: [
+            SizedBox(height: 10),
+            TitleWithNothing(
+              title: 'List Pending Managers',
+            ),
+            BlocBuilder<UserBloc, UserState>(
+              // ignore: missing_return
+              builder: (context, state) {
+                if (state is UserLoaded) {
+                  return MapManagerContent();
+                } else if (state is UserError) {
+                  return FailureStateWidget();
+                } else if (state is UserLoading) {
+                  return LoadingWidget();
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-_storeConfirmManager(BuildContext context, String userName) {
+_storeConfirmManager(BuildContext context, String userId) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
@@ -64,14 +64,14 @@ _storeConfirmManager(BuildContext context, String userName) {
           ),
           TextButton(
             onPressed: () {
-              String managerId;
-              var userDetailState =
-                  BlocProvider.of<UserDetailBloc>(context).state;
-              if (userDetailState is UserDetailLoaded) {
-                managerId = userDetailState.user.userId;
+              String storeId;
+              var storeDetailState =
+                  BlocProvider.of<StoreDetailBloc>(context).state;
+              if (storeDetailState is StoreDetailLoaded) {
+                storeId = storeDetailState.store.storeId;
               }
-              // BlocProvider.of<UserUpdateInsideBloc>(context)
-              //     .add(UserMapStoreEvent(storeId, managerId, 1));
+              BlocProvider.of<StoreUpdateInsideBloc>(context)
+                  .add(StoreMapManagerEvent(storeId, userId, 1));
               Navigator.pop(context);
             },
             child: const Text('Yes'),
@@ -87,7 +87,7 @@ _storeMapManagerLoaded(BuildContext context) {
   Navigator.pop(context);
 }
 
-_storeMapManagerError(BuildContext context, UserUpdateInsideError state) {
+_storeMapManagerError(BuildContext context, StoreUpdateInsideError state) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
@@ -138,7 +138,7 @@ class MapManagerContent extends StatelessWidget {
                     status: userLst[index].status,
                     navigationField: userLst[index].userName,
                     onTap: () {
-                      _storeConfirmManager(context, userLst[index].userName);
+                      _storeConfirmManager(context, userLst[index].userId);
                     },
                   );
                 },
@@ -146,7 +146,7 @@ class MapManagerContent extends StatelessWidget {
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },

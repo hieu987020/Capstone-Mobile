@@ -1,4 +1,5 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
+import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
@@ -11,47 +12,43 @@ class ScreenProduct extends StatelessWidget {
     // It will provie us total height  and width of our screen
     Size size = MediaQuery.of(context).size;
     // it enable scrolling on small device
-    return Scaffold(
-      appBar: buildAppBar(),
-      drawer: AdminNavigator(
-        size: size,
-        selectedIndex: 'Product',
-      ),
-      floatingActionButton: AddFloatingButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ScreenProductCreate()));
-        },
-      ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                HeaderWithSearchBox(size),
-                TitleWithMoreBtn(
-                  title: 'List Products',
-                  model: 'product',
-                ),
-                BlocBuilder<ProductBloc, ProductState>(
-                  // ignore: missing_return
-                  builder: (context, state) {
-                    if (state is ProductLoaded) {
-                      return ProductContent();
-                    } else if (state is ProductError) {
-                      return FailureStateWidget();
-                    } else if (state is ProductLoading) {
-                      return LoadingWidget();
-                    }
-                  },
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () => outApp(context),
+      child: Scaffold(
+        appBar: buildAppBar(),
+        drawer: AdminNavigator(
+          size: size,
+          selectedIndex: 'Product',
+        ),
+        floatingActionButton: AddFloatingButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ScreenProductCreate()));
+          },
+        ),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterFloat,
+        body: MyScrollView(
+          listWidget: [
+            HeaderWithSearchBox(size),
+            TitleWithMoreBtn(
+              title: 'List Products',
+              model: 'product',
+              defaultStatus: StatusStringBase.All,
             ),
-          ),
+            BlocBuilder<ProductBloc, ProductState>(
+              builder: (context, state) {
+                if (state is ProductLoaded) {
+                  return ProductContent();
+                } else if (state is ProductError) {
+                  return FailureStateWidget();
+                } else if (state is ProductLoading) {
+                  return LoadingWidget();
+                }
+                return LoadingWidget();
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -102,7 +99,7 @@ class ProductContent extends StatelessWidget {
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },

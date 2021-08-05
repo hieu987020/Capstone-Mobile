@@ -1,4 +1,5 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
+import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
@@ -11,47 +12,43 @@ class ScreenCamera extends StatelessWidget {
     // It will provie us total height  and width of our screen
     Size size = MediaQuery.of(context).size;
     // it enable scrolling on small device
-    return Scaffold(
-      appBar: buildAppBar(),
-      drawer: AdminNavigator(
-        size: size,
-        selectedIndex: 'Camera',
-      ),
-      floatingActionButton: AddFloatingButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ScreenCameraCreate()));
-        },
-      ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                HeaderWithSearchBox(size),
-                TitleWithMoreBtn(
-                  title: 'List Cameras',
-                  model: 'camera',
-                ),
-                BlocBuilder<CameraBloc, CameraState>(
-                  // ignore: missing_return
-                  builder: (context, state) {
-                    if (state is CameraLoaded) {
-                      return CameraContent();
-                    } else if (state is CameraError) {
-                      return FailureStateWidget();
-                    } else if (state is CameraLoading) {
-                      return LoadingWidget();
-                    }
-                  },
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () => outApp(context),
+      child: Scaffold(
+        appBar: buildAppBar(),
+        drawer: AdminNavigator(
+          size: size,
+          selectedIndex: 'Camera',
+        ),
+        floatingActionButton: AddFloatingButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ScreenCameraCreate()));
+          },
+        ),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterFloat,
+        body: MyScrollView(
+          listWidget: [
+            HeaderWithSearchBox(size),
+            TitleWithMoreBtn(
+              title: 'List Cameras',
+              model: 'camera',
+              defaultStatus: StatusStringBase.All,
             ),
-          ),
+            BlocBuilder<CameraBloc, CameraState>(
+              builder: (context, state) {
+                if (state is CameraLoaded) {
+                  return CameraContent();
+                } else if (state is CameraError) {
+                  return FailureStateWidget();
+                } else if (state is CameraLoading) {
+                  return LoadingWidget();
+                }
+                return LoadingWidget();
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -102,7 +99,7 @@ class CameraContent extends StatelessWidget {
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },

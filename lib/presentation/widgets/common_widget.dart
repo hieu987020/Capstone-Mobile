@@ -227,7 +227,32 @@ class NoRecordWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
             height: 80,
-            child: Image.asset('images/no_data.png'),
+            child: Image.asset('assets/images/no_data.png'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ErrorRecordWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Some records are not found, please try again!",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+            height: 80,
+            child: Image.asset('assets/images/no_data.png'),
           ),
         ],
       ),

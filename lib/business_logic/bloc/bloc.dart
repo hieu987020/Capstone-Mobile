@@ -45,6 +45,12 @@ export 'store/update/state.dart';
 export 'store/update_image/bloc.dart';
 export 'store/update_image/event.dart';
 export 'store/update_image/state.dart';
+export 'store/update_inside/bloc.dart';
+export 'store/update_inside/state.dart';
+export 'store/update_inside/event.dart';
+export 'store/update_inactive/bloc.dart';
+export 'store/update_inactive/state.dart';
+export 'store/update_inactive/event.dart';
 
 //? product
 export 'product/view_all/state.dart';
@@ -84,6 +90,10 @@ export 'camera/update/state.dart';
 export 'camera/update_image/bloc.dart';
 export 'camera/update_image/event.dart';
 export 'camera/update_image/state.dart';
+export 'camera/update_inside/bloc.dart';
+export 'camera/update_inside/state.dart';
+export 'camera/update_inside/event.dart';
+
 //? shelf
 export 'shelf/view_all/bloc.dart';
 export 'shelf/view_all/event.dart';

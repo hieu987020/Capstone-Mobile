@@ -36,9 +36,7 @@ class _UpdateImageState extends State<UpdateImage> {
       height: MediaQuery.of(context).size.height * 1,
       child: ListView(
         children: [
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

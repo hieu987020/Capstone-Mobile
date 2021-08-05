@@ -1,4 +1,5 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
+import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
@@ -6,53 +7,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ScreenStore extends StatelessWidget {
-  const ScreenStore({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    // It will provie us total height  and width of our screen
     Size size = MediaQuery.of(context).size;
-    // it enable scrolling on small device
-    return Scaffold(
-      appBar: buildAppBar(),
-      drawer: AdminNavigator(
-        size: size,
-        selectedIndex: 'Store',
-      ),
-      floatingActionButton: AddFloatingButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ScreenStoreCreate()));
-        },
-      ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                HeaderWithSearchBox(size),
-                TitleWithMoreBtn(
-                  title: 'List Stores',
-                  model: 'store',
-                ),
-                BlocBuilder<StoreBloc, StoreState>(
-                  // ignore: missing_return
-                  builder: (context, state) {
-                    if (state is StoreLoaded) {
-                      return StoreContent();
-                    } else if (state is StoreError) {
-                      return FailureStateWidget();
-                    } else if (state is StoreLoading) {
-                      return LoadingWidget();
-                    }
-                  },
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () => outApp(context),
+      child: Scaffold(
+        appBar: buildAppBar(),
+        drawer: AdminNavigator(
+          size: size,
+          selectedIndex: 'Store',
+        ),
+        floatingActionButton: AddFloatingButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ScreenStoreCreate()));
+          },
+        ),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterFloat,
+        body: MyScrollView(
+          listWidget: [
+            HeaderWithSearchBox(size),
+            TitleWithMoreBtn(
+              title: 'List Stores',
+              model: 'store',
+              defaultStatus: StatusStringBase.All,
             ),
-          ),
+            BlocBuilder<StoreBloc, StoreState>(
+              builder: (context, state) {
+                if (state is StoreLoaded) {
+                  return StoreContent();
+                } else if (state is StoreError) {
+                  return FailureStateWidget();
+                } else if (state is StoreLoading) {
+                  return LoadingWidget();
+                }
+                return LoadingWidget();
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -103,7 +97,7 @@ class StoreContent extends StatelessWidget {
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },

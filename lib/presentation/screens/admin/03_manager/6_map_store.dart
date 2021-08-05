@@ -8,17 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenManagerMapStore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // It will provie us total height  and width of our screen
-    Size size = MediaQuery.of(context).size;
-    // it enable scrolling on small device
     BlocProvider.of<StoreBloc>(context)
         .add(StoreFetchEvent(StatusIntBase.Pending));
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Choose store'),
-        backgroundColor: kPrimaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
+      appBar: buildNormalAppbar('Choose Store'),
       body: BlocListener<UserUpdateInsideBloc, UserUpdateInsideState>(
         listener: (context, state) {
           if (state is UserUpdateInsideLoading) {
@@ -29,43 +22,31 @@ class ScreenManagerMapStore extends StatelessWidget {
             _userMapStoreLoaded(context);
           }
         },
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TitleWithNothing(
-                    title: 'List Stores',
-                  ),
-                  BlocBuilder<StoreBloc, StoreState>(
-                    // ignore: missing_return
-                    builder: (context, state) {
-                      if (state is StoreLoaded) {
-                        return UserLoadStoreContent();
-                      } else if (state is StoreError) {
-                        return FailureStateWidget();
-                      } else if (state is StoreLoading) {
-                        return LoadingWidget();
-                      }
-                    },
-                  ),
-                ],
-              ),
+        child: MyScrollView(
+          listWidget: [
+            SizedBox(height: 10),
+            TitleWithNothing(
+              title: 'List Pending Stores',
             ),
-          ),
+            BlocBuilder<StoreBloc, StoreState>(
+              builder: (context, state) {
+                if (state is StoreLoaded) {
+                  return UserLoadStoreContent();
+                } else if (state is StoreError) {
+                  return FailureStateWidget();
+                } else if (state is StoreLoading) {
+                  return LoadingWidget();
+                }
+                return LoadingWidget();
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// ignore: todo
-//TODO Stuff
 _userConfirmStore(BuildContext context, String storeId) {
   showDialog<String>(
     context: context,
@@ -128,127 +109,6 @@ _userMapStoreError(BuildContext context, UserUpdateInsideError state) {
   );
 }
 
-// ignore: todo
-//TODO View
-class UserLoadStoreBoldText extends StatelessWidget {
-  final String _text;
-  UserLoadStoreBoldText(this._text);
-  @override
-  Widget build(BuildContext context) {
-    if (_text != null) {
-      return Container(
-        child: new Text(
-          _text,
-          style: TextStyle(
-            color: Color.fromRGBO(69, 75, 102, 1),
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
-    }
-    return Text("");
-  }
-}
-
-class UserLoadStoreNormalText extends StatelessWidget {
-  final String _text;
-  UserLoadStoreNormalText(this._text);
-  @override
-  Widget build(BuildContext context) {
-    if (this._text != null) {
-      return Container(
-        padding: EdgeInsets.only(left: 5),
-        child: new Text(
-          _text,
-          style: TextStyle(
-            color: Color.fromRGBO(24, 34, 76, 1),
-            fontSize: 15,
-          ),
-        ),
-      );
-    }
-    return Text("");
-  }
-}
-
-class UserLoadStoreHeader extends StatelessWidget {
-  final String _text;
-  UserLoadStoreHeader(this._text);
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ScreenHeaderText(_text),
-      ],
-    );
-  }
-}
-
-// class UserLoadStoreContent extends StatefulWidget {
-//   @override
-//   _UserLoadStoreContentState createState() => _UserLoadStoreContentState();
-// }
-
-// class _UserLoadStoreContentState extends State<UserLoadStoreContent> {
-//   @override
-//   Widget build(BuildContext context) {
-//     List<Store> stores;
-//     var state = BlocProvider.of<StoreBloc>(context).state;
-//     if (state is StoreLoaded) {
-//       stores = state.stores;
-//     }
-//     Future<Null> _onStoreRefresh(BuildContext context) async {
-//       BlocProvider.of<StoreBloc>(context)
-//           .add(StoreFetchEvent(StatusIntBase.Pending));
-//       setState(() {
-//         stores.clear();
-//       });
-//     }
-
-//     return RefreshIndicator(
-//       onRefresh: () async {
-//         _onStoreRefresh(context);
-//       },
-//       child: Container(
-//         margin: EdgeInsets.fromLTRB(0, 50, 0, 60),
-//         child: FutureBuilder<List<Store>>(
-//           initialData: stores,
-//           builder: (context, snapshot) {
-//             if (snapshot.hasData) {
-//               List<Store> storeLst = snapshot.data;
-//               return ListView.builder(
-//                 itemCount: storeLst.length,
-//                 itemBuilder: (context, index) {
-//                   return ListTile(
-//                     leading: CircleAvatar(
-//                       backgroundImage: NetworkImage(storeLst[index].imageUrl),
-//                       backgroundColor: Colors.white,
-//                     ),
-//                     title: UserLoadStoreBoldText(storeLst[index].storeName),
-//                     subtitle: UserLoadStoreNormalText(
-//                         storeLst[index].managerUsername),
-//                     trailing: StatusText(storeLst[index].statusName),
-//                     onTap: () {
-//                       _userConfirmStore(context, storeLst[index].storeId);
-//                     },
-//                   );
-//                 },
-//               );
-//             } else if (snapshot.data == null) {
-//               return NoRecordWidget();
-//             } else if (snapshot.hasError) {
-//               return Text("No Record: ${snapshot.error}");
-//             }
-//             return LoadingWidget();
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class UserLoadStoreContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -257,7 +117,6 @@ class UserLoadStoreContent extends StatelessWidget {
     if (state is StoreLoaded) {
       stores = state.stores;
     }
-
     return Flexible(
       child: Padding(
         padding: const EdgeInsets.all(kDefaultPadding),
@@ -287,7 +146,7 @@ class UserLoadStoreContent extends StatelessWidget {
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },

@@ -1,4 +1,5 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
+import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/login.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
@@ -26,8 +27,13 @@ class ScreenLogin extends StatelessWidget {
             _loginError(context, state);
           }
         },
-        child: LoginForm(
-          size: size,
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: LoginForm(
+            size: size,
+          ),
         ),
       ),
     );
@@ -59,9 +65,9 @@ _loginError(BuildContext context, LoginError state) {
 }
 
 _loginAdminLoaded(BuildContext context) {
+  BlocProvider.of<UserBloc>(context).add(UserFetchEvent(StatusIntBase.All));
   Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(
-        builder: (BuildContext context) => ScreenAdminDashboard()),
+    MaterialPageRoute(builder: (BuildContext context) => ScreenManager()),
     ModalRoute.withName('/'),
   );
   //Navigator.of(context).pushReplacementNamed('/admin_dashboard');
@@ -105,7 +111,7 @@ class LoginFormState extends State<LoginForm> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                height: 50,
+                height: 30,
               ),
               Container(
                 alignment: Alignment.topCenter,

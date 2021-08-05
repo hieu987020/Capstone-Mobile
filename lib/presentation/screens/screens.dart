@@ -9,6 +9,7 @@ export 'admin/02_store/4_update_info.dart';
 export 'admin/02_store/5_update_image.dart';
 export 'admin/02_store/6_map_manager.dart';
 export 'admin/02_store/7_create.dart';
+export 'admin/02_store/8_inactive.dart';
 
 export 'admin/03_manager/1_manager.dart';
 export 'admin/03_manager/2_search.dart';
@@ -33,6 +34,7 @@ export 'admin/05_camera/4_update_info.dart';
 export 'admin/05_camera/5_update_image.dart';
 export 'admin/05_camera/6_map_manager.dart';
 export 'admin/05_camera/7_create.dart';
+export 'admin/05_camera/8_inactive.dart';
 
 export 'admin/06_category/1_category.dart';
 

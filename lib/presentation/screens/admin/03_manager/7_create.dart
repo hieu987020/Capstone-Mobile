@@ -1,10 +1,8 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
-import 'package:capstone/data/repositories/repositories.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,15 +13,10 @@ import 'package:image_picker/image_picker.dart';
 class ScreenManagerCreate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // It will provie us total height  and width of our screen
-    // Size size = MediaQuery.of(context).size;
-    // it enable scrolling on small device
     BlocProvider.of<UserCreateBloc>(context).add(UserCreateInitialEvent());
-
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: buildNormalAppbar('Create Manager'),
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[200],
       body: BlocListener<UserCreateBloc, UserCreateState>(
         listener: (context, state) {
           if (state is UserCreateLoaded) {
@@ -31,37 +24,23 @@ class ScreenManagerCreate extends StatelessWidget {
           } else if (state is UserCreateError) {
             _userCreateError(context, state);
           } else if (state is UserCreateLoading) {
-            _userCreateLoading(context);
+            loadingCommon(context);
           } else if (state is UserCreateDuplicateIdentifyCard) {
             Navigator.of(context).pop();
           } else if (state is UserCreateDuplicatedEmail) {
             Navigator.of(context).pop();
           }
         },
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ManagerCreateForm(),
-                ],
-              ),
-            ),
-          ),
+        child: MyScrollView(
+          listWidget: [ManagerCreateForm()],
         ),
-
-        // ManagerCreateForm(),
       ),
     );
   }
 }
 
-// ignore: todo
-//TODO  Stuff
-
 _userCreateLoaded(BuildContext context, UserCreateLoaded state) {
+  // Navigator.pushReplacementNamed(context, "/manager");
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => ScreenManager()),
@@ -70,7 +49,7 @@ _userCreateLoaded(BuildContext context, UserCreateLoaded state) {
   BlocProvider.of<UserCreateBloc>(context).add(UserCreateInitialEvent());
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text("Create Successfully"),
-    duration: Duration(milliseconds: 5000),
+    duration: Duration(milliseconds: 2000),
   ));
 }
 
@@ -96,19 +75,6 @@ _userCreateError(BuildContext context, UserCreateError state) {
   );
 }
 
-_userCreateLoading(BuildContext context) {
-  showDialog<String>(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      return LoadingDialog();
-    },
-  );
-}
-
-// ignore: todo
-//TODO  View
-
 class ManagerCreateForm extends StatefulWidget {
   @override
   ManagerCreateFormState createState() {
@@ -126,12 +92,9 @@ class ManagerCreateFormState extends State<ManagerCreateForm> {
   final _gender = TextEditingController(text: "Male");
   final _address = TextEditingController();
   final _districtId = TextEditingController();
-  final _cityId = TextEditingController();
 
   File _image;
   final picker = ImagePicker();
-  List<City> listCity;
-
   @override
   Widget build(BuildContext context) {
     return Flexible(
@@ -197,9 +160,7 @@ class ManagerCreateFormState extends State<ManagerCreateForm> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ManagerTextField(
                   hintText: "Fullname",
                   controller: _fullName,
@@ -245,9 +206,7 @@ class ManagerCreateFormState extends State<ManagerCreateForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ManagerTextField(
                   hintText: "Email",
                   controller: _email,
@@ -268,7 +227,6 @@ class ManagerCreateFormState extends State<ManagerCreateForm> {
                     return Text("");
                   },
                 ),
-
                 DateTextField(
                   hintText: "Date of birth",
                   controller: _birthDate,
@@ -281,9 +239,7 @@ class ManagerCreateFormState extends State<ManagerCreateForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 ManagerTextField(
                   hintText: "Address",
                   controller: _address,
@@ -296,45 +252,13 @@ class ManagerCreateFormState extends State<ManagerCreateForm> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
-                // CityDropdown(
-                //   controller: _cityId,
-                // ),
-                // DistrictDropdown(
-                //   controller: _districtId,
-                // ),
-                // ManagerTextField(
-                //   hintText: "City",
-                //   controller: _cityId,
-                //   prefixIcon: Container(
-                //     margin: EdgeInsets.only(right: 10),
-                //     child: Image.asset(
-                //       'assets/icons/district.png',
-                //       color: kPrimaryColor,
-                //       height: 25,
-                //     ),
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 15.0,
-                // ),
-                ManagerTextField(
-                  hintText: "Dictrict",
+                SizedBox(height: 15.0),
+                StaticDropDown(
                   controller: _districtId,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/district.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  defaultCity: "Ho Chi Minh",
+                  defaultDistrict: "District 1",
                 ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
                 PrimaryButton(
                   text: "Create",
                   onPressed: () {
@@ -379,127 +303,5 @@ class ManagerCreateFormState extends State<ManagerCreateForm> {
         print('No image selected.');
       }
     });
-  }
-}
-
-class CityDropdown extends StatefulWidget {
-  final Function onChange;
-
-  final TextEditingController controller;
-  CityDropdown({this.onChange, this.controller});
-
-  @override
-  State<CityDropdown> createState() => CityDropdownState(onChange, controller);
-}
-
-class CityDropdownState extends State<CityDropdown> {
-  final Function onChanged;
-  final TextEditingController controller;
-
-  String dropdownValue = "Ho Chi Minh";
-  List<String> _dropdownItems = [];
-  CityDropdownState(this.onChanged, this.controller);
-  @override
-  void initState() {
-    var state = BlocProvider.of<CityBloc>(context).state;
-    var listCity;
-    if (state is CityLoaded) {
-      listCity = state.cities;
-    }
-    listCity.forEach((city) {
-      _dropdownItems.add(city.cityName);
-    });
-    //dropdownValue = listCity.first.cityName;
-    super.initState();
-    // setState(() {
-    //   listCity.forEach((city) {
-    //     _dropdownItems.add(city.cityName);
-    //   });
-    // });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      value: dropdownValue,
-      icon: const Icon(Icons.arrow_downward),
-      iconSize: 15,
-      iconEnabledColor: Colors.black,
-      elevation: 16,
-      style: const TextStyle(color: Colors.black),
-      underline: Container(
-        height: 1,
-        color: Colors.black,
-      ),
-      onChanged: (String newValue) {
-        setState(() {
-          dropdownValue = newValue;
-          controller.value = TextEditingValue(text: newValue);
-        });
-      },
-      items: _dropdownItems.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class DistrictDropdown extends StatefulWidget {
-  final Function onChange;
-
-  final TextEditingController controller;
-  final City city;
-  DistrictDropdown({this.onChange, this.controller, this.city});
-
-  @override
-  State<DistrictDropdown> createState() =>
-      DistrictDropdownState(onChange, controller, city);
-}
-
-class DistrictDropdownState extends State<DistrictDropdown> {
-  final Function onChanged;
-  final TextEditingController controller;
-  final City city;
-  String dropdownValue = "";
-  List<String> _dropdownItems = [];
-  DistrictDropdownState(this.onChanged, this.controller, this.city);
-  @override
-  void initState() {
-    city.listDistrict.forEach((district) {
-      _dropdownItems.add(district.districtName);
-    });
-    //dropdownValue = listCity.first.cityName;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      value: dropdownValue,
-      icon: const Icon(Icons.arrow_downward),
-      iconSize: 15,
-      iconEnabledColor: Colors.black,
-      elevation: 16,
-      style: const TextStyle(color: Colors.black),
-      underline: Container(
-        height: 1,
-        color: Colors.black,
-      ),
-      onChanged: (String newValue) {
-        setState(() {
-          dropdownValue = newValue;
-          controller.value = TextEditingValue(text: newValue);
-        });
-      },
-      items: _dropdownItems.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
   }
 }

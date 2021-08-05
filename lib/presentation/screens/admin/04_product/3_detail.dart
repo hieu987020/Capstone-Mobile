@@ -1,4 +1,5 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
+import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -19,11 +20,11 @@ class ScreenProductDetail extends StatelessWidget {
           ProductMenu(),
         ],
       ),
-      body: DetailView(
-        size: size,
-        header: ProductDetailHeader(),
-        info: ProductDetailInformation(size: size),
-        footer: Text(""),
+      body: MyScrollView(
+        listWidget: [
+          ProductDetailHeader(),
+          ProductDetailInformation(size: size),
+        ],
       ),
     );
   }
@@ -47,24 +48,66 @@ class ProductMenu extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => ScreenProductUpdateImage()));
           break;
+        case 'Change To Inactive':
+          break;
+        case 'Change To Active':
+          break;
       }
     }
 
-    return PopupMenuButton<String>(
-      onSelected: _handleClick,
-      itemBuilder: (BuildContext context) {
-        return {'Update Information', 'Change Image'}.map((String choice) {
-          return PopupMenuItem<String>(
-            value: choice,
-            child: Text(choice),
-          );
-        }).toList();
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+      builder: (context, state) {
+        if (state is ProductDetailLoaded) {
+          if (state.product.statusName == StatusStringBase.Active) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                  'Change Image',
+                  'Change To Inactive'
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          } else if (state.product.statusName == StatusStringBase.Inactive) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                  'Change Image',
+                  'Change To Active'
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          }
+        }
+        return PopupMenuButton<String>(
+          onSelected: _handleClick,
+          itemBuilder: (BuildContext context) {
+            return {''}.map((String choice) {
+              return PopupMenuItem<String>(
+                value: choice,
+                child: Text(choice),
+              );
+            }).toList();
+          },
+        );
       },
     );
   }
 }
 
-//! Header
 class ProductDetailHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -88,7 +131,6 @@ class ProductDetailHeader extends StatelessWidget {
   }
 }
 
-//! Information
 class ProductDetailInformation extends StatelessWidget {
   final Size size;
   ProductDetailInformation({this.size});
@@ -121,6 +163,16 @@ class ProductDetailInformation extends StatelessWidget {
                   fieldName: 'Updated Time',
                   fieldValue: product.updatedTime,
                 ),
+                (product.reasonInactive == null)
+                    ? SizedBox(height: 0)
+                    : DetailDivider(size: size),
+                (product.reasonInactive == null)
+                    ? SizedBox(height: 0)
+                    : DetailFieldContainer(
+                        fieldName: 'Reason Inactive',
+                        fieldValue: product.reasonInactive,
+                      ),
+                DetailDivider(size: size),
               ],
             ),
           );

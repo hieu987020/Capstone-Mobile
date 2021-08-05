@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:capstone/business_logic/bloc/bloc.dart';
@@ -10,7 +11,6 @@ class UserCreateBloc extends Bloc<UserCreateEvent, UserCreateState> {
   UserCreateBloc() : super(UserCreateInitial());
   final UserRepository _usersRepository = new UserRepository();
   final ImageRepository _imageRepository = new ImageRepository();
-  final CityRepository _cityRepository = new CityRepository();
   @override
   Stream<UserCreateState> mapEventToState(UserCreateEvent event) async* {
     if (event is UserCreateInitialEvent) {
@@ -40,7 +40,8 @@ class UserCreateBloc extends Bloc<UserCreateEvent, UserCreateState> {
         );
       }
       String result = await _usersRepository.postUser(user);
-      print(user.toJson());
+      log(user.toJson().toString());
+
       if (result.contains('MSG-055')) {
         yield UserCreateDuplicatedEmail('Email is existed');
       } else if (result.contains('MSG-056')) {
