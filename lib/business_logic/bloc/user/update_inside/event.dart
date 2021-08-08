@@ -20,3 +20,9 @@ class UserChangeStatus extends UserUpdateInsideEvent {
   final String reasonInactive;
   UserChangeStatus(this.userName, this.statusId, this.reasonInactive);
 }
+
+class UserResetPassword extends UserUpdateInsideEvent {
+  final String userName;
+  final String email;
+  UserResetPassword(this.userName, this.email);
+}

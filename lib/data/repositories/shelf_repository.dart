@@ -36,6 +36,43 @@ class ShelfRepository {
         .toList();
   }
 
+  Future<List<Shelf>> getShelvesByStoreId(String storeId) async {
+    final String rawBody = await _api.getShelvesByStoreId(storeId);
+
+    var jsonResponse = json.decode(rawBody);
+    if (jsonResponse
+        .toString()
+        .contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
+    return (jsonResponse['shelves'] as List)
+        .map((e) => Shelf.fromJsonLst(e))
+        .toList();
+  }
+
+  Future<String> changeStatus(
+      String shelfId, int statusId, String reasonInactive) async {
+    Map<String, dynamic> jsonChangeStatus;
+    if (reasonInactive == null) {
+      jsonChangeStatus = {
+        "shelfId": shelfId,
+        "statusId": statusId,
+      };
+    } else {
+      jsonChangeStatus = {
+        "shelfId": shelfId,
+        "statusId": statusId,
+        "reasonInactive": reasonInactive,
+      };
+    }
+    var userCreateJson = jsonEncode(jsonChangeStatus);
+    final String response = await _api.changeStatus(userCreateJson);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
+    }
+    return response;
+  }
+
   Future<String> changeCamera(
       String shelfId, String cameraId, int action) async {
     Map<String, dynamic> jsonMapStore = {
@@ -44,9 +81,9 @@ class ShelfRepository {
       "action": action,
     };
     var jsonUpt = jsonEncode(jsonMapStore);
-    final String response = await _api.changeCamera(jsonUpt);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    String response = await _api.changeCamera(jsonUpt);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
     return 'true';
   }
@@ -54,10 +91,10 @@ class ShelfRepository {
   Future<String> updateShelf(Shelf shelf) async {
     var shelfCreateJson = jsonEncode(shelf.toJson());
     final String response = await _api.updateShelf(shelfCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> postShelf(Shelf shelf, String storeId) async {
@@ -69,9 +106,9 @@ class ShelfRepository {
     };
     var shelfCreateJson = jsonEncode(jsonMapCamera);
     final String response = await _api.postShelf(shelfCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 }

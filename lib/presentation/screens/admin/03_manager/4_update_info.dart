@@ -115,27 +115,27 @@ class ManagerUpdateFormState extends State<ManagerUpdateForm> {
                 ManagerTextField(
                   hintText: "Fullname",
                   controller: _fullName,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/fullname.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  // prefixIcon: Container(
+                  //   margin: EdgeInsets.only(right: 10),
+                  //   child: Image.asset(
+                  //     'assets/icons/fullname.png',
+                  //     color: kPrimaryColor,
+                  //     height: 25,
+                  //   ),
+                  // ),
                 ),
                 GenderRatio(_gender, defaultGender),
                 ManagerTextField(
                   hintText: "Identify Card",
                   controller: _identifyCard,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/id_card.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  // prefixIcon: Container(
+                  //   margin: EdgeInsets.only(right: 10),
+                  //   child: Image.asset(
+                  //     'assets/icons/id_card.png',
+                  //     color: kPrimaryColor,
+                  //     height: 25,
+                  //   ),
+                  // ),
                 ),
                 BlocBuilder<UserCreateBloc, UserCreateState>(
                   builder: (context, state) {
@@ -148,27 +148,27 @@ class ManagerUpdateFormState extends State<ManagerUpdateForm> {
                 ManagerTextField(
                   hintText: "Phone",
                   controller: _phone,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/phone.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  // prefixIcon: Container(
+                  //   margin: EdgeInsets.only(right: 10),
+                  //   child: Image.asset(
+                  //     'assets/icons/phone.png',
+                  //     color: kPrimaryColor,
+                  //     height: 25,
+                  //   ),
+                  // ),
                 ),
                 SizedBox(height: 15.0),
                 ManagerTextField(
                   hintText: "Email",
                   controller: _email,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/email.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  // prefixIcon: Container(
+                  //   margin: EdgeInsets.only(right: 10),
+                  //   child: Image.asset(
+                  //     'assets/icons/email.png',
+                  //     color: kPrimaryColor,
+                  //     height: 25,
+                  //   ),
+                  // ),
                 ),
                 BlocBuilder<UserCreateBloc, UserCreateState>(
                   builder: (context, state) {
@@ -181,27 +181,27 @@ class ManagerUpdateFormState extends State<ManagerUpdateForm> {
                 DateTextField(
                   hintText: "Date of birth",
                   controller: _birthDate,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/date.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  // prefixIcon: Container(
+                  //   margin: EdgeInsets.only(right: 10),
+                  //   child: Image.asset(
+                  //     'assets/icons/date.png',
+                  //     color: kPrimaryColor,
+                  //     height: 25,
+                  //   ),
+                  // ),
                 ),
                 SizedBox(height: 15.0),
                 ManagerTextField(
                   hintText: "Address",
                   controller: _address,
-                  prefixIcon: Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Image.asset(
-                      'assets/icons/address.png',
-                      color: kPrimaryColor,
-                      height: 25,
-                    ),
-                  ),
+                  // prefixIcon: Container(
+                  //   margin: EdgeInsets.only(right: 10),
+                  //   child: Image.asset(
+                  //     'assets/icons/address.png',
+                  //     color: kPrimaryColor,
+                  //     height: 25,
+                  //   ),
+                  // ),
                 ),
                 SizedBox(height: 15.0),
                 StaticDropDown(

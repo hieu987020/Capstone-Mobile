@@ -70,14 +70,12 @@ _loginAdminLoaded(BuildContext context) {
     MaterialPageRoute(builder: (BuildContext context) => ScreenManager()),
     ModalRoute.withName('/'),
   );
-  //Navigator.of(context).pushReplacementNamed('/admin_dashboard');
-  //BlocProvider.of<LoginBloc>(context).add(LoginInitialEvent());
 }
 
 _loginManagerLoaded(BuildContext context) {
+  BlocProvider.of<ShelfBloc>(context).add(ShelfFetchEvent(StatusIntBase.All));
   Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(
-        builder: (BuildContext context) => ScreenManagerDashboard()),
+    MaterialPageRoute(builder: (BuildContext context) => ScreenShelf()),
     ModalRoute.withName('/'),
   );
 }
@@ -107,23 +105,23 @@ class LoginFormState extends State<LoginForm> {
       child: SafeArea(
         child: Container(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
-                height: 30,
-              ),
               Container(
-                alignment: Alignment.topCenter,
+                alignment: Alignment.center,
                 child: Image.asset(
                   "assets/images/cffe.png",
                   color: kPrimaryColor,
-                  height: size.width * 0.6,
+                  //width: size.width * 0.4,
+                  height: size.width * 0.4,
                 ),
               ),
               Flexible(
                 child: Padding(
-                  padding: const EdgeInsets.all(kDefaultPadding),
+                  padding: EdgeInsets.only(
+                      left: kDefaultPadding, right: kDefaultPadding),
                   child: Container(
                     child: Form(
                       key: _formKey,
@@ -316,33 +314,3 @@ class LoginInvalidTextField extends StatelessWidget {
     return Text("");
   }
 }
-// class LoginButton extends StatelessWidget {
-//   LoginButton(this.size, this._formKey, this._username, this._password);
-//   final Size size;
-//   final _formKey;
-//   final TextEditingController _username;
-//   final TextEditingController _password;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.fromLTRB(20, 0, 20, 5),
-//       child: TextButton(
-//         style: TextButton.styleFrom(
-//           primary: Colors.white,
-//           backgroundColor: kPrimaryColor,
-//         ),
-//         onPressed: () {
-//           if (_formKey.currentState.validate()) {
-//             LoginModel loginModel = new LoginModel(
-//               userName: _username.text,
-//               passWord: _password.text,
-//             );
-//             BlocProvider.of<LoginBloc>(context)
-//                 .add(LoginClickLoginButton(loginModel));
-//           }
-//         },
-//         child: Text('Login'),
-//       ),
-//     );
-//   }
-// }

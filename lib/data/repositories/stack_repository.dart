@@ -34,6 +34,29 @@ class StackRepository {
         .toList();
   }
 
+  Future<String> changeStatus(
+      String stackId, int statusId, String reasonInactive) async {
+    Map<String, dynamic> jsonChangeStatus;
+    if (reasonInactive == null) {
+      jsonChangeStatus = {
+        "stackId": stackId,
+        "statusId": statusId,
+      };
+    } else {
+      jsonChangeStatus = {
+        "stackId": stackId,
+        "statusId": statusId,
+        "reasonInactive": reasonInactive,
+      };
+    }
+    var userCreateJson = jsonEncode(jsonChangeStatus);
+    final String response = await _api.changeStatus(userCreateJson);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
+    }
+    return response;
+  }
+
   Future<String> changeProduct(
       String stackId, String productId, int action) async {
     Map<String, dynamic> jsonMapStore = {
@@ -43,8 +66,8 @@ class StackRepository {
     };
     var jsonUpt = jsonEncode(jsonMapStore);
     final String response = await _api.changeProduct(jsonUpt);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
     return 'true';
   }
@@ -58,27 +81,27 @@ class StackRepository {
     };
     var jsonUpt = jsonEncode(jsonMapStore);
     final String response = await _api.changeCamera(jsonUpt);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
     return 'true';
   }
 
-  Future<String> updateStack(StackModel stack) async {
-    var stackCreateJson = jsonEncode(stack.toJson());
-    final String response = await _api.updateStack(stackCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
-    }
-    return 'true';
-  }
+  // Future<String> updateStack(StackModel stack) async {
+  //   var stackCreateJson = jsonEncode(stack.toJson());
+  //   final String response = await _api.updateStack(stackCreateJson);
+  //   if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+  //     return response;
+  //   }
+  //   return 'true';
+  // }
 
-  Future<String> postStack(StackModel stack) async {
-    var stackCreateJson = jsonEncode(stack.toJson());
-    final String response = await _api.postStack(stackCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
-    }
-    return 'true';
-  }
+  // Future<String> postStack(StackModel stack) async {
+  //   var stackCreateJson = jsonEncode(stack.toJson());
+  //   final String response = await _api.postStack(stackCreateJson);
+  //   if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+  //     return response;
+  //   }
+  //   return 'true';
+  // }
 }

@@ -222,73 +222,286 @@ class _StaticDropDownState extends State<StaticDropDown> {
   }
 }
 
-// class TypeDetectDropDown extends StatefulWidget {
-//   TypeDetectDropDown({this.controller, this.defaultType});
-//   final TextEditingController controller;
-//   final String defaultType;
+class StoreDropDown extends StatefulWidget {
+  final TextEditingController selectedStore;
+  final String defaultStore;
+  StoreDropDown({
+    @required this.selectedStore,
+    @required this.defaultStore,
+  });
 
-//   @override
-//   _TypeDetectDropDownState createState() =>
-//       _TypeDetectDropDownState(controller, defaultType);
-// }
+  @override
+  _StoreDropDownState createState() =>
+      _StoreDropDownState(selectedStore, defaultStore);
+}
 
-// class _TypeDetectDropDownState extends State<TypeDetectDropDown> {
-//   final TextEditingController controller;
-//   final String defaultType;
-//   _TypeDetectDropDownState(this.controller, this.defaultType);
-//   String selectedType;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.symmetric(horizontal: 18.0),
-//       width: double.infinity,
-//       height: 50,
-//       decoration: BoxDecoration(
-//         color: Colors.white,
-//         borderRadius: BorderRadius.circular(8),
-//         boxShadow: [
-//           BoxShadow(
-//             color: kPrimaryColor.withOpacity(0.4),
-//             spreadRadius: 0,
-//             blurRadius: 8,
-//             offset: Offset(0, 2), // changes position of shadow
-//           ),
-//         ],
-//       ),
-//       child: DropdownButtonFormField<String>(
-//         decoration: InputDecoration(
-//             enabledBorder: UnderlineInputBorder(
-//                 borderSide: BorderSide(color: Colors.white))),
-//         hint: Text(
-//           'Choose Type Detect',
-//           style: TextStyle(
-//             fontSize: 14.0,
-//             color: Color.fromRGBO(169, 176, 185, 1),
-//           ),
-//         ),
-//         value: selectedType,
-//         style: TextStyle(
-//           fontSize: 16.0,
-//           color: Colors.black,
-//         ),
-//         isExpanded: true,
-//         items: <String>['Hotspot', 'Emotion'].map((String value) {
-//           return DropdownMenuItem<String>(
-//             value: value,
-//             child: Text(value),
-//           );
-//         }).toList(),
-//         onChanged: (type) {
-//           setState(() {
-//             selectedType = type;
-//           });
-//           if (type == 'Hotspot') {
-//             controller.value = TextEditingValue(text: '1');
-//           } else if (type == 'Emotion') {
-//             controller.value = TextEditingValue(text: '2');
-//           }
-//         },
-//       ),
-//     );
-//   }
-// }
+class _StoreDropDownState extends State<StoreDropDown> {
+  final TextEditingController controller;
+  final String defaultStore;
+
+  _StoreDropDownState(this.controller, this.defaultStore);
+
+  List<String> stores = [];
+  String selectedStore;
+  @override
+  void initState() {
+    var storeState = BlocProvider.of<StoreBloc>(context).state;
+    if (storeState is StoreLoaded) {
+      if (storeState.stores != null || storeState.stores.isNotEmpty) {
+        storeState.stores.forEach((element) {
+          stores.add(element.storeName);
+        });
+      }
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.0),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        itemHeight: 100,
+        decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white))),
+        hint: Text(
+          'Choose Store',
+          style: TextStyle(
+            fontSize: 14.0,
+            color: Color.fromRGBO(169, 176, 185, 1),
+          ),
+        ),
+        value: selectedStore,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        isExpanded: true,
+        items: stores.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            selectedStore = value;
+          });
+          var storeState = BlocProvider.of<StoreBloc>(context).state;
+          if (storeState is StoreLoaded) {
+            if (storeState.stores != null || storeState.stores.isNotEmpty) {
+              storeState.stores.forEach((element) {
+                if (element.storeName == value) {
+                  controller.value = TextEditingValue(text: element.storeId);
+                  BlocProvider.of<ShelfBloc>(context)
+                      .add(FetchShelfByStoreIdEvent(element.storeId));
+                  return;
+                }
+              });
+            }
+          }
+        },
+      ),
+    );
+  }
+}
+
+class ShelfDropDown extends StatefulWidget {
+  final TextEditingController selectedShelf;
+  final String defaultShelf;
+  ShelfDropDown({
+    @required this.selectedShelf,
+    @required this.defaultShelf,
+  });
+
+  @override
+  _ShelfDropDownState createState() =>
+      _ShelfDropDownState(selectedShelf, defaultShelf);
+}
+
+class _ShelfDropDownState extends State<ShelfDropDown> {
+  final TextEditingController controller;
+  final String defaulShelf;
+
+  _ShelfDropDownState(this.controller, this.defaulShelf);
+
+  List<String> shelves = [];
+  String selectedShelf;
+  @override
+  void initState() {
+    var shelfState = BlocProvider.of<ShelfBloc>(context).state;
+    if (shelfState is ShelfLoaded) {
+      if (shelfState.shelves != null || shelfState.shelves.isNotEmpty) {
+        shelfState.shelves.forEach((element) {
+          shelves.add(element.shelfName);
+        });
+      }
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.0),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        itemHeight: 100,
+        decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white))),
+        hint: Text(
+          'Choose Shelf',
+          style: TextStyle(
+            fontSize: 14.0,
+            color: Color.fromRGBO(169, 176, 185, 1),
+          ),
+        ),
+        value: selectedShelf,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        isExpanded: true,
+        items: shelves.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (shelf) {
+          setState(() {
+            selectedShelf = shelf;
+          });
+        },
+      ),
+    );
+  }
+}
+
+class ProductDropDown extends StatefulWidget {
+  final TextEditingController selectedStore;
+  final String defaultStore;
+  ProductDropDown({
+    @required this.selectedStore,
+    @required this.defaultStore,
+  });
+
+  @override
+  _ProductDropDownState createState() =>
+      _ProductDropDownState(selectedStore, defaultStore);
+}
+
+class _ProductDropDownState extends State<ProductDropDown> {
+  final TextEditingController controller;
+  final String defaultStore;
+
+  _ProductDropDownState(this.controller, this.defaultStore);
+
+  List<String> stores = [];
+  String selectedStore;
+  @override
+  void initState() {
+    var storeState = BlocProvider.of<StoreBloc>(context).state;
+    if (storeState is StoreLoaded) {
+      if (storeState.stores != null || storeState.stores.isNotEmpty) {
+        storeState.stores.forEach((element) {
+          stores.add(element.storeName);
+        });
+      }
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.0),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        itemHeight: 100,
+        decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white))),
+        hint: Text(
+          'Choose Product',
+          style: TextStyle(
+            fontSize: 14.0,
+            color: Color.fromRGBO(169, 176, 185, 1),
+          ),
+        ),
+        value: selectedStore,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        isExpanded: true,
+        items: stores.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            selectedStore = value;
+          });
+          var storeState = BlocProvider.of<StoreBloc>(context).state;
+          if (storeState is StoreLoaded) {
+            if (storeState.stores != null || storeState.stores.isNotEmpty) {
+              storeState.stores.forEach((element) {
+                if (element.storeName == value) {
+                  controller.value = TextEditingValue(text: element.storeId);
+                  BlocProvider.of<ShelfBloc>(context)
+                      .add(FetchShelfByStoreIdEvent(element.storeId));
+                  return;
+                }
+              });
+            }
+          }
+        },
+      ),
+    );
+  }
+}

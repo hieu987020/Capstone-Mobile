@@ -52,6 +52,45 @@ class ShelfApi {
     }
   }
 
+  Future<String> getShelvesByStoreId(String storeId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String uri = "$baseUrl" +
+        "/admin/manager/store/shelves-by-storeid?" +
+        "storeId=$storeId";
+    print(uri);
+    final response = await http.get(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
+  Future<String> changeStatus(String json) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    final response = await http.post(
+      Uri.parse('$baseUrl/admin/manager/store/shelf/update-status'),
+      headers: {
+        'Content-Type': 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+      body: json,
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
   Future<String> changeCamera(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
@@ -76,7 +115,7 @@ class ShelfApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/update'),
+      Uri.parse('$baseUrl/admin/manager/store/shelf/update'),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',

@@ -57,6 +57,7 @@ class Shelf extends Equatable {
     return Shelf(
       shelfId: json['shelfId'],
       shelfName: json['shelfName'],
+      description: json['description'],
       numberOfStack: json['numberOfStack'],
       updatedTime: json['updatedTime'],
       statusName: json['statusName'],

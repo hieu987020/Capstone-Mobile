@@ -25,6 +25,30 @@ class StoreRepository {
         .toList();
   }
 
+  Future<List<Store>> getOperationStores() async {
+    final String rawBody = await _api.getOperationStores();
+    var jsonResponse = json.decode(rawBody);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
+    return (jsonResponse['stores'] as List)
+        .map((e) => Store.fromJsonLst(e))
+        .toList();
+  }
+
+  Future<List<Store>> getStoresByProduct(String searchValue, String searchField,
+      int pageNum, int fetchNext, int statusId, String productId) async {
+    final String rawBody = await _api.getStoresByProduct(
+        searchValue, searchField, pageNum, fetchNext, statusId, productId);
+    var jsonResponse = json.decode(rawBody);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
+    return (jsonResponse['stores'] as List)
+        .map((e) => Store.fromJsonLst(e))
+        .toList();
+  }
+
   Future<String> changeStatus(
       String storeId, int statusId, String reasonInactive) async {
     Map<String, dynamic> jsonChangeStatus;
@@ -42,10 +66,10 @@ class StoreRepository {
     }
     var userCreateJson = jsonEncode(jsonChangeStatus);
     final String response = await _api.changeStatus(userCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<List<Store>> getStoresByStoreName(String storeName) async {
@@ -68,35 +92,29 @@ class StoreRepository {
       "userId": userId,
       "active": active,
     };
-    print('json trong map store repository\n');
-    print(jsonMapStore.toString());
     var jsonUpt = jsonEncode(jsonMapStore);
     final String response = await _api.changeManager(jsonUpt);
-    print('response map store trong repository ne\n');
-    print(response);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> updateStore(Store store) async {
     var storeCreateJson = jsonEncode(store.toJson());
     final String response = await _api.updateStore(storeCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> postStore(Store user) async {
     var json = jsonEncode(user.toJson());
     String response = await _api.postStore(json);
-    if (response.contains('true') == true &&
-        response.contains('errorCodeAndMsg') == false) {
-      return 'true';
-    } else {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
+    return response;
   }
 }

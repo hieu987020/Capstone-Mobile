@@ -1,3 +1,4 @@
+import 'package:capstone/data/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 class ShelfUpdateInsideState extends Equatable {

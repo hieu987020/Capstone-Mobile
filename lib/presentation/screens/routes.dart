@@ -27,6 +27,9 @@ class AppRouter {
       case '/camera':
         return MaterialPageRoute(builder: (_) => ScreenCamera());
         break;
+      case '/video':
+        return MaterialPageRoute(builder: (_) => ScreenVideo());
+        break;
 
       //? Manager
       case '/manager_dashboard':
@@ -35,14 +38,17 @@ class AppRouter {
       case '/shelf':
         return MaterialPageRoute(builder: (_) => ScreenShelf());
         break;
-      case '/video':
-        return MaterialPageRoute(builder: (_) => ScreenVideo());
+      case '/manager_video':
+        return MaterialPageRoute(builder: (_) => ScreenVideoManager());
         break;
       case '/manager_product':
         return MaterialPageRoute(builder: (_) => ScreenProductManager());
         break;
       case '/manager_camera':
         return MaterialPageRoute(builder: (_) => ScreenCameraManager());
+        break;
+      case '/manager_category':
+        return MaterialPageRoute(builder: (_) => ScreenCategoryManager());
         break;
       default:
         return null;

@@ -37,9 +37,9 @@ class _CameraTypeRatioState extends State<CameraTypeRatio> {
           Container(
             width: 150,
             child: ListTile(
-              title: const Text('Hotspot'),
+              title: const Text('Counter'),
               leading: Radio<String>(
-                value: "Hotspot",
+                value: "Counter",
                 groupValue: groupValue,
                 activeColor: kPrimaryColor,
                 onChanged: (String value) {

@@ -36,15 +36,18 @@ class StoreCreateBloc extends Bloc<StoreCreateEvent, StoreCreateState> {
 
       if (result == 'true') {
         yield StoreCreateLoaded();
-      } else if (result.contains('MSG-062')) {
-        yield StoreDuplicatedName('Store Name is existed !');
-      } else if (result.contains('MSG-076')) {
-        yield StoreCreateError('System can not finish this action');
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield StoreCreateError(result);
       }
+      // else if (result.contains('MSG-062')) {
+      //   yield StoreDuplicatedName('Store Name is existed !');
+      // } else if (result.contains('MSG-076')) {
+      //   yield StoreCreateError('System can not finish this action');
+      // } else if (result.contains('errorCodeAndMsg')) {
+      //   yield StoreCreateError(result);
+      // }
     } catch (e) {
-      yield StoreCreateError(e.toString());
+      yield StoreCreateError("System can not finish this action");
     }
   }
 }

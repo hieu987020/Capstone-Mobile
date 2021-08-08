@@ -20,7 +20,11 @@ class CameraDetailBloc extends Bloc<CameraDetailEvent, CameraDetailState> {
     try {
       yield CameraDetailLoading();
       final camera = await _camerasRepository.getCamera(cameraId);
-      yield CameraDetailLoaded(camera);
+      if (camera == null) {
+        yield CameraDetailNoPermission();
+      } else {
+        yield CameraDetailLoaded(camera);
+      }
     } catch (e) {
       print(e);
       yield CameraDetailError();

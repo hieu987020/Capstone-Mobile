@@ -38,14 +38,13 @@ class StoreUpdateImageBloc
         );
       }
       String result = await _storeRepository.updateStore(store);
-      print(result);
       if (result == 'true') {
         yield StoreUpdateImageLoaded();
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield StoreUpdateImageError(result);
       }
     } catch (e) {
-      yield StoreUpdateImageError(e);
+      yield StoreUpdateImageError("System can not finish this action");
     }
   }
 }

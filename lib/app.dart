@@ -76,9 +76,24 @@ class App extends StatelessWidget {
         BlocProvider<ProductUpdateImageBloc>(
           create: (context) => ProductUpdateImageBloc(),
         ),
+        BlocProvider<ProductUpdateInsideBloc>(
+          create: (context) => ProductUpdateInsideBloc(),
+        ),
 //! Category
         BlocProvider<CategoryBloc>(
           create: (context) => CategoryBloc(),
+        ),
+        BlocProvider<CategoryDetailBloc>(
+          create: (context) => CategoryDetailBloc(),
+        ),
+        BlocProvider<CategoryCreateBloc>(
+          create: (context) => CategoryCreateBloc(),
+        ),
+        BlocProvider<CategoryUpdateBloc>(
+          create: (context) => CategoryUpdateBloc(),
+        ),
+        BlocProvider<CategoryUpdateInsideBloc>(
+          create: (context) => CategoryUpdateInsideBloc(),
         ),
 //! Camera
         BlocProvider<CameraBloc>(
@@ -112,6 +127,9 @@ class App extends StatelessWidget {
         BlocProvider<ShelfCreateBloc>(
           create: (context) => ShelfCreateBloc(),
         ),
+        BlocProvider<ShelfUpdateBloc>(
+          create: (context) => ShelfUpdateBloc(),
+        ),
 //! Stack
         BlocProvider<StackBloc>(
           create: (context) => StackBloc(),
@@ -122,6 +140,8 @@ class App extends StatelessWidget {
         BlocProvider<StackUpdateInsideBloc>(
           create: (context) => StackUpdateInsideBloc(),
         ),
+
+//! City
         BlocProvider<CityBloc>(
           create: (context) => CityBloc(),
         ),

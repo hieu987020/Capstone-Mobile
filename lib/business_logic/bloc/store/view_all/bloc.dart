@@ -15,6 +15,8 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
       yield* _getStores(event.statusId);
     } else if (event is StoreSearchEvent) {
       yield* _searchStores(event.storeName);
+    } else if (event is StoreGetOperationEvent) {
+      yield* _getOperationStores();
     }
   }
 
@@ -29,6 +31,16 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
           FetchNextBase.Default,
           statusId);
 
+      yield StoreLoaded(stores);
+    } catch (e) {
+      yield StoreError();
+    }
+  }
+
+  Stream<StoreState> _getOperationStores() async* {
+    try {
+      yield StoreLoading();
+      final stores = await storeRepository.getOperationStores();
       yield StoreLoaded(stores);
     } catch (e) {
       yield StoreError();

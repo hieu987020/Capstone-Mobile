@@ -22,19 +22,22 @@ class UserUpdateBloc extends Bloc<UserUpdateEvent, UserUpdateState> {
   Stream<UserUpdateState> _updateUser(User user) async* {
     try {
       yield UserUpdateLoading();
-      print(user.toJson());
       String result = await _usersRepository.updateUser(user);
       if (result == 'true') {
         yield UserUpdateLoaded();
-      } else if (result.contains('MSG-055')) {
-        yield UserUpdateDuplicatedEmail('Email is existed');
-      } else if (result.contains('MSG-056')) {
-        yield UserUpdateDuplicateIdentifyCard('IdentifyCard is existed');
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield UserUpdateError(result);
       }
+
+      // else if (result.contains('MSG-055')) {
+      //   yield UserUpdateDuplicatedEmail('Email is existed');
+      // } else if (result.contains('MSG-056')) {
+      //   yield UserUpdateDuplicateIdentifyCard('IdentifyCard is existed');
+      // } else if (result.contains('errorCodeAndMsg')) {
+      //   yield UserUpdateError(result);
+      // }
     } catch (e) {
-      yield UserUpdateError(e);
+      yield UserUpdateError("System can not finish this action");
     }
   }
 }

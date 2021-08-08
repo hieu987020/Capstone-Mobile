@@ -123,7 +123,7 @@ class ManagerTextField extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 18.0),
       width: double.infinity,
-      height: 70,
+      height: 50,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(this.borderRadius),
@@ -443,6 +443,151 @@ class StoreTextField extends StatelessWidget {
   }
 }
 
+class ShelfTextField extends StatelessWidget {
+  final String hintText;
+  final bool obscureText;
+  final Icon suffixIcon;
+  final Widget prefixIcon;
+  final double borderRadius;
+  final TextEditingController controller;
+  final String Function(String) validator;
+  ShelfTextField({
+    this.hintText,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.borderRadius = 8.0,
+    this.controller,
+    this.validator,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.0),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(this.borderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: TextFormField(
+        obscureText: this.obscureText,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: controller,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        decoration: InputDecoration(
+          prefixIcon: this.prefixIcon,
+          prefixIconConstraints: BoxConstraints(minWidth: 0.0),
+          suffixIcon: this.suffixIcon,
+          border: InputBorder.none,
+          hintText: this.hintText,
+          hintStyle: TextStyle(
+            fontSize: 14.0,
+            color: Color.fromRGBO(169, 176, 185, 1),
+          ),
+        ),
+        validator: (value) {
+          switch (hintText) {
+            case 'Shelf Name':
+              if (value.length < 2 || value.length > 100) {
+                return "2 - 100 characters";
+              }
+              break;
+            case 'Description':
+              if (value.length < 2 || value.length > 250) {
+                return "2 - 250 characters";
+              }
+              break;
+            default:
+          }
+          return null;
+        },
+      ),
+    );
+  }
+}
+
+class CategoryTextField extends StatelessWidget {
+  final String hintText;
+  final bool obscureText;
+  final Icon suffixIcon;
+  final Widget prefixIcon;
+  final double borderRadius;
+  final TextEditingController controller;
+  final String Function(String) validator;
+  CategoryTextField({
+    this.hintText,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.borderRadius = 8.0,
+    this.controller,
+    this.validator,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.0),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(this.borderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: TextFormField(
+        obscureText: this.obscureText,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: controller,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        decoration: InputDecoration(
+          prefixIcon: this.prefixIcon,
+          prefixIconConstraints: BoxConstraints(minWidth: 0.0),
+          suffixIcon: this.suffixIcon,
+          border: InputBorder.none,
+          hintText: this.hintText,
+          hintStyle: TextStyle(
+            fontSize: 14.0,
+            color: Color.fromRGBO(169, 176, 185, 1),
+          ),
+        ),
+        validator: (value) {
+          switch (hintText) {
+            case 'Category Name':
+              if (value.length < 2 || value.length > 100) {
+                return "2 - 100 characters";
+              }
+              break;
+            default:
+          }
+          return null;
+        },
+      ),
+    );
+  }
+}
+
 class DateTextField extends StatefulWidget {
   final String hintText;
   final bool obscureText;
@@ -581,6 +726,119 @@ class ReasonTextField extends StatelessWidget {
         }
         return null;
       },
+    );
+  }
+}
+
+class DateFilter extends StatefulWidget {
+  final String hintText;
+  final bool obscureText;
+  final Icon suffixIcon;
+  final Widget prefixIcon;
+  final double borderRadius;
+  final TextEditingController controller;
+  final String Function(String) validator;
+  DateFilter({
+    this.hintText,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.borderRadius = 8.0,
+    this.controller,
+    this.validator,
+  });
+
+  @override
+  _DateFilterState createState() => _DateFilterState(
+        hintText,
+        obscureText,
+        suffixIcon,
+        prefixIcon,
+        borderRadius,
+        controller,
+        validator,
+      );
+}
+
+class _DateFilterState extends State<DateFilter> {
+  final String hintText;
+  final bool obscureText;
+  final Icon suffixIcon;
+  final Widget prefixIcon;
+  final double borderRadius;
+  final TextEditingController controller;
+  final String Function(String) validator;
+  _DateFilterState(
+    this.hintText,
+    this.obscureText,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.borderRadius,
+    this.controller,
+    this.validator,
+  );
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(1950, 8),
+        lastDate: DateTime(2022));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        var f = new DateFormat('yyyy-MM-dd');
+        String date = f.format(picked);
+        controller.value = TextEditingValue(text: date);
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.0),
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(this.widget.borderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: SizedBox(
+        child: TextFormField(
+          onTap: () {
+            _selectDate(context);
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          obscureText: this.widget.obscureText,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          controller: widget.controller,
+          decoration: InputDecoration(
+            prefixIcon: this.widget.prefixIcon,
+            prefixIconConstraints: BoxConstraints(minWidth: 0.0),
+            suffixIcon: this.widget.suffixIcon,
+            border: InputBorder.none,
+            hintText: this.widget.hintText,
+            hintStyle: TextStyle(
+              fontSize: 14.0,
+              color: Color.fromRGBO(169, 176, 185, 1),
+            ),
+          ),
+          // validator: (value) {
+          //   if (value.isEmpty) {
+          //     return "Date of birth is required";
+          //   }
+          //   return null;
+          // },
+        ),
+      ),
     );
   }
 }

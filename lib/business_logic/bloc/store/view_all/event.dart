@@ -14,3 +14,5 @@ class StoreSearchEvent extends StoreEvent {
   final String storeName;
   StoreSearchEvent(this.storeName);
 }
+
+class StoreGetOperationEvent extends StoreEvent {}

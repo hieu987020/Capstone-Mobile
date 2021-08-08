@@ -23,7 +23,7 @@ class ObjectListInkWell extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(bottom: 10.0),
+        margin: EdgeInsets.only(bottom: 10),
         padding: EdgeInsets.all(6.0),
         width: double.infinity,
         height: 62.0,
@@ -41,14 +41,125 @@ class ObjectListInkWell extends StatelessWidget {
         ),
         child: Row(
           children: [
+            SizedBox(width: 10.0),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
                   child: Container(
-                    height: 50.0,
-                    width: 50.0,
+                    height: 40.0,
+                    width: 40.0,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(224, 230, 255, 1),
+                    ),
+                    child: Image.network(
+                      imageURL,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(width: 25.0),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.0),
+                  Container(
+                    child: Text(
+                      sub,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StatusText(status),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ObjectListInkWell3 extends StatelessWidget {
+  ObjectListInkWell3({
+    this.model,
+    @required this.imageURL,
+    @required this.title,
+    @required this.sub,
+    @required this.three,
+    @required this.status,
+    this.navigationField,
+    @required this.onTap,
+  });
+  final String model;
+  final String imageURL;
+  final String title;
+  final String sub;
+  final String three;
+  final String status;
+  final String navigationField;
+  final Function() onTap;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(6.0),
+        width: double.infinity,
+        height: 62.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(169, 176, 185, 0.42),
+              spreadRadius: 0,
+              blurRadius: 8,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: 10.0),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Container(
+                    height: 40.0,
+                    width: 40.0,
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(224, 230, 255, 1),
                     ),
@@ -84,6 +195,19 @@ class ObjectListInkWell extends StatelessWidget {
                     width: 150,
                     child: Text(
                       sub,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.0),
+                  Container(
+                    width: 150,
+                    child: Text(
+                      three,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -128,7 +252,7 @@ class CategoryListInkWell extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(bottom: 10.0),
+        margin: EdgeInsets.only(bottom: 10),
         padding: EdgeInsets.all(6.0),
         width: double.infinity,
         height: 62.0,
@@ -176,6 +300,324 @@ class CategoryListInkWell extends StatelessWidget {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ShelfListInkWell extends StatelessWidget {
+  ShelfListInkWell({
+    this.model,
+    @required this.title,
+    @required this.sub,
+    @required this.three,
+    @required this.status,
+    this.navigationField,
+    @required this.onTap,
+  });
+  final String model;
+  final String title;
+  final String sub;
+  final String three;
+  final String status;
+  final String navigationField;
+  final Function() onTap;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(6.0),
+        width: double.infinity,
+        height: 62.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(169, 176, 185, 0.42),
+              spreadRadius: 0,
+              blurRadius: 8,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: 10.0),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.0),
+                  Container(
+                    child: Text(
+                      sub,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Text(
+                      three,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 2.0),
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StatusText(status),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StackListInkWell extends StatelessWidget {
+  StackListInkWell({
+    this.model,
+    @required this.title,
+    @required this.sub,
+    @required this.status,
+    this.navigationField,
+    @required this.onTap,
+    @required this.three,
+  });
+  final String model;
+  final String title;
+  final String sub;
+  final String three;
+  final String status;
+  final String navigationField;
+  final Function() onTap;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(6.0),
+        width: double.infinity,
+        height: 62.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(169, 176, 185, 0.42),
+              spreadRadius: 0,
+              blurRadius: 8,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: 10.0),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.0),
+                  Container(
+                    child: Text(
+                      sub,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.0),
+                  Container(
+                    //color: Colors.red,
+                    child: Text(
+                      three,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 2.0),
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StatusText(status),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CounterListInkWell extends StatelessWidget {
+  CounterListInkWell({
+    this.model,
+    @required this.imageURL,
+    @required this.title,
+    @required this.sub,
+    @required this.status,
+    @required this.onTap,
+    @required this.onRemove,
+  });
+  final String model;
+  final String imageURL;
+  final String title;
+  final String sub;
+  final String status;
+  final Function() onTap;
+  final Function() onRemove;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(6.0),
+        width: double.infinity,
+        height: 62.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(169, 176, 185, 0.42),
+              spreadRadius: 0,
+              blurRadius: 8,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: 10.0),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Container(
+                    height: 40.0,
+                    width: 40.0,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(224, 230, 255, 1),
+                    ),
+                    child: Image.network(
+                      imageURL,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(width: 20.0),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.0),
+                  Container(
+                    child: Text(
+                      sub,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/icons/cancel.png",
+                      color: kPrimaryColor,
+                      height: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(width: 5),
           ],
         ),
       ),

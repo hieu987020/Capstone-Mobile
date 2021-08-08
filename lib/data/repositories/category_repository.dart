@@ -6,7 +6,7 @@ import 'package:capstone/data/models/models.dart';
 class CategoryRepository {
   final CategoryApi _api = new CategoryApi();
 
-  Future<Category> getCategory(String categoryId) async {
+  Future<Category> getCategory(int categoryId) async {
     final String rawBody = await _api.getCategory(categoryId);
     var jsonResponse = json.decode(rawBody);
     return Category.fromJson(jsonResponse);
@@ -25,14 +25,35 @@ class CategoryRepository {
         .toList();
   }
 
-  Future<String> postCategory(Category user) async {
-    var json = jsonEncode(user.toJson());
-    String response = await _api.postCategory(json);
-    if (response.contains('true') == true &&
-        response.contains('errorCodeAndMsg') == false) {
-      return 'true';
-    } else {
-      return response;
+  Future<String> changeStatus(int cateId, int statusId) async {
+    Map<String, dynamic> jsonChangeStatus;
+    jsonChangeStatus = {
+      "categoryId": cateId,
+      "statusId": statusId,
+    };
+    var userCreateJson = jsonEncode(jsonChangeStatus);
+    final String response = await _api.changeStatus(userCreateJson);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
+    return response;
+  }
+
+  Future<String> updateCategory(Category cate) async {
+    var categoryUpdateJson = jsonEncode(cate.toJson());
+    final String response = await _api.updateCategory(categoryUpdateJson);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
+    }
+    return response;
+  }
+
+  Future<String> postCategory(Category cate) async {
+    var json = jsonEncode(cate.toJson());
+    String response = await _api.postCategory(json);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
+    }
+    return response;
   }
 }

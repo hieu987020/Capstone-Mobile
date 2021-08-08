@@ -40,19 +40,20 @@ class UserCreateBloc extends Bloc<UserCreateEvent, UserCreateState> {
         );
       }
       String result = await _usersRepository.postUser(user);
-      log(user.toJson().toString());
 
-      if (result.contains('MSG-055')) {
-        yield UserCreateDuplicatedEmail('Email is existed');
-      } else if (result.contains('MSG-056')) {
-        yield UserCreateDuplicateIdentifyCard('IdentifyCard is existed');
-      } else if (result == 'true') {
+      // if (result.contains('MSG-055')) {
+      //   yield UserCreateDuplicatedEmail('Email is existed');
+      // } else if (result.contains('MSG-056')) {
+      //   yield UserCreateDuplicateIdentifyCard('IdentifyCard is existed');
+      // } else
+
+      if (result == 'true') {
         yield UserCreateLoaded();
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield UserCreateError(result);
       }
     } catch (e) {
-      yield UserCreateError(e.toString());
+      yield UserCreateError("System can not finish this action");
     }
   }
 }

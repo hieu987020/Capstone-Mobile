@@ -1,5 +1,6 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/data/data_providers/const_common.dart';
+import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -119,6 +120,20 @@ class StatusDropdownState extends State<StatusDropdown> {
             BlocProvider.of<CategoryBloc>(context)
                 .add(CategoryFetchEvent(StatusIntBase.All));
           }
+        } else if (model == 'shelf') {
+          if (newValue == "Active") {
+            BlocProvider.of<ShelfBloc>(context)
+                .add(ShelfFetchEvent(StatusIntBase.Active));
+          } else if (newValue == "Pending") {
+            BlocProvider.of<ShelfBloc>(context)
+                .add(ShelfFetchEvent(StatusIntBase.Pending));
+          } else if (newValue == "Inactive") {
+            BlocProvider.of<ShelfBloc>(context)
+                .add(ShelfFetchEvent(StatusIntBase.Inactive));
+          } else if (newValue == "All") {
+            BlocProvider.of<ShelfBloc>(context)
+                .add(ShelfFetchEvent(StatusIntBase.All));
+          }
         }
       },
       items: _menu1.map<DropdownMenuItem<String>>((String value) {
@@ -127,6 +142,109 @@ class StatusDropdownState extends State<StatusDropdown> {
           child: Text(value),
         );
       }).toList(),
+    );
+  }
+}
+
+class StackNum extends StatefulWidget {
+  final String defaultValue;
+  final TextEditingController controller;
+  StackNum({this.defaultValue, this.controller});
+
+  @override
+  State<StackNum> createState() => StackNumState(defaultValue, controller);
+}
+
+class StackNumState extends State<StackNum> {
+  final String defaultValue;
+  final TextEditingController controller;
+  String selectedValue = "";
+  var _menu1 = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+    '16',
+    '17',
+    '18',
+    '19',
+    '20',
+    '21',
+    '22',
+    '23',
+    '24',
+    '25',
+    '26',
+    '27',
+    '28',
+    '29',
+    '30'
+  ];
+
+  @override
+  void initState() {
+    if (defaultValue.isEmpty || defaultValue == null) {
+      selectedValue = "1";
+    } else {
+      selectedValue = defaultValue;
+    }
+    super.initState();
+  }
+
+  StackNumState(this.defaultValue, this.controller);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.0),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        value: selectedValue,
+        isExpanded: true,
+        elevation: 16,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white))),
+        onChanged: (String newValue) {
+          setState(() {
+            selectedValue = newValue;
+          });
+          controller.value = TextEditingValue(text: newValue);
+        },
+        items: _menu1.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      ),
     );
   }
 }

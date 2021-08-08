@@ -22,17 +22,10 @@ class CameraUpdateBloc extends Bloc<CameraUpdateEvent, CameraUpdateState> {
   Stream<CameraUpdateState> _updateCamera(Camera camera) async* {
     try {
       yield CameraUpdateLoading();
-      print("camera json trong bloc roi ne");
-      print(camera.toJson());
       String result = await _camerasRepository.updateCamera(camera);
-      print(result);
       if (result == 'true') {
         yield CameraUpdateLoaded();
-      } else if (result.contains("MSG-057")) {
-        yield CameraUpdateDuplicatedIPAddress("IP address is existed");
-      } else if (result.contains("MSG-058")) {
-        yield CameraUpdateDuplicatedRTSPString("RTSP String is existed");
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield CameraUpdateError(result);
       }
     } catch (e) {

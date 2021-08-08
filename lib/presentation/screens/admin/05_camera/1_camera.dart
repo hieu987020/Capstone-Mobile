@@ -30,9 +30,12 @@ class ScreenCamera extends StatelessWidget {
             FloatingActionButtonLocation.miniCenterFloat,
         body: MyScrollView(
           listWidget: [
-            HeaderWithSearchBox(size),
+            HeaderWithSearchBox(
+              size: size,
+              title: "Hi Admin",
+            ),
             TitleWithMoreBtn(
-              title: 'List Cameras',
+              title: 'Camera',
               model: 'camera',
               defaultStatus: StatusStringBase.All,
             ),
@@ -66,7 +69,7 @@ class CameraContent extends StatelessWidget {
 
     return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(kDefaultPadding),
+        padding: const EdgeInsets.all(kDefaultPadding / 2),
         child: FutureBuilder<List<Camera>>(
           initialData: cameras,
           builder: (context, snapshot) {
@@ -77,11 +80,12 @@ class CameraContent extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: cameraLst.length,
                 itemBuilder: (context, index) {
-                  return ObjectListInkWell(
+                  return ObjectListInkWell3(
                     model: 'camera',
                     imageURL: cameraLst[index].imageUrl,
                     title: cameraLst[index].cameraName,
-                    sub: cameraLst[index].storeName ?? "-",
+                    sub: "MAC: " + cameraLst[index].macAddress,
+                    three: cameraLst[index].storeName ?? "-",
                     status: cameraLst[index].statusName,
                     navigationField: cameraLst[index].cameraId,
                     onTap: () {

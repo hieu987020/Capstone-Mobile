@@ -75,6 +75,27 @@ class UserApi {
     }
   }
 
+  Future<String> resetPassword(String username, String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String uri = "$baseUrl" +
+        "/admin/manager/reset-password?" +
+        "userName=$username" +
+        "&email=$email";
+    print(uri);
+    final response = await http.get(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');

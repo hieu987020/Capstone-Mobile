@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/models.dart';
@@ -14,9 +13,20 @@ class ProductRepository {
   }
 
   Future<List<Product>> getProducts(String searchValue, String searchField,
-      int pageNum, int fetchNext, int statusId) async {
+      int pageNum, int fetchNext, int categoryId, int statusId) async {
     final String rawBody = await _api.getProducts(
-        searchValue, searchField, pageNum, fetchNext, statusId);
+        searchValue, searchField, pageNum, fetchNext, categoryId, statusId);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
+    var jsonResponse = json.decode(rawBody);
+    return (jsonResponse['products'] as List)
+        .map((e) => Product.fromJsonLst(e))
+        .toList();
+  }
+
+  Future<List<Product>> getAll() async {
+    final String rawBody = await _api.getAll();
     if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
       return null;
     }
@@ -40,35 +50,35 @@ class ProductRepository {
   }
 
   Future<String> changeStatus(
-      String userName, int statusId, String reasonInactive) async {
+      String productId, int statusId, String reasonInactive) async {
     Map<String, dynamic> jsonChangeStatus;
     if (reasonInactive == null) {
       jsonChangeStatus = {
-        "userName": userName,
+        "productId": productId,
         "statusId": statusId,
       };
     } else {
       jsonChangeStatus = {
-        "userName": userName,
+        "productId": productId,
         "statusId": statusId,
         "reasonInactive": reasonInactive,
       };
     }
     var userCreateJson = jsonEncode(jsonChangeStatus);
     final String response = await _api.changeStatus(userCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> updateProduct(Product product) async {
     var productUpdateJson = jsonEncode(product.toJson());
     final String response = await _api.updateProduct(productUpdateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> postProduct(Product product) async {
@@ -79,13 +89,10 @@ class ProductRepository {
       "productName": product.productName,
     };
     var json = jsonEncode(productCreate);
-    log(json.toString());
     String response = await _api.postProduct(json);
-    if (response.contains('true') == true &&
-        response.contains('errorCodeAndMsg') == false) {
-      return 'true';
-    } else {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
+    return response;
   }
 }

@@ -1,7 +1,5 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
-import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/models.dart';
-import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,60 +8,31 @@ class ScreenShelfMapCamera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Shelf add camera'),
-        backgroundColor: Colors.grey[200],
-        iconTheme: IconThemeData(color: Colors.black),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ScreenCameraSearch()));
+      appBar: buildNormalAppbar('Choose Counter Camera'),
+      body: MyScrollView(
+        listWidget: [
+          SizedBox(height: 10),
+          TitleWithNothing(
+            title: 'Camera',
+          ),
+          BlocBuilder<CameraBloc, CameraState>(
+            builder: (context, state) {
+              if (state is CameraLoaded) {
+                return CounterCameraContent();
+              } else if (state is CameraError) {
+                return FailureStateWidget();
+              } else if (state is CameraLoading) {
+                return LoadingWidget();
+              }
+              return LoadingWidget();
             },
-          )
+          ),
         ],
       ),
-      body: BlocListener<ShelfUpdateInsideBloc, ShelfUpdateInsideState>(
-        listener: (context, state) {
-          if (state is ShelfUpdateInsideLoading) {
-            loadingCommon(context);
-          } else if (state is ShelfUpdateInsideError) {
-            _shelfMapCameraError(context, state);
-          } else if (state is ShelfUpdateInsideLoaded) {
-            _shelfMapCameraLoaded(context);
-          }
-        },
-        child: Stack(
-          children: [
-            ShelfMapCameraHeader('List Camera'),
-            BlocBuilder<CameraBloc, CameraState>(
-              // ignore: missing_return
-              builder: (context, state) {
-                if (state is CameraLoaded) {
-                  return ShelfMapCameraContentManager();
-                } else if (state is CameraError) {
-                  return FailureStateWidget();
-                } else if (state is CameraLoading) {
-                  return LoadingWidget();
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-      backgroundColor: Colors.white,
     );
   }
 }
 
-// ignore: todo
-//TODO Stuff
 _shelfConfirmCamera(BuildContext context, String cameraId) {
   showDialog<String>(
     context: context,
@@ -89,6 +58,7 @@ _shelfConfirmCamera(BuildContext context, String cameraId) {
               BlocProvider.of<ShelfUpdateInsideBloc>(context)
                   .add(ShelfMapCameraEvent(shelfId, cameraId, 1));
               Navigator.pop(context);
+              Navigator.pop(context);
             },
             child: const Text('Yes'),
           ),
@@ -98,43 +68,7 @@ _shelfConfirmCamera(BuildContext context, String cameraId) {
   );
 }
 
-_shelfMapCameraLoaded(BuildContext context) {
-  // BlocProvider.of<ShelfUpdateInsideBloc>(context)
-  //     .add(ShelfUpdateInsideInitialEvent());
-  Navigator.pop(context);
-  Navigator.pop(context);
-}
-
-_shelfMapCameraError(BuildContext context, ShelfUpdateInsideError state) {
-  showDialog<String>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Error notification'),
-        content: Text(state.message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Back'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-class ShelfMapCameraContentManager extends StatefulWidget {
-  @override
-  _ShelfMapCameraContentManagerState createState() =>
-      _ShelfMapCameraContentManagerState();
-}
-
-class _ShelfMapCameraContentManagerState
-    extends State<ShelfMapCameraContentManager> {
+class CounterCameraContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Camera> cameras;
@@ -142,36 +76,27 @@ class _ShelfMapCameraContentManagerState
     if (state is CameraLoaded) {
       cameras = state.cameras;
     }
-    Future<Null> _onCameraRefresh(BuildContext context) async {
-      BlocProvider.of<CameraBloc>(context)
-          .add(CameraFetchEvent(StatusIntBase.All));
-      setState(() {
-        cameras.clear();
-      });
-    }
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        _onCameraRefresh(context);
-      },
-      child: Container(
-        margin: EdgeInsets.fromLTRB(0, 50, 0, 60),
+    return Flexible(
+      child: Padding(
+        padding: const EdgeInsets.all(kDefaultPadding / 2),
         child: FutureBuilder<List<Camera>>(
           initialData: cameras,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<Camera> cameraLst = snapshot.data;
               return ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: cameraLst.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(cameraLst[index].imageUrl),
-                      backgroundColor: Colors.white,
-                    ),
-                    title: Text(cameraLst[index].cameraName),
-                    subtitle: Text(cameraLst[index].ipAddress),
-                    trailing: StatusText(cameraLst[index].statusName),
+                  return ObjectListInkWell(
+                    model: 'camera',
+                    imageURL: cameraLst[index].imageUrl,
+                    title: cameraLst[index].cameraName,
+                    sub: "Counter Camera",
+                    status: "Pending",
+                    navigationField: cameraLst[index].cameraId,
                     onTap: () {
                       _shelfConfirmCamera(context, cameraLst[index].cameraId);
                     },
@@ -181,26 +106,12 @@ class _ShelfMapCameraContentManagerState
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },
         ),
       ),
-    );
-  }
-}
-
-class ShelfMapCameraHeader extends StatelessWidget {
-  final String _text;
-  ShelfMapCameraHeader(this._text);
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ScreenHeaderText(_text),
-      ],
     );
   }
 }

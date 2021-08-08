@@ -10,5 +10,5 @@ const kPrimaryColor = Color.fromRGBO(60, 81, 134, 1);
 const kTextColor = Color(0xFF3C4046);
 const kCaptionTextColor = Color.fromRGBO(157, 161, 180, 1);
 const kBackgroundColor = Color(0xFFF9F8FD);
-
+//const kBackgroundColor = Colors.white;
 const double kDefaultPadding = 20.0;

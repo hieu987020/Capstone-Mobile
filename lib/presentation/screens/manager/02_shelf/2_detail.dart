@@ -9,13 +9,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenShelfDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: AppBarText('Shelf Detail'),
-        backgroundColor: Colors.grey[200],
-        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: kPrimaryColor,
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          ShelfMenu(),
+        ],
       ),
-      backgroundColor: Colors.grey[200],
       body: BlocListener<ShelfUpdateInsideBloc, ShelfUpdateInsideState>(
         listener: (context, state) {
           if (state is ShelfUpdateInsideLoading) {
@@ -26,22 +29,32 @@ class ScreenShelfDetail extends StatelessWidget {
             _shelfUpdateInsideLoaded(context);
           }
         },
-        child: ShelfDetailView(),
+        child: MyScrollView(
+          listWidget: [
+            SizedBox(height: 10),
+            TitleWithNothing(title: "About"),
+            ShelfDetailInformation(size: size),
+            SizedBox(height: 10),
+            TitleWithNothing(title: "Counter Camera"),
+            CounterCameraInside1(),
+            CounterCameraInside2(),
+            TitleWithNothing(title: "Stack"),
+            StackContent(),
+          ],
+        ),
       ),
     );
   }
 }
 
-// ignore: todo
-//TODO Stuff
 _shelfUpdateInsideError(BuildContext context, ShelfUpdateInsideError state) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Error notification'),
-        content: Text(state.message),
+        title: Text('App Message'),
+        content: Text(state.message ?? "Null"),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -66,14 +79,14 @@ _shelfUpdateInsideLoaded(BuildContext context) {
   Navigator.pop(context);
 }
 
-_removeHotspotCamera(BuildContext context) {
+_removeCounterCamera(BuildContext context, String cameraId, String cameraName) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Remove hotspot camera'),
-        content: Text('Are you sure to remove this camera'),
+        title: Text('Remove Counter camera'),
+        content: Text('Are you sure to remove camera $cameraName'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -84,11 +97,10 @@ _removeHotspotCamera(BuildContext context) {
           TextButton(
             onPressed: () {
               String shelfId;
-              String cameraId;
               var state = BlocProvider.of<ShelfDetailBloc>(context).state;
               if (state is ShelfDetailLoaded) {
                 shelfId = state.shelf.shelfId;
-                cameraId = state.shelf.camera.first.cameraId;
+                // cameraId = state.shelf.camera.first.cameraId;
               }
               BlocProvider.of<ShelfUpdateInsideBloc>(context)
                   .add(ShelfMapCameraEvent(shelfId, cameraId, 2));
@@ -102,93 +114,94 @@ _removeHotspotCamera(BuildContext context) {
   );
 }
 
-//! View
-class ShelfDetailView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    Future<Null> _onShelfRefresh(BuildContext context) async {
-      var state = BlocProvider.of<ShelfDetailBloc>(context).state;
-      String shelfId;
-      if (state is ShelfDetailLoaded) {
-        shelfId = state.shelf.shelfId;
-      }
-      BlocProvider.of<ShelfDetailBloc>(context)
-          .add(ShelfDetailFetchEvent(shelfId));
-      BlocProvider.of<StackBloc>(context).add(StackFetchEvent(shelfId));
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async {
-        _onShelfRefresh(context);
-      },
-      child: SingleChildScrollView(
-        physics: ScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            ShelfDetailInformation(),
-            HotSpotCameraInside(),
-            StackContent(),
-          ],
-        ),
-      ),
-    );
-  }
+_shelfChangeStatusDialog(BuildContext context, int statusId) {
+  showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Change to Pending'),
+        content: Text('The status will change to Pending, are you sure?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              String shelfId;
+              var state = BlocProvider.of<ShelfDetailBloc>(context).state;
+              if (state is ShelfDetailLoaded) {
+                shelfId = state.shelf.shelfId;
+              }
+              BlocProvider.of<ShelfUpdateInsideBloc>(context)
+                  .add(ShelfChangeStatus(shelfId, statusId, null));
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 class ShelfDetailInformation extends StatelessWidget {
+  final Size size;
+  ShelfDetailInformation({this.size});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ShelfDetailBloc, ShelfDetailState>(
       builder: (context, state) {
         if (state is ShelfDetailLoading) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(35),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: 250,
-              color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  LoadingWidget(),
-                ],
-              ),
-            ),
-          );
+          return LoadingContainer();
         } else if (state is ShelfDetailLoaded) {
-          Shelf shelf = state.shelf;
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(35),
+          var shelf = state.shelf;
+          return Padding(
+            padding: const EdgeInsets.all(kDefaultPadding / 2),
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: 250,
-              margin: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.025,
-                MediaQuery.of(context).size.width * 0.025,
-                MediaQuery.of(context).size.width * 0.025,
-                MediaQuery.of(context).size.width * 0.025,
-              ),
+              constraints: BoxConstraints(minWidth: 500, maxWidth: 800),
               color: Colors.white,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SDBodyTitleText("Shelf " + shelf.shelfName),
-                      StatusText(shelf.statusName),
-                    ],
+                  DetailFieldContainerStatus(
+                    fieldName: 'Status',
+                    fieldValue: shelf.statusName,
                   ),
-                  SDBodyFieldnameText("Number of Stacks"),
-                  SDBodyContentText(shelf.numberOfStack.toString()),
-                  SDBodyFieldnameText("Description"),
-                  SDBodyContentText(shelf.description),
-                  SDBodyFieldnameText("Created Time"),
-                  SDBodyContentText(shelf.createdTime),
-                  SDBodyFieldnameText("Updated Time"),
-                  SDBodyContentText(shelf.updatedTime),
+                  DetailDivider(size: size),
+                  DetailFieldContainer(
+                    fieldName: 'Shelf Name',
+                    fieldValue: shelf.shelfName,
+                  ),
+                  DetailDivider(size: size),
+                  DetailFieldContainer(
+                    fieldName: 'Description',
+                    fieldValue: shelf.description,
+                  ),
+                  DetailDivider(size: size),
+                  DetailFieldContainer(
+                    fieldName: 'Created time',
+                    fieldValue: shelf.createdTime,
+                  ),
+                  DetailDivider(size: size),
+                  DetailFieldContainer(
+                    fieldName: 'Updated time',
+                    fieldValue: shelf.updatedTime,
+                  ),
+                  (shelf.reasonInactive == null)
+                      ? SizedBox(height: 0)
+                      : DetailDivider(size: size),
+                  (shelf.reasonInactive == null)
+                      ? SizedBox(height: 0)
+                      : DetailFieldContainer(
+                          fieldName: 'Reason Inactive',
+                          fieldValue: shelf.reasonInactive,
+                        ),
+                  DetailDivider(size: size),
                 ],
               ),
             ),
@@ -196,271 +209,374 @@ class ShelfDetailInformation extends StatelessWidget {
         } else if (state is ShelfDetailError) {
           return FailureStateWidget();
         }
-        return UnmappedStateWidget();
+        return LoadingContainer();
       },
     );
   }
 }
 
-class HotSpotCameraInside extends StatelessWidget {
+class CounterCameraInside1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ShelfDetailBloc, ShelfDetailState>(
       builder: (context, state) {
         if (state is ShelfDetailLoading) {
-          return Container(
-            height: 200,
-            child: LoadingWidget(),
-          );
+          return LoadingContainer();
         } else if (state is ShelfDetailLoaded) {
-          if (state.shelf.camera.isEmpty || state.shelf.camera == null) {
+          var shelf = state.shelf;
+          if (shelf.camera == null || shelf.camera.isEmpty) {
             return ClipRRect(
               borderRadius: BorderRadius.circular(35),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 50,
-                margin: EdgeInsets.fromLTRB(
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                ),
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SDBodyTitleText("Add Hotspot Camera"),
-                        Container(
-                          width: 50,
-                          margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              primary: Colors.white,
-                              backgroundColor: Colors.grey[500],
-                            ),
-                            onPressed: () {
-                              BlocProvider.of<CameraBloc>(context)
-                                  .add(CameraFetchEvent(StatusIntBase.Pending));
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ScreenShelfMapCamera()));
-                            },
-                            child: Icon(
-                              Icons.add,
+              child: Padding(
+                padding: EdgeInsets.all(kDefaultPadding / 2),
+                child: Container(
+                  height: 50,
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Container(
+                              child: Text(
+                                ("Add Counter Camera"),
+                                style: TextStyle(
+                                  color: Color.fromRGBO(69, 75, 102, 1),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          Container(
+                            width: 50,
+                            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor.withOpacity(0.6),
+                              ),
+                              onPressed: () {
+                                BlocProvider.of<CameraBloc>(context).add(
+                                    CameraAvailableEvent(
+                                        StatusIntBase.Pending, 1));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ScreenShelfMapCamera()));
+                              },
+                              child: Icon(
+                                Icons.add,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
-          } else if (state.shelf.camera.first != null) {
-            Camera camera = state.shelf.camera.first;
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(35),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 250,
-                margin: EdgeInsets.fromLTRB(
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                ),
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SDBodyTitleText(camera.cameraName),
-                        HotspotCameraMenu(),
-                      ],
-                    ),
-                    SDBodyFieldnameText("IP Address"),
-                    SDBodyContentText(camera.ipAddress ?? "no ip"),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                      height: 100,
-                      child: Image.network(camera.imageUrl),
-                    ),
-                  ],
-                ),
+          } else {
+            Camera camera = shelf.camera[0];
+            return Padding(
+              padding: EdgeInsets.only(
+                left: kDefaultPadding / 2,
+                right: kDefaultPadding / 2,
+                top: kDefaultPadding / 2,
+              ),
+              child: CounterListInkWell(
+                model: 'camera',
+                imageURL: camera.imageUrl,
+                title: camera.cameraName,
+                sub: "MAC Address: " + camera.macAddress,
+                status: "Active",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ScreenCameraDetailManager()),
+                  );
+                  BlocProvider.of<CameraDetailBloc>(context)
+                      .add(CameraDetailFetchEvent(camera.cameraId));
+                },
+                onRemove: () {
+                  _removeCounterCamera(
+                      context, camera.cameraId, camera.cameraName);
+                },
               ),
             );
           }
+        } else if (state is ShelfDetailError) {
+          return FailureStateWidget();
         }
-        return UnmappedStateWidget();
+        return LoadingContainer();
       },
     );
   }
 }
 
-class StackContent extends StatefulWidget {
+class CounterCameraInside2 extends StatelessWidget {
   @override
-  _StackContentState createState() => _StackContentState();
+  Widget build(BuildContext context) {
+    return BlocBuilder<ShelfDetailBloc, ShelfDetailState>(
+      builder: (context, state) {
+        if (state is ShelfDetailLoading) {
+          return LoadingContainer();
+        } else if (state is ShelfDetailLoaded) {
+          var shelf = state.shelf;
+          if (shelf.camera == null ||
+              shelf.camera.isEmpty ||
+              shelf.camera.length != 2) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(35),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    left: kDefaultPadding / 2,
+                    right: kDefaultPadding / 2,
+                    bottom: kDefaultPadding / 2),
+                child: Container(
+                  height: 50,
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Container(
+                              child: Text(
+                                ("Add Counter Camera"),
+                                style: TextStyle(
+                                  color: Color.fromRGBO(69, 75, 102, 1),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 50,
+                            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor.withOpacity(0.6),
+                              ),
+                              onPressed: () {
+                                BlocProvider.of<CameraBloc>(context).add(
+                                    CameraAvailableEvent(
+                                        StatusIntBase.Pending, 1));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ScreenShelfMapCamera()));
+                              },
+                              child: Icon(
+                                Icons.add,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          } else if (shelf.camera.length == 2) {
+            Camera camera = shelf.camera[1];
+            return Padding(
+              padding: EdgeInsets.only(
+                  left: kDefaultPadding / 2, right: kDefaultPadding / 2),
+              child: CounterListInkWell(
+                model: 'camera',
+                imageURL: camera.imageUrl,
+                title: camera.cameraName,
+                sub: "MAC Address: " + camera.macAddress,
+                status: "Active",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ScreenCameraDetailManager()),
+                  );
+                  BlocProvider.of<CameraDetailBloc>(context)
+                      .add(CameraDetailFetchEvent(camera.cameraId));
+                },
+                onRemove: () {
+                  _removeCounterCamera(
+                      context, camera.cameraId, camera.cameraName);
+                },
+              ),
+            );
+          }
+        } else if (state is ShelfDetailError) {
+          return FailureStateWidget();
+        }
+        return LoadingContainer();
+      },
+    );
+  }
 }
 
-class _StackContentState extends State<StackContent> {
+class StackContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StackBloc, StackState>(
-      // ignore: missing_return
       builder: (context, state) {
         if (state is StackLoading) {
-          return Container(
-            height: 500,
-            child: LoadingWidget(),
-          );
-        } else if (state is StackError) {
-          return Text("Error");
+          return LoadingContainer();
         } else if (state is StackLoaded) {
-          var stacks = state.stacks;
-          return FutureBuilder<List<StackModel>>(
-            initialData: stacks,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<StackModel> stacksList = snapshot.data;
-                return Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: stacksList.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: StackBoldText("Position " +
-                            stacksList[index].position.toString()),
-                        subtitle: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            stacksList[index].product == null
-                                ? StackNormalText("No Product")
-                                : StackNormalText(
-                                    stacksList[index].product.productName),
-                            stacksList[index].camera == null
-                                ? StackNormalText("No Camera")
-                                : StackNormalText(
-                                    stacksList[index].camera.cameraName),
-                          ],
-                        ),
-                        trailing: StatusText(stacksList[index].statusName),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ScreenStackDetail()),
-                          );
-                          BlocProvider.of<StackDetailBloc>(context).add(
-                              StackDetailFetchEvent(stacksList[index].stackId));
-                        },
-                      );
-                    },
-                  ),
-                );
-              } else if (snapshot.data == null) {
-                return NoRecordWidget();
-              } else if (snapshot.hasError) {
-                return Text("No Record: ${snapshot.error}");
-              }
-              return LoadingWidget();
-            },
+          List<StackModel> stacks = state.stacks;
+          return Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(kDefaultPadding / 2),
+              child: FutureBuilder<List<StackModel>>(
+                initialData: stacks,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<StackModel> lst = snapshot.data;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: lst.length,
+                      itemBuilder: (context, index) {
+                        return StackListInkWell(
+                          model: 'manager',
+                          title: "Position " + lst[index].position.toString(),
+                          sub: lst[index].product == null
+                              ? "Product: -"
+                              : "Product: " + lst[index].product.productName,
+                          three: lst[index].camera == null
+                              ? "Emotion Camera: -"
+                              : "Emotion Camera: " +
+                                  lst[index].camera.cameraName,
+                          status: lst[index].statusName,
+                          navigationField: lst[index].stackId,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ScreenStackDetail()),
+                            );
+                            BlocProvider.of<StackDetailBloc>(context)
+                                .add(StackDetailFetchEvent(lst[index].stackId));
+                          },
+                        );
+                      },
+                    );
+                  } else if (snapshot.data == null) {
+                    return NoRecordWidget();
+                  } else if (snapshot.hasError) {
+                    return ErrorRecordWidget();
+                  }
+                  return LoadingContainer();
+                },
+              ),
+            ),
           );
+        } else if (state is ShelfDetailError) {
+          return FailureStateWidget();
         }
+        return LoadingContainer();
       },
     );
   }
 }
 
-class HotspotCameraMenu extends StatelessWidget {
+class ShelfMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _handleClick(String value) {
       switch (value) {
-        case 'View Detail':
-          String cameraId;
-          var state = BlocProvider.of<ShelfDetailBloc>(context).state;
-          if (state is ShelfDetailLoaded) {
-            cameraId = state.shelf.camera.first.cameraId;
-          }
-          BlocProvider.of<CameraDetailBloc>(context)
-              .add(CameraDetailFetchEvent(cameraId));
+        case 'Update Information':
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ScreenCameraDetailManager()));
+                  builder: (context) => ScreenShelfUpdateInformation()));
           break;
-
-        case 'Remove':
-          _removeHotspotCamera(context);
+        case 'Change to Inactive':
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ScreenShelfInactive()));
+          break;
+        case 'Change to Pending':
+          _shelfChangeStatusDialog(context, StatusIntBase.Pending);
           break;
       }
     }
 
-    return PopupMenuButton<String>(
-      onSelected: _handleClick,
-      itemBuilder: (BuildContext context) {
-        return {'View Detail', 'Remove'}.map((String choice) {
-          return PopupMenuItem<String>(
-            value: choice,
-            child: Text(choice),
-          );
-        }).toList();
+    return BlocBuilder<ShelfDetailBloc, ShelfDetailState>(
+      builder: (context, state) {
+        if (state is ShelfDetailLoaded) {
+          if (state.shelf.statusName.contains(StatusStringBase.Pending)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                  'Change to Inactive',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          } else if (state.shelf.statusName
+              .contains(StatusStringBase.Inactive)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                  'Change to Pending',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          } else if (state.shelf.statusName.contains(StatusStringBase.Active)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          }
+        }
+        return PopupMenuButton<String>(
+          onSelected: _handleClick,
+          itemBuilder: (BuildContext context) {
+            return {""}.map((String choice) {
+              return PopupMenuItem<String>(
+                value: choice,
+                child: Text(choice),
+              );
+            }).toList();
+          },
+        );
       },
     );
-  }
-}
-
-class StackBoldText extends StatelessWidget {
-  final String _text;
-  StackBoldText(this._text);
-  @override
-  Widget build(BuildContext context) {
-    if (_text != null) {
-      return Container(
-        width: 100,
-        child: new Text(
-          _text,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Color.fromRGBO(69, 75, 102, 1),
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
-    }
-    return Text("");
-  }
-}
-
-class StackNormalText extends StatelessWidget {
-  final String _text;
-  StackNormalText(this._text);
-  @override
-  Widget build(BuildContext context) {
-    if (this._text != null) {
-      return Container(
-        padding: EdgeInsets.only(left: 5),
-        child: new Text(
-          _text,
-          style: TextStyle(
-            color: Color.fromRGBO(24, 34, 76, 1),
-            fontSize: 15,
-          ),
-        ),
-      );
-    }
-    return Text("");
   }
 }

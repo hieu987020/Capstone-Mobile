@@ -47,7 +47,10 @@ _storeUpdateError(BuildContext context, StoreUpdateError state) {
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
             child: const Text('Back'),
           ),
         ],

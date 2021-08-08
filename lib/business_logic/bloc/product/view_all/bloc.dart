@@ -15,6 +15,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       yield* _getProducts(event.statusId);
     } else if (event is ProductSearchEvent) {
       yield* _searchProducts(event.productName);
+    } else if (event is ProductAllEvent) {
+      yield* _getAllProducts();
     }
   }
 
@@ -27,6 +29,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           SearchFieldBase.Default,
           PageNumBase.Default,
           FetchNextBase.Default,
+          0,
           statusId);
       yield ProductLoaded(products);
     } catch (e) {
@@ -39,6 +42,16 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       yield ProductLoading();
       final products =
           await productRepository.getProductsByProductName(productName);
+      yield ProductLoaded(products);
+    } catch (e) {
+      yield ProductError();
+    }
+  }
+
+  Stream<ProductState> _getAllProducts() async* {
+    try {
+      yield ProductLoading();
+      final products = await productRepository.getAll();
       yield ProductLoaded(products);
     } catch (e) {
       yield ProductError();

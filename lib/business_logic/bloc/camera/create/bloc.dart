@@ -39,15 +39,19 @@ class CameraCreateBloc extends Bloc<CameraCreateEvent, CameraCreateState> {
 
       if (result == 'true') {
         yield CameraCreateLoaded();
-      } else if (result.contains("MSG-057")) {
-        yield CameraCreateDuplicatedIPAddress("IP address is existed");
-      } else if (result.contains("MSG-058")) {
-        yield CameraCreateDuplicatedRTSPString("RTSP String is existed");
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield CameraCreateError(result);
       }
+
+      // else if (result.contains("MSG-057")) {
+      //   yield CameraCreateDuplicatedIPAddress("IP address is existed");
+      // } else if (result.contains("MSG-058")) {
+      //   yield CameraCreateDuplicatedRTSPString("RTSP String is existed");
+      // } else if (result.contains('errorCodeAndMsg')) {
+      //   yield CameraCreateError(result);
+      // }
     } catch (e) {
-      yield CameraCreateError(e.toString());
+      yield CameraCreateError("System can not finish this action");
     }
   }
 }

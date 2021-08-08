@@ -45,7 +45,50 @@ class StoreApi {
       throw Exception('Unexpected error occured!');
     }
   }
-Future<String> changeStatus(String json) async {
+
+  Future<String> getOperationStores() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String uri = "$baseUrl" + "/admin/operation-stores?all=true";
+    final response = await http.get(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
+  Future<String> getStoresByProduct(String searchValue, String searchField,
+      int pageNum, int fetchNext, int statusId, String productId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String uri = "$baseUrl" +
+        "/admin/stores-by-product?" +
+        "searchValue=$searchValue" +
+        "&searchField=$searchField" +
+        "&pageNum=$pageNum" +
+        "&fetchNext=$fetchNext" +
+        "&statusId=$statusId" +
+        "&productId=$productId";
+    final response = await http.get(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
+  Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     final response = await http.post(
@@ -62,6 +105,7 @@ Future<String> changeStatus(String json) async {
       throw Exception('Unexpected error occured!');
     }
   }
+
   Future<String> getStoresByStoreName(String storeName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');

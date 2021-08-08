@@ -26,7 +26,7 @@ class StoreUpdateBloc extends Bloc<StoreUpdateEvent, StoreUpdateState> {
       print(result);
       if (result == 'true') {
         yield StoreUpdateLoaded();
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield StoreUpdateError(result);
       }
     } catch (e) {

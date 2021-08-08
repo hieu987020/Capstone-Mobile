@@ -25,3 +25,8 @@ class CameraDetailError extends CameraDetailState {
   @override
   List<Object> get props => [];
 }
+
+class CameraDetailNoPermission extends CameraDetailState {
+  @override
+  List<Object> get props => [];
+}

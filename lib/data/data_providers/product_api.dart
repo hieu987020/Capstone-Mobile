@@ -24,7 +24,7 @@ class ProductApi {
   }
 
   Future<String> getProducts(String searchValue, String searchField,
-      int pageNum, int fetchNext, int statusId) async {
+      int pageNum, int fetchNext, int categoryId, int statusId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String token = prefs.getString('token');
@@ -33,6 +33,7 @@ class ProductApi {
           "searchValue=$searchValue" +
           "&searchField=$searchField" +
           "&pageNum=$pageNum" +
+          "&categoryId=$categoryId" +
           "&fetchNext=$fetchNext" +
           "&statusId=$statusId";
       print(uri);
@@ -50,6 +51,28 @@ class ProductApi {
     } catch (e) {
       print(e.toString());
       throw Exception(e.toString());
+    }
+  }
+
+  Future<String> getAll() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString('token');
+      String uri = "$baseUrl/admin/all-product";
+
+      final response = await http.get(
+        Uri.parse(uri),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        throw Exception('Unexpected error occured in product_api!');
+      }
+    } catch (e) {
+      throw Exception(e);
     }
   }
 

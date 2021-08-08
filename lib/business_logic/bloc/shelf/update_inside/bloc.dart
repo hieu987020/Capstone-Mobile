@@ -17,6 +17,10 @@ class ShelfUpdateInsideBloc
     if (event is ShelfMapCameraEvent) {
       yield* _mapCamera(event.shelfId, event.cameraId, event.action);
     }
+    if (event is ShelfChangeStatus) {
+      yield* _shelfChangeStatus(
+          event.shelfId, event.statusId, event.reasonInactive);
+    }
   }
 
   Stream<ShelfUpdateInsideState> _mapCamera(
@@ -31,9 +35,23 @@ class ShelfUpdateInsideBloc
         yield ShelfUpdateInsideError(response);
       }
     } catch (e) {
-      print("error trong shelf update_inside bloc , map camera ");
-      print(e.toString());
-      yield ShelfUpdateInsideError(e.toString());
+      yield ShelfUpdateInsideError(null);
+    }
+  }
+
+  Stream<ShelfUpdateInsideState> _shelfChangeStatus(
+      String shelfId, int statusId, String reasonInactive) async* {
+    try {
+      yield ShelfUpdateInsideLoading();
+      String response =
+          await shelfRepository.changeStatus(shelfId, statusId, reasonInactive);
+      if (response == 'true') {
+        yield ShelfUpdateInsideLoaded();
+      } else {
+        yield ShelfUpdateInsideError(response);
+      }
+    } catch (e) {
+      yield ShelfUpdateInsideError("System can not finish this action");
     }
   }
 }

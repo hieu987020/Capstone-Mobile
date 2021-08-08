@@ -10,13 +10,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenStackDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: AppBarText('Stack detail'),
-        backgroundColor: Colors.grey[200],
-        iconTheme: IconThemeData(color: Colors.black),
+        title: AppBarText('Stack Detail'),
+        backgroundColor: kPrimaryColor,
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          StackMenu(),
+        ],
       ),
-      backgroundColor: Colors.grey[200],
       body: BlocListener<StackUpdateInsideBloc, StackUpdateInsideState>(
         listener: (context, state) {
           if (state is StackUpdateInsideLoading) {
@@ -27,21 +30,29 @@ class ScreenStackDetail extends StatelessWidget {
             _stackUpdateInsideLoaded(context);
           }
         },
-        child: StackDetailView(),
+        child: MyScrollView(
+          listWidget: [
+            SizedBox(height: 10),
+            TitleWithNothing(title: "About"),
+            StackDetailInformation(size: size),
+            TitleWithNothing(title: "Product"),
+            ProductInside(),
+            TitleWithNothing(title: "Emotion Camera"),
+            CameraInside(),
+          ],
+        ),
       ),
     );
   }
 }
 
-// ignore: todo
-//TODO Stuff
 _stackUpdateInsideError(BuildContext context, StackUpdateInsideError state) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Error notification'),
+        title: Text('App Message'),
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
@@ -67,14 +78,15 @@ _stackUpdateInsideLoaded(BuildContext context) {
   Navigator.pop(context);
 }
 
-_removeProduct(BuildContext context) {
+_removeProduct(BuildContext context, String stackId, String productId,
+    String productName) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text('Remove product'),
-        content: Text('Are you sure to remove this product'),
+        content: Text('Are you sure to remove product $productName?'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -84,13 +96,6 @@ _removeProduct(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
-              String stackId;
-              String productId;
-              var state = BlocProvider.of<StackDetailBloc>(context).state;
-              if (state is StackDetailLoaded) {
-                stackId = state.stack.stackId;
-                productId = state.stack.product.productId;
-              }
               BlocProvider.of<StackUpdateInsideBloc>(context)
                   .add(StackMapProductEvent(stackId, productId, 2));
               Navigator.pop(context);
@@ -103,14 +108,15 @@ _removeProduct(BuildContext context) {
   );
 }
 
-_removeEmotionCamera(BuildContext context) {
+_removeEmotionCamera(
+    BuildContext context, String stackId, String cameraId, String cameraName) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text('Remove emotion camera'),
-        content: Text('Are you sure to remove this camera'),
+        content: Text('Are you sure to remove camera $cameraName?'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -120,13 +126,6 @@ _removeEmotionCamera(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
-              String stackId;
-              String cameraId;
-              var state = BlocProvider.of<StackDetailBloc>(context).state;
-              if (state is StackDetailLoaded) {
-                stackId = state.stack.stackId;
-                cameraId = state.stack.camera.cameraId;
-              }
               BlocProvider.of<StackUpdateInsideBloc>(context)
                   .add(StackMapCameraEvent(stackId, cameraId, 2));
               Navigator.pop(context);
@@ -139,74 +138,89 @@ _removeEmotionCamera(BuildContext context) {
   );
 }
 
-//! View
-class StackDetailView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: ScrollPhysics(),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          StackDetailInformation(),
-          ProductInside(),
-          CameraInside(),
+_stackChangeStatusDialog(BuildContext context, int statusId) {
+  showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Change to Pending'),
+        content: Text('The status will change to Pending, are you sure?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              String stackId;
+              var state = BlocProvider.of<StackDetailBloc>(context).state;
+              if (state is StackDetailLoaded) {
+                stackId = state.stack.stackId;
+              }
+              BlocProvider.of<StackUpdateInsideBloc>(context)
+                  .add(StackChangeStatus(stackId, statusId, null));
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
         ],
-      ),
-    );
-  }
+      );
+    },
+  );
 }
 
 class StackDetailInformation extends StatelessWidget {
+  final Size size;
+  StackDetailInformation({this.size});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StackDetailBloc, StackDetailState>(
       builder: (context, state) {
         if (state is StackDetailLoading) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(35),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: 150,
-              color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  LoadingWidget(),
-                ],
-              ),
-            ),
-          );
+          return LoadingContainer();
         } else if (state is StackDetailLoaded) {
-          StackModel stack = state.stack;
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(35),
+          var stack = state.stack;
+          return Padding(
+            padding: const EdgeInsets.all(kDefaultPadding / 2),
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: 150,
-              margin: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.025,
-                MediaQuery.of(context).size.width * 0.025,
-                MediaQuery.of(context).size.width * 0.025,
-                MediaQuery.of(context).size.width * 0.025,
-              ),
+              constraints: BoxConstraints(minWidth: 500, maxWidth: 800),
               color: Colors.white,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SDBodyTitleText(
-                          "Stack Position " + stack.position.toString()),
-                      StatusText(stack.statusName),
-                    ],
+                  DetailFieldContainerStatus(
+                    fieldName: 'Status',
+                    fieldValue: stack.statusName,
                   ),
-                  SDBodyFieldnameText("Created Time"),
-                  SDBodyContentText(stack.createTime),
-                  SDBodyFieldnameText("Updated Time"),
-                  SDBodyContentText(stack.updatedTime),
+                  DetailDivider(size: size),
+                  DetailFieldContainer(
+                    fieldName: 'Position',
+                    fieldValue: stack.position.toString(),
+                  ),
+                  DetailDivider(size: size),
+                  DetailFieldContainer(
+                    fieldName: 'Created time',
+                    fieldValue: stack.createTime,
+                  ),
+                  DetailDivider(size: size),
+                  DetailFieldContainer(
+                    fieldName: 'Updated time',
+                    fieldValue: stack.updatedTime,
+                  ),
+                  (stack.reasonInactive == null)
+                      ? SizedBox(height: 0)
+                      : DetailDivider(size: size),
+                  (stack.reasonInactive == null)
+                      ? SizedBox(height: 0)
+                      : DetailFieldContainer(
+                          fieldName: 'Reason Inactive',
+                          fieldValue: stack.reasonInactive,
+                        ),
+                  DetailDivider(size: size),
                 ],
               ),
             ),
@@ -214,7 +228,7 @@ class StackDetailInformation extends StatelessWidget {
         } else if (state is StackDetailError) {
           return FailureStateWidget();
         }
-        return UnmappedStateWidget();
+        return LoadingContainer();
       },
     );
   }
@@ -226,141 +240,101 @@ class ProductInside extends StatelessWidget {
     return BlocBuilder<StackDetailBloc, StackDetailState>(
       builder: (context, state) {
         if (state is StackDetailLoading) {
-          return Container(
-            height: 200,
-            child: LoadingWidget(),
-          );
+          return LoadingContainer();
         } else if (state is StackDetailLoaded) {
           if (state.stack.product == null) {
             return ClipRRect(
               borderRadius: BorderRadius.circular(35),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 50,
-                margin: EdgeInsets.fromLTRB(
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                ),
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SDBodyTitleText("Add Product"),
-                        Container(
-                          width: 50,
-                          margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              primary: Colors.white,
-                              backgroundColor: Colors.grey[500],
-                            ),
-                            onPressed: () {
-                              BlocProvider.of<ProductBloc>(context)
-                                  .add(ProductFetchEvent(StatusIntBase.Active));
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ScreenStackMapProduct()));
-                            },
-                            child: Icon(
-                              Icons.add,
+              child: Padding(
+                padding: EdgeInsets.all(kDefaultPadding / 2),
+                child: Container(
+                  height: 50,
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Container(
+                              child: Text(
+                                ("Add Product"),
+                                style: TextStyle(
+                                  color: Color.fromRGBO(69, 75, 102, 1),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          Container(
+                            width: 50,
+                            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor.withOpacity(0.6),
+                              ),
+                              onPressed: () {
+                                BlocProvider.of<ProductBloc>(context).add(
+                                    ProductFetchEvent(StatusIntBase.Active));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ScreenStackMapProduct()));
+                              },
+                              child: Icon(
+                                Icons.add,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           } else {
             Product product = state.stack.product;
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(35),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 200,
-                margin: EdgeInsets.fromLTRB(
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                ),
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SDBodyTitleText(product.productName),
-                        ProductInsideMenu(),
-                      ],
-                    ),
-                    SDBodyFieldnameText("Description"),
-                    SDBodyContentText(product.description),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                      height: 100,
-                      child: Image.network(product.imageUrl),
-                    ),
-                  ],
-                ),
+            return Padding(
+              padding: EdgeInsets.only(
+                left: kDefaultPadding / 2,
+                right: kDefaultPadding / 2,
+                top: kDefaultPadding / 2,
+              ),
+              child: CounterListInkWell(
+                model: 'camera',
+                imageURL: product.imageUrl,
+                title: product.productName,
+                sub: product.description,
+                status: "Active",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ScreenProductDetailManager()),
+                  );
+                  BlocProvider.of<ProductDetailBloc>(context)
+                      .add(ProductDetailFetchEvent(product.productId));
+                },
+                onRemove: () {
+                  _removeProduct(
+                    context,
+                    state.stack.stackId,
+                    product.productId,
+                    product.productName,
+                  );
+                },
               ),
             );
           }
         }
         return UnmappedStateWidget();
-      },
-    );
-  }
-}
-
-class ProductInsideMenu extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    String productId;
-    Camera camera;
-    var state = BlocProvider.of<StackDetailBloc>(context).state;
-    if (state is StackDetailLoaded) {
-      productId = state.stack.product.productId;
-      camera = state.stack.camera;
-    }
-
-    _handleClick(String value) {
-      switch (value) {
-        case 'View Detail':
-          BlocProvider.of<ProductDetailBloc>(context)
-              .add(ProductDetailFetchEvent(productId));
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ScreenProductDetailManager()));
-          break;
-
-        case 'Remove':
-          _removeProduct(context);
-          break;
-      }
-    }
-
-    return PopupMenuButton<String>(
-      onSelected: _handleClick,
-      itemBuilder: (BuildContext context) {
-        return {'View Detail', 'Remove'}.map((String choice) {
-          return PopupMenuItem<String>(
-            value: choice,
-            child: Text(choice),
-          );
-        }).toList();
       },
     );
   }
@@ -372,97 +346,93 @@ class CameraInside extends StatelessWidget {
     return BlocBuilder<StackDetailBloc, StackDetailState>(
       builder: (context, state) {
         if (state is StackDetailLoading) {
-          return Container(
-            height: 200,
-            child: LoadingWidget(),
-          );
+          return LoadingContainer();
         } else if (state is StackDetailLoaded) {
           if (state.stack.camera == null) {
             return ClipRRect(
               borderRadius: BorderRadius.circular(35),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 50,
-                margin: EdgeInsets.fromLTRB(
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                ),
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SDBodyTitleText("Add Camera"),
-                        state.stack.product == null
-                            ? Text("")
-                            : Container(
-                                width: 50,
-                                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor: Colors.grey[500],
-                                  ),
-                                  onPressed: () {
-                                    BlocProvider.of<CameraBloc>(context).add(
-                                        CameraFetchEvent(
-                                            StatusIntBase.Pending));
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ScreenStackMapCamera()));
-                                  },
-                                  child: Icon(
-                                    Icons.add,
-                                  ),
+              child: Padding(
+                padding: EdgeInsets.all(kDefaultPadding / 2),
+                child: Container(
+                  height: 50,
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Container(
+                              child: Text(
+                                ("Add Emotion Camera"),
+                                style: TextStyle(
+                                  color: Color.fromRGBO(69, 75, 102, 1),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                      ],
-                    ),
-                  ],
+                            ),
+                          ),
+                          Container(
+                            width: 50,
+                            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor.withOpacity(0.6),
+                              ),
+                              onPressed: () {
+                                BlocProvider.of<CameraBloc>(context).add(
+                                    CameraAvailableEvent(
+                                        StatusIntBase.Pending, 2));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ScreenStackMapCamera()));
+                              },
+                              child: Icon(
+                                Icons.add,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           } else {
             Camera camera = state.stack.camera;
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(35),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 200,
-                margin: EdgeInsets.fromLTRB(
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                  MediaQuery.of(context).size.width * 0.025,
-                ),
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SDBodyTitleText(camera.cameraName),
-                        CameraInsideMenu(),
-                      ],
-                    ),
-                    SDBodyFieldnameText("IP Address"),
-                    SDBodyContentText(camera.ipAddress),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                      height: 100,
-                      child: Image.network(camera.imageUrl),
-                    ),
-                  ],
-                ),
+            return Padding(
+              padding: EdgeInsets.only(
+                left: kDefaultPadding / 2,
+                right: kDefaultPadding / 2,
+                top: kDefaultPadding / 2,
+              ),
+              child: CounterListInkWell(
+                model: 'camera',
+                imageURL: camera.imageUrl,
+                title: camera.cameraName,
+                sub: "Mac Address: " + camera.macAddress,
+                status: "Active",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ScreenCameraDetailManager()),
+                  );
+                  BlocProvider.of<ProductDetailBloc>(context)
+                      .add(ProductDetailFetchEvent(camera.cameraId));
+                },
+                onRemove: () {
+                  _removeEmotionCamera(context, state.stack.stackId,
+                      camera.cameraId, camera.cameraName);
+                },
               ),
             );
           }
@@ -473,40 +443,80 @@ class CameraInside extends StatelessWidget {
   }
 }
 
-class CameraInsideMenu extends StatelessWidget {
+class StackMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _handleClick(String value) {
       switch (value) {
-        case 'View Detail':
-          String cameraId;
-          var state = BlocProvider.of<ShelfDetailBloc>(context).state;
-          if (state is ShelfDetailLoaded) {
-            cameraId = state.shelf.camera.first.cameraId;
-          }
-          BlocProvider.of<CameraDetailBloc>(context)
-              .add(CameraDetailFetchEvent(cameraId));
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ScreenCameraDetailManager()));
+        case 'Change to Inactive':
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ScreenStackInactive()));
           break;
-
-        case 'Remove':
-          _removeEmotionCamera(context);
+        case 'Change to Pending':
+          _stackChangeStatusDialog(context, StatusIntBase.Pending);
           break;
       }
     }
 
-    return PopupMenuButton<String>(
-      onSelected: _handleClick,
-      itemBuilder: (BuildContext context) {
-        return {'View Detail', 'Remove'}.map((String choice) {
-          return PopupMenuItem<String>(
-            value: choice,
-            child: Text(choice),
-          );
-        }).toList();
+    return BlocBuilder<StackDetailBloc, StackDetailState>(
+      builder: (context, state) {
+        if (state is StackDetailLoaded) {
+          if (state.stack.statusName.contains(StatusStringBase.Pending)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Change to Inactive',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          } else if (state.stack.statusName
+              .contains(StatusStringBase.Inactive)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Change to Pending',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          } else if (state.stack.statusName.contains(StatusStringBase.Active)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Nothing',
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          }
+        }
+        return PopupMenuButton<String>(
+          onSelected: _handleClick,
+          itemBuilder: (BuildContext context) {
+            return {""}.map((String choice) {
+              return PopupMenuItem<String>(
+                value: choice,
+                child: Text(choice),
+              );
+            }).toList();
+          },
+        );
       },
     );
   }

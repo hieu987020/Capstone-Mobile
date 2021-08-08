@@ -34,12 +34,9 @@ class ProductCreateBloc extends Bloc<ProductCreateEvent, ProductCreateState> {
         );
       }
       String result = await _productsRepository.postProduct(product);
-
-      if (result.contains('MSG-055')) {
-        yield ProductCreateDuplicatedEmail('Email is existed');
-      } else if (result == 'true') {
+      if (result == 'true') {
         yield ProductCreateLoaded();
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield ProductCreateError(result);
       }
     } catch (e) {

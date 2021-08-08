@@ -51,6 +51,24 @@ class StackApi {
     }
   }
 
+  Future<String> changeStatus(String json) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    final response = await http.post(
+      Uri.parse('$baseUrl/admin/manager/store/shelf/stack/update-status'),
+      headers: {
+        'Content-Type': 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+      body: json,
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
   Future<String> changeProduct(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
@@ -93,39 +111,39 @@ class StackApi {
     }
   }
 
-  Future<String> updateStack(String json) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token');
-    final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/update'),
-      headers: {
-        'Content-Type': 'application/json',
-        HttpHeaders.authorizationHeader: 'Bearer $token',
-      },
-      body: json,
-    );
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      throw Exception('Unexpected error occured!');
-    }
-  }
+  // Future<String> updateStack(String json) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String token = prefs.getString('token');
+  //   final response = await http.post(
+  //     Uri.parse('$baseUrl/admin/manager/update'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       HttpHeaders.authorizationHeader: 'Bearer $token',
+  //     },
+  //     body: json,
+  //   );
+  //   if (response.statusCode == 200) {
+  //     return response.body;
+  //   } else {
+  //     throw Exception('Unexpected error occured!');
+  //   }
+  // }
 
-  Future<String> postStack(String json) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token');
-    final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/create'),
-      headers: {
-        'Content-Type': 'application/json',
-        HttpHeaders.authorizationHeader: 'Bearer $token',
-      },
-      body: json,
-    );
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      throw Exception('Unexpected error occured!');
-    }
-  }
+  // Future<String> postStack(String json) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String token = prefs.getString('token');
+  //   final response = await http.post(
+  //     Uri.parse('$baseUrl/admin/manager/create'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       HttpHeaders.authorizationHeader: 'Bearer $token',
+  //     },
+  //     body: json,
+  //   );
+  //   if (response.statusCode == 200) {
+  //     return response.body;
+  //   } else {
+  //     throw Exception('Unexpected error occured!');
+  //   }
+  // }
 }

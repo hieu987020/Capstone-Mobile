@@ -29,14 +29,16 @@ class ScreenManager extends StatelessWidget {
             FloatingActionButtonLocation.miniCenterFloat,
         body: MyScrollView(
           listWidget: [
-            HeaderWithSearchBox(size),
+            HeaderWithSearchBox(
+              size: size,
+              title: "Hi Admin",
+            ),
             TitleWithMoreBtn(
-              title: 'List Manager',
+              title: 'Manager',
               model: 'manager',
               defaultStatus: StatusStringBase.All,
             ),
             BlocBuilder<UserBloc, UserState>(
-              // ignore: missing_return
               builder: (context, state) {
                 if (state is UserLoaded) {
                   return ManagerContent();
@@ -45,6 +47,7 @@ class ScreenManager extends StatelessWidget {
                 } else if (state is UserLoading) {
                   return LoadingWidget();
                 }
+                return LoadingWidget();
               },
             ),
           ],
@@ -64,7 +67,7 @@ class ManagerContent extends StatelessWidget {
     }
     return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(kDefaultPadding),
+        padding: const EdgeInsets.all(kDefaultPadding / 2),
         child: FutureBuilder<List<User>>(
           initialData: users,
           builder: (context, snapshot) {
@@ -75,11 +78,12 @@ class ManagerContent extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: userLst.length,
                 itemBuilder: (context, index) {
-                  return ObjectListInkWell(
+                  return ObjectListInkWell3(
                     model: 'manager',
                     imageURL: userLst[index].imageURL,
                     title: userLst[index].userName,
                     sub: userLst[index].fullName,
+                    three: userLst[index].storeName ?? "-",
                     status: userLst[index].status,
                     navigationField: userLst[index].userName,
                     onTap: () {

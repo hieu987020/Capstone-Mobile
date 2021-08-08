@@ -15,6 +15,8 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
       yield* _getCameras(event.statusId);
     } else if (event is CameraSearchEvent) {
       yield* _searchCameras(event.cameraName);
+    } else if (event is CameraAvailableEvent) {
+      yield* _getAvailableCameras(event.statusId, event.typeId);
     }
   }
 
@@ -24,6 +26,19 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
       final cameras = await cameraRepository.getCameras(
           "", "", statusId, PageNumBase.Default, FetchNextBase.Default);
+
+      yield CameraLoaded(cameras);
+    } catch (e) {
+      yield CameraError();
+    }
+  }
+
+  Stream<CameraState> _getAvailableCameras(int statusId, int typeId) async* {
+    try {
+      yield CameraLoading();
+
+      final cameras = await cameraRepository.getAvailableCameras(
+          "", PageNumBase.Default, FetchNextBase.Default, typeId);
 
       yield CameraLoaded(cameras);
     } catch (e) {

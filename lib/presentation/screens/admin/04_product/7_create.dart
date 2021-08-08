@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
@@ -33,9 +32,6 @@ class ScreenProductCreate extends StatelessWidget {
   }
 }
 
-// ignore: todo
-//TODO  Stuff
-
 _productCreateLoaded(BuildContext context, ProductCreateLoaded state) {
   Navigator.push(
     context,
@@ -61,7 +57,6 @@ _productCreateError(BuildContext context, ProductCreateError state) {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pop(context);
             },
             child: const Text('Back'),
           ),
@@ -70,9 +65,6 @@ _productCreateError(BuildContext context, ProductCreateError state) {
     },
   );
 }
-
-// ignore: todo
-//TODO  View
 
 class ProductCreateForm extends StatefulWidget {
   @override
@@ -92,10 +84,6 @@ class ProductCreateFormState extends State<ProductCreateForm> {
 
   @override
   Widget build(BuildContext context) {
-    var state = BlocProvider.of<ProductCreateBloc>(context).state;
-    if (state is ProductCreateLoading) {
-      return LoadingWidget();
-    }
     return Flexible(
       child: Padding(
         padding: const EdgeInsets.all(kDefaultPadding),

@@ -12,36 +12,25 @@ class ScreenStoreMapManager extends StatelessWidget {
         .add(UserFetchEvent(StatusIntBase.Pending));
     return Scaffold(
       appBar: buildNormalAppbar('Choose Manager'),
-      body: BlocListener<StoreUpdateInsideBloc, StoreUpdateInsideState>(
-        listener: (context, state) {
-          if (state is StoreUpdateInsideLoading) {
-            loadingCommon(context);
-          } else if (state is StoreUpdateInsideError) {
-            _storeMapManagerError(context, state);
-          } else if (state is StoreUpdateInsideLoaded) {
-            _storeMapManagerLoaded(context);
-          }
-        },
-        child: MyScrollView(
-          listWidget: [
-            SizedBox(height: 10),
-            TitleWithNothing(
-              title: 'List Pending Managers',
-            ),
-            BlocBuilder<UserBloc, UserState>(
-              // ignore: missing_return
-              builder: (context, state) {
-                if (state is UserLoaded) {
-                  return MapManagerContent();
-                } else if (state is UserError) {
-                  return FailureStateWidget();
-                } else if (state is UserLoading) {
-                  return LoadingWidget();
-                }
-              },
-            ),
-          ],
-        ),
+      body: MyScrollView(
+        listWidget: [
+          SizedBox(height: 10),
+          TitleWithNothing(
+            title: 'List Pending Managers',
+          ),
+          BlocBuilder<UserBloc, UserState>(
+            // ignore: missing_return
+            builder: (context, state) {
+              if (state is UserLoaded) {
+                return MapManagerContent();
+              } else if (state is UserError) {
+                return FailureStateWidget();
+              } else if (state is UserLoading) {
+                return LoadingWidget();
+              }
+            },
+          ),
+        ],
       ),
     );
   }
@@ -73,35 +62,9 @@ _storeConfirmManager(BuildContext context, String userId) {
               BlocProvider.of<StoreUpdateInsideBloc>(context)
                   .add(StoreMapManagerEvent(storeId, userId, 1));
               Navigator.pop(context);
+              Navigator.pop(context);
             },
             child: const Text('Yes'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-_storeMapManagerLoaded(BuildContext context) {
-  Navigator.pop(context);
-  Navigator.pop(context);
-}
-
-_storeMapManagerError(BuildContext context, StoreUpdateInsideError state) {
-  showDialog<String>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Choose Store Error'),
-        content: Text(state.message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Back'),
           ),
         ],
       );

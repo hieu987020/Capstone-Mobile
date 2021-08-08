@@ -1,5 +1,6 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/data/data_providers/data_providers.dart';
+import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,18 @@ class ScreenCameraDetail extends StatelessWidget {
           listWidget: [
             CameraDetailHeader(),
             CameraDetailInformation(size: size),
+            SizedBox(height: 10),
+            BlocBuilder<CameraDetailBloc, CameraDetailState>(
+              builder: (context, state) {
+                if (state is CameraDetailLoaded) {
+                  if (state.camera.storeImage != null) {
+                    return TitleWithNothing(title: "Store");
+                  }
+                }
+                return SizedBox(height: 0);
+              },
+            ),
+            CameraDetailFooter(),
           ],
         ),
       ),
@@ -57,7 +70,7 @@ _cameraUpdateInsideError(BuildContext context, CameraUpdateInsideError state) {
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Error Notification'),
+        title: Text('App Message'),
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
@@ -253,7 +266,7 @@ class CameraDetailInformation extends StatelessWidget {
                 (camera.typeDetect == 1)
                     ? DetailFieldContainer(
                         fieldName: 'Type Detect',
-                        fieldValue: 'Hotspot',
+                        fieldValue: 'Counter',
                       )
                     : DetailFieldContainer(
                         fieldName: 'Type Detect',
@@ -297,6 +310,52 @@ class CameraDetailInformation extends StatelessWidget {
               ],
             ),
           );
+        } else if (state is CameraDetailError) {
+          return FailureStateWidget();
+        }
+        return LoadingContainer();
+      },
+    );
+  }
+}
+
+class CameraDetailFooter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CameraDetailBloc, CameraDetailState>(
+      builder: (context, state) {
+        if (state is CameraDetailLoaded) {
+          Camera camera;
+          camera = state.camera;
+          if (camera.storeName == null || camera.storeName.isEmpty) {
+            return SizedBox(height: 0);
+          } else {
+            return Padding(
+              padding: const EdgeInsets.all(kDefaultPadding / 2),
+              child: ObjectListInkWell3(
+                model: 'store',
+                imageURL: camera.storeImage,
+                title: camera.storeName ?? "-",
+                sub: "Shelf: " + camera.shelfName ?? "-",
+                three: (camera.stackId == null || camera.stackId.isEmpty)
+                    ? ""
+                    : "Stack: No." + camera.position.toString(),
+                status: "",
+                navigationField: camera.cameraId,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ScreenStoreDetail()),
+                  );
+                  BlocProvider.of<StoreDetailBloc>(context)
+                      .add(StoreDetailFetchEvent(camera.storeId));
+                },
+              ),
+            );
+          }
+        } else if (state is CameraDetailLoading) {
+          return LoadingContainer();
         } else if (state is CameraDetailError) {
           return FailureStateWidget();
         }

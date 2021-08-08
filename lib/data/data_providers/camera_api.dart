@@ -50,6 +50,30 @@ class CameraApi {
     }
   }
 
+  Future<String> getAvailableCameras(
+      String cameraName, int pageNum, int fetchNext, int typeDetect) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String uri = "$baseUrl" +
+        "/admin/available-camera-lst?" +
+        "cameraName=$cameraName" +
+        "&pageNum=$pageNum" +
+        "&fetchNext=$fetchNext" +
+        "&typeDetect=$typeDetect";
+    print(uri);
+    final response = await http.get(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');

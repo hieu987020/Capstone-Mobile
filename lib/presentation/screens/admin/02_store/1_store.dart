@@ -28,9 +28,12 @@ class ScreenStore extends StatelessWidget {
             FloatingActionButtonLocation.miniCenterFloat,
         body: MyScrollView(
           listWidget: [
-            HeaderWithSearchBox(size),
+            HeaderWithSearchBox(
+              size: size,
+              title: "Hi Admin",
+            ),
             TitleWithMoreBtn(
-              title: 'List Stores',
+              title: 'Store',
               model: 'store',
               defaultStatus: StatusStringBase.All,
             ),
@@ -64,7 +67,7 @@ class StoreContent extends StatelessWidget {
 
     return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(kDefaultPadding),
+        padding: const EdgeInsets.all(kDefaultPadding / 2),
         child: FutureBuilder<List<Store>>(
           initialData: stores,
           builder: (context, snapshot) {
@@ -75,11 +78,12 @@ class StoreContent extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: storeLst.length,
                 itemBuilder: (context, index) {
-                  return ObjectListInkWell(
+                  return ObjectListInkWell3(
                     model: 'store',
                     imageURL: storeLst[index].imageUrl,
                     title: storeLst[index].storeName,
-                    sub: storeLst[index].managerUsername ?? "-",
+                    sub: storeLst[index].address,
+                    three: storeLst[index].managerUsername ?? "-",
                     status: storeLst[index].statusName,
                     navigationField: storeLst[index].storeId,
                     onTap: () {

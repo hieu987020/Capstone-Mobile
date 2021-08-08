@@ -10,11 +10,14 @@ class ShelfBloc extends Bloc<ShelfEvent, ShelfState> {
 
   @override
   Stream<ShelfState> mapEventToState(ShelfEvent event) async* {
-    if (event is ShelfFetchInitial) {
-      yield* _getShelves(StatusIntBase.All);
+    if (event is ShelfFetchInitalEvent) {
+      yield ShelfFetchInitial();
     } else if (event is ShelfFetchEvent) {
       yield* _getShelves(event.statusId);
+    } else if (event is FetchShelfByStoreIdEvent) {
+      yield* _getShelvesByAdmin(event.storeId);
     }
+
     // else if (event is ShelfSearchEvent) {
     //   yield* _searchShelfs(event.storeName);
     // }
@@ -34,12 +37,20 @@ class ShelfBloc extends Bloc<ShelfEvent, ShelfState> {
       );
       yield ShelfLoaded(shelves);
     } catch (e) {
-      print("exception\n");
-      print(e.toString());
       yield ShelfError();
     }
   }
 
+  Stream<ShelfState> _getShelvesByAdmin(String storeId) async* {
+    try {
+      yield ShelfLoading();
+      final shelves = await shelfRepository.getShelvesByStoreId(storeId);
+      print(shelves.length);
+      yield ShelfLoaded(shelves);
+    } catch (e) {
+      yield ShelfError();
+    }
+  }
   // Stream<ShelfState> _searchShelfs(String storeName) async* {
   //   try {
   //     yield ShelfLoading();

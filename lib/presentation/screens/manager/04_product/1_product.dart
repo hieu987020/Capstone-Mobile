@@ -9,54 +9,46 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenProductManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Product'),
-        backgroundColor: Colors.grey[200],
-        iconTheme: IconThemeData(color: Colors.black),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.black,
+    Size size = MediaQuery.of(context).size;
+    return WillPopScope(
+      onWillPop: () => outApp(context),
+      child: Scaffold(
+        appBar: buildAppBar(),
+        drawer: ManagerNavigator(
+          size: size,
+          selectedIndex: 'Product',
+        ),
+        body: MyScrollView(
+          listWidget: [
+            HeaderWithSearchBox(
+              size: size,
+              title: "Hi Manager",
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ScreenProductSearch()));
-            },
-          )
-        ],
-      ),
-      drawer: ManagerNavigator(),
-      body: Stack(
-        children: [
-          BlocBuilder<ProductBloc, ProductState>(
-            // ignore: missing_return
-            builder: (context, state) {
-              if (state is ProductLoaded) {
-                return ProductContentManager();
-              } else if (state is ProductError) {
-                return FailureStateWidget();
-              } else if (state is ProductLoading) {
+            TitleWithMoreBtn(
+              title: 'Product',
+              model: 'product',
+              defaultStatus: StatusStringBase.All,
+            ),
+            BlocBuilder<ProductBloc, ProductState>(
+              builder: (context, state) {
+                if (state is ProductLoaded) {
+                  return ProductContentM();
+                } else if (state is ProductError) {
+                  return FailureStateWidget();
+                } else if (state is ProductLoading) {
+                  return LoadingWidget();
+                }
                 return LoadingWidget();
-              }
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
-      backgroundColor: Colors.white,
     );
   }
 }
 
-class ProductContentManager extends StatefulWidget {
-  @override
-  _ProductContentManagerState createState() => _ProductContentManagerState();
-}
-
-class _ProductContentManagerState extends State<ProductContentManager> {
+class ProductContentM extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Product> products;
@@ -64,36 +56,38 @@ class _ProductContentManagerState extends State<ProductContentManager> {
     if (state is ProductLoaded) {
       products = state.products;
     }
-    Future<Null> _onProductRefresh(BuildContext context) async {
-      BlocProvider.of<ProductBloc>(context)
-          .add(ProductFetchEvent(StatusIntBase.All));
-      setState(() {
-        products.clear();
-      });
-    }
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        _onProductRefresh(context);
-      },
-      child: Container(
-        margin: EdgeInsets.fromLTRB(0, 50, 0, 60),
+    return Flexible(
+      child: Padding(
+        padding: const EdgeInsets.all(kDefaultPadding / 2),
         child: FutureBuilder<List<Product>>(
           initialData: products,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<Product> productLst = snapshot.data;
               return ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: productLst.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(productLst[index].imageUrl),
-                      backgroundColor: Colors.white,
-                    ),
-                    title: Text(productLst[index].productName),
-                    subtitle: Text(productLst[index].productName),
-                    trailing: StatusText(productLst[index].statusName),
+                  List<Category> listCate = productLst[index].categories;
+                  String cateString = "";
+                  listCate.forEach((element) {
+                    cateString += element.categoryName;
+                    if (listCate.last.categoryId == element.categoryId) {
+                      cateString += ".";
+                    } else {
+                      cateString += ", ";
+                    }
+                  });
+                  return ObjectListInkWell3(
+                    model: 'product',
+                    imageURL: productLst[index].imageUrl,
+                    title: productLst[index].productName,
+                    sub: productLst[index].description,
+                    three: cateString,
+                    status: productLst[index].statusName,
+                    navigationField: productLst[index].productId,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -109,7 +103,7 @@ class _ProductContentManagerState extends State<ProductContentManager> {
             } else if (snapshot.data == null) {
               return NoRecordWidget();
             } else if (snapshot.hasError) {
-              return Text("No Record: ${snapshot.error}");
+              return ErrorRecordWidget();
             }
             return LoadingWidget();
           },

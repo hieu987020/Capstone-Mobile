@@ -14,9 +14,10 @@ class ProductDetailLoading extends ProductDetailState {
 }
 
 class ProductDetailLoaded extends ProductDetailState {
-  ProductDetailLoaded(this.product);
+  ProductDetailLoaded(this.product, this.stores);
 
   final Product product;
+  final List<Store> stores;
   @override
   List<Object> get props => [];
 }

@@ -1,6 +1,7 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
+import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,9 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // It will provie us total height  and width of our screen
     Size size = MediaQuery.of(context).size;
-    // it enable scrolling on small device
     return WillPopScope(
       onWillPop: () => outApp(context),
       child: Scaffold(
@@ -21,41 +20,38 @@ class ScreenCategory extends StatelessWidget {
         ),
         floatingActionButton: AddFloatingButton(
           onPressed: () {
-            // Navigator.push(context,
-            //     MaterialPageRoute(builder: (context) => ScreenCategoryCreate()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ScreenCategoryCreate()));
           },
         ),
         floatingActionButtonLocation:
             FloatingActionButtonLocation.miniCenterFloat,
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  HeaderWithSearchBox(size),
-                  TitleWithMoreBtn(
-                    title: 'List Categories',
-                    model: 'category',
-                    defaultStatus: StatusStringBase.All,
-                  ),
-                  BlocBuilder<CategoryBloc, CategoryState>(
-                    // ignore: missing_return
-                    builder: (context, state) {
-                      if (state is CategoryLoaded) {
-                        return CategoryContent();
-                      } else if (state is CategoryError) {
-                        return FailureStateWidget();
-                      } else if (state is CategoryLoading) {
-                        return LoadingWidget();
-                      }
-                    },
-                  ),
-                ],
-              ),
+        body: MyScrollView(
+          listWidget: [
+            HeaderWithSearchBox(
+              size: size,
+              title: "Hi Admin",
             ),
-          ),
+            TitleWithMoreBtn(
+              title: 'Category',
+              model: 'category',
+              defaultStatus: StatusStringBase.All,
+            ),
+            BlocBuilder<CategoryBloc, CategoryState>(
+              // ignore: missing_return
+              builder: (context, state) {
+                if (state is CategoryLoaded) {
+                  return CategoryContent();
+                } else if (state is CategoryError) {
+                  return FailureStateWidget();
+                } else if (state is CategoryLoading) {
+                  return LoadingWidget();
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -73,30 +69,30 @@ class CategoryContent extends StatelessWidget {
 
     return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(kDefaultPadding),
+        padding: const EdgeInsets.all(kDefaultPadding / 2),
         child: FutureBuilder<List<Category>>(
           initialData: categories,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List<Category> cameraLst = snapshot.data;
+              List<Category> lst = snapshot.data;
               return ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: cameraLst.length,
+                itemCount: lst.length,
                 itemBuilder: (context, index) {
                   return CategoryListInkWell(
                     model: 'camera',
-                    title: cameraLst[index].categoryName,
-                    status: cameraLst[index].statusName,
-                    navigationField: cameraLst[index].categoryName,
+                    title: lst[index].categoryName,
+                    status: lst[index].statusName,
+                    navigationField: lst[index].categoryName,
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => ScreenCategoryDetail()),
-                      // );
-                      // BlocProvider.of<CategoryDetailBloc>(context).add(
-                      //     CategoryDetailFetchEvent(cameraLst[index].cameraId));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ScreenCategoryDetail()),
+                      );
+                      BlocProvider.of<CategoryDetailBloc>(context)
+                          .add(CategoryDetailFetchEvent(lst[index].categoryId));
                     },
                   );
                 },

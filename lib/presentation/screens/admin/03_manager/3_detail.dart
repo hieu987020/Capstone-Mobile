@@ -12,7 +12,7 @@ class ScreenManagerDetail extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: AppBarText('Manager Detail'),
+        title: AppBarText('Profile Detail'),
         backgroundColor: kPrimaryColor,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [ManagerMenu()],
@@ -54,7 +54,7 @@ _userUpdateInsideError(BuildContext context, UserUpdateInsideError state) {
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Error Notification'),
+        title: Text('App Message'),
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
@@ -133,6 +133,35 @@ _userRemoveStoreDialog(BuildContext context, User user) {
   );
 }
 
+_userResetPasswordDialog(BuildContext context, User user) {
+  showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Reset Password'),
+        content: Text('Are you sure to reset password for this manager?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              BlocProvider.of<UserUpdateInsideBloc>(context)
+                  .add(UserResetPassword(user.userName, user.email));
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 class ManagerMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -146,7 +175,14 @@ class ManagerMenu extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => ScreenManagerUpdateInformation()));
           break;
-
+        case 'Reset Password':
+          User user;
+          var state = BlocProvider.of<UserDetailBloc>(context).state;
+          if (state is UserDetailLoaded) {
+            user = state.user;
+          }
+          _userResetPasswordDialog(context, user);
+          break;
         case 'Change Avatar':
           Navigator.push(
               context,
@@ -166,14 +202,30 @@ class ManagerMenu extends StatelessWidget {
     return BlocBuilder<UserDetailBloc, UserDetailState>(
       builder: (context, state) {
         if (state is UserDetailLoaded) {
-          if (state.user.status.contains(StatusStringBase.Pending)) {
+          if (state.user.userName == "admin") {
             return PopupMenuButton<String>(
               onSelected: _handleClick,
               itemBuilder: (BuildContext context) {
                 return {
                   'Update Information',
                   'Change Avatar',
-                  'Change to Inactive'
+                }.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            );
+          } else if (state.user.status.contains(StatusStringBase.Pending)) {
+            return PopupMenuButton<String>(
+              onSelected: _handleClick,
+              itemBuilder: (BuildContext context) {
+                return {
+                  'Update Information',
+                  'Change Avatar',
+                  'Reset Password',
+                  'Change to Inactive',
                 }.map((String choice) {
                   return PopupMenuItem<String>(
                     value: choice,
@@ -189,6 +241,7 @@ class ManagerMenu extends StatelessWidget {
                 return {
                   'Update Information',
                   'Change Avatar',
+                  'Reset Password',
                   'Change to Pending'
                 }.map((String choice) {
                   return PopupMenuItem<String>(
@@ -204,6 +257,7 @@ class ManagerMenu extends StatelessWidget {
               itemBuilder: (BuildContext context) {
                 return {
                   'Update Information',
+                  'Reset Password',
                   'Change Avatar',
                 }.map((String choice) {
                   return PopupMenuItem<String>(
@@ -357,7 +411,10 @@ class ManagerDetailFooterWidget extends StatelessWidget {
           return LoadingContainer();
         } else if (state is UserDetailLoaded) {
           User user = state.user;
-          if (user.status == StatusStringBase.Pending) {
+
+          if (user.userName == "admin") {
+            return SizedBox(height: 0);
+          } else if (user.status == StatusStringBase.Pending) {
             return Container(
               constraints: BoxConstraints(minWidth: 500, maxWidth: 800),
               color: Colors.white,

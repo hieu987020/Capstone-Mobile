@@ -1,4 +1,3 @@
-
 import 'package:capstone/business_logic/bloc/bloc.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,10 @@ _cameraUpdateImageError(BuildContext context, CameraUpdateImageError state) {
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
             child: const Text('Back'),
           ),
         ],

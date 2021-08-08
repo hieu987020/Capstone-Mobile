@@ -17,8 +17,11 @@ class UserUpdateInsideBloc
       yield* _userChooseStore(event.managerId, event.storeId, event.active);
     }
     if (event is UserChangeStatus) {
-      yield* _userChangeToPending(
+      yield* _userChangeStatus(
           event.userName, event.statusId, event.reasonInactive);
+    }
+    if (event is UserResetPassword) {
+      yield* _userResetPassword(event.userName, event.email);
     }
   }
 
@@ -38,7 +41,7 @@ class UserUpdateInsideBloc
     }
   }
 
-  Stream<UserUpdateInsideState> _userChangeToPending(
+  Stream<UserUpdateInsideState> _userChangeStatus(
       String userName, int statusId, String reasonInactive) async* {
     try {
       yield UserUpdateInsideLoading();
@@ -50,7 +53,22 @@ class UserUpdateInsideBloc
         yield UserUpdateInsideError(response);
       }
     } catch (e) {
-      yield UserUpdateInsideError(e);
+      yield UserUpdateInsideError(e.toString());
+    }
+  }
+
+  Stream<UserUpdateInsideState> _userResetPassword(
+      String userName, String email) async* {
+    try {
+      yield UserUpdateInsideLoading();
+      String response = await _userRepository.resetPassword(userName, email);
+      if (response == 'true') {
+        yield UserUpdateInsideLoaded();
+      } else {
+        yield UserUpdateInsideError(response);
+      }
+    } catch (e) {
+      yield UserUpdateInsideError("System can not finish this action");
     }
   }
 }

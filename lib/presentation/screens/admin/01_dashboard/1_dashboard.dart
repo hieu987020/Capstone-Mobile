@@ -20,22 +20,6 @@ class ScreenAdminDashboard extends StatelessWidget {
           initialUrl: 'https://datastudio.google.com/s/sn0Uktbk6Wg',
           javascriptMode: JavascriptMode.unrestricted,
         ),
-
-        // SingleChildScrollView(
-        //   child: Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children: [
-        //       HeaderWithSearchBox(size),
-        //       TitleWithMoreBtn(
-        //         title: 'Dashboard',
-        //       ),
-        //       const WebView(
-        //         initialUrl: 'https://flutter.io',
-        //         javascriptMode: JavascriptMode.unrestricted,
-        //       ),
-        //     ],
-        //   ),
-        // ),
       ),
     );
   }

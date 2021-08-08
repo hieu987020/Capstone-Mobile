@@ -14,3 +14,5 @@ class ProductSearchEvent extends ProductEvent {
   final String productName;
   ProductSearchEvent(this.productName);
 }
+
+class ProductAllEvent extends ProductEvent {}

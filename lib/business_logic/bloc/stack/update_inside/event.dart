@@ -20,3 +20,10 @@ class StackMapCameraEvent extends StackUpdateInsideEvent {
   final int action;
   StackMapCameraEvent(this.stackId, this.cameraId, this.action);
 }
+
+class StackChangeStatus extends StackUpdateInsideEvent {
+  final String stackId;
+  final int statusId;
+  final String reasonInactive;
+  StackChangeStatus(this.stackId, this.statusId, this.reasonInactive);
+}

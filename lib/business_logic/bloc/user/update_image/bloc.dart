@@ -43,14 +43,13 @@ class UserUpdateImageBloc
         );
       }
       String result = await _userRepository.updateUser(user);
-      print(result);
       if (result == 'true') {
         yield UserUpdateImageLoaded();
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield UserUpdateImageError(result);
       }
     } catch (e) {
-      yield UserUpdateImageError(e);
+      yield UserUpdateImageError("System can not finish this action");
     }
   }
 }

@@ -30,9 +30,12 @@ class ScreenProduct extends StatelessWidget {
             FloatingActionButtonLocation.miniCenterFloat,
         body: MyScrollView(
           listWidget: [
-            HeaderWithSearchBox(size),
+            HeaderWithSearchBox(
+              size: size,
+              title: "Hi Admin",
+            ),
             TitleWithMoreBtn(
-              title: 'List Products',
+              title: 'Product',
               model: 'product',
               defaultStatus: StatusStringBase.All,
             ),
@@ -66,7 +69,7 @@ class ProductContent extends StatelessWidget {
 
     return Flexible(
       child: Padding(
-        padding: const EdgeInsets.all(kDefaultPadding),
+        padding: const EdgeInsets.all(kDefaultPadding / 2),
         child: FutureBuilder<List<Product>>(
           initialData: products,
           builder: (context, snapshot) {
@@ -77,11 +80,22 @@ class ProductContent extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: productLst.length,
                 itemBuilder: (context, index) {
-                  return ObjectListInkWell(
+                  List<Category> listCate = productLst[index].categories;
+                  String cateString = "";
+                  listCate.forEach((element) {
+                    cateString += element.categoryName;
+                    if (listCate.last.categoryId == element.categoryId) {
+                      cateString += ".";
+                    } else {
+                      cateString += ", ";
+                    }
+                  });
+                  return ObjectListInkWell3(
                     model: 'product',
                     imageURL: productLst[index].imageUrl,
                     title: productLst[index].productName,
                     sub: productLst[index].description,
+                    three: cateString,
                     status: productLst[index].statusName,
                     navigationField: productLst[index].productId,
                     onTap: () {

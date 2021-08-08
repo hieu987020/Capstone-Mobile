@@ -87,10 +87,6 @@ class StoreCreateFormState extends State<StoreCreateForm> {
 
   @override
   Widget build(BuildContext context) {
-    var state = BlocProvider.of<StoreCreateBloc>(context).state;
-    if (state is StoreCreateLoading) {
-      return LoadingWidget();
-    }
     return Flexible(
       child: Padding(
         padding: const EdgeInsets.all(kDefaultPadding),

@@ -49,6 +49,14 @@ class UserRepository {
         .toList();
   }
 
+  Future<String> resetPassword(String userName, String email) async {
+    final String response = await _api.resetPassword(userName, email);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
+    }
+    return response;
+  }
+
   Future<String> changeStatus(
       String userName, int statusId, String reasonInactive) async {
     Map<String, dynamic> jsonChangeStatus;
@@ -66,27 +74,27 @@ class UserRepository {
     }
     var userCreateJson = jsonEncode(jsonChangeStatus);
     final String response = await _api.changeStatus(userCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> updateUser(User user) async {
     var userCreateJson = jsonEncode(user.toJson());
     final String response = await _api.updateUser(userCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> postUser(User user) async {
     var userCreateJson = jsonEncode(user.toJson());
     final String response = await _api.postUser(userCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 }

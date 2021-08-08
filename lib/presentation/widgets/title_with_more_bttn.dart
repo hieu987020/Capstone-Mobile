@@ -14,7 +14,7 @@ class TitleWithMoreBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         children: <Widget>[
           TitleWithCustomUnderline(text: title),
@@ -30,10 +30,9 @@ class TitleWithMoreBtn extends StatelessWidget {
 }
 
 class TitleWithCustomUnderline extends StatelessWidget {
-  const TitleWithCustomUnderline({
-    Key key,
+  TitleWithCustomUnderline({
     this.text,
-  }) : super(key: key);
+  });
 
   final String text;
 
@@ -46,7 +45,7 @@ class TitleWithCustomUnderline extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: kDefaultPadding / 4),
             child: Text(
-              text,
+              text.toUpperCase(),
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
@@ -74,7 +73,7 @@ class TitleWithNothing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         children: <Widget>[
           TitleWithCustomUnderline(text: title),

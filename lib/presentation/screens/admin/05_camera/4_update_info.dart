@@ -54,7 +54,10 @@ _cameraUpdateError(BuildContext context, CameraUpdateError state) {
         content: Text(state.message),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
             child: const Text('Back'),
           ),
         ],
@@ -147,7 +150,7 @@ class CameraUpdateFormState extends State<CameraUpdateForm> {
               PrimaryButton(
                 text: "Save",
                 onPressed: () {
-                  CameraUpdateBloc cameraCreateBloc =
+                  CameraUpdateBloc cameraUpdateBloc =
                       BlocProvider.of<CameraUpdateBloc>(context);
                   if (_formKey.currentState.validate()) {
                     Camera _camera = new Camera(
@@ -158,7 +161,7 @@ class CameraUpdateFormState extends State<CameraUpdateForm> {
                       ipAddress: _ipAddress.text,
                       rtspString: _rtspString.text,
                     );
-                    cameraCreateBloc.add(CameraUpdateSubmit(_camera));
+                    cameraUpdateBloc.add(CameraUpdateSubmit(_camera));
                   }
                 },
               ),

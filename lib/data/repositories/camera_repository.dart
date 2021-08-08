@@ -8,6 +8,9 @@ class CameraRepository {
 
   Future<Camera> getCamera(String cameraId) async {
     final String rawBody = await _api.getCamera(cameraId);
+    if (rawBody.contains("MSG-120")) {
+      return null;
+    }
     var jsonResponse = json.decode(rawBody);
     return Camera.fromJson(jsonResponse);
   }
@@ -16,6 +19,19 @@ class CameraRepository {
       int statusId, int pageNum, int fetchNext) async {
     final String rawBody = await _api.getCameras(
         storeId, cameraName, statusId, pageNum, fetchNext);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
+    var jsonResponse = json.decode(rawBody);
+    return (jsonResponse['cameras'] as List)
+        .map((e) => Camera.fromJsonLst(e))
+        .toList();
+  }
+
+  Future<List<Camera>> getAvailableCameras(
+      String cameraName, int pageNum, int fetchNext, int typeDetect) async {
+    final String rawBody = await _api.getAvailableCameras(
+        cameraName, pageNum, fetchNext, typeDetect);
     if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
       return null;
     }
@@ -42,29 +58,27 @@ class CameraRepository {
     }
     var userCreateJson = jsonEncode(jsonChangeStatus);
     final String response = await _api.changeStatus(userCreateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> updateCamera(Camera camera) async {
     var cameraUpdateJson = jsonEncode(camera.toJson());
     final String response = await _api.updateCamera(cameraUpdateJson);
-    if (response.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
-    return 'true';
+    return response;
   }
 
   Future<String> postCamera(Camera user) async {
     var json = jsonEncode(user.toJson());
     String response = await _api.postCamera(json);
-    if (response.contains('true') == true &&
-        response.contains('errorCodeAndMsg') == false) {
-      return 'true';
-    } else {
-      return response;
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
     }
+    return response;
   }
 }

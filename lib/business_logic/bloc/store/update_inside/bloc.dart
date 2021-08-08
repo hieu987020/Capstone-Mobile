@@ -17,7 +17,7 @@ class StoreUpdateInsideBloc
       yield* _userChooseStore(event.managerId, event.storeId, event.active);
     }
     if (event is StoreChangeStatus) {
-      yield* _userChangeStatus(
+      yield* _storeChangeStatus(
           event.userName, event.statusId, event.reasonInactive);
     }
   }
@@ -30,17 +30,15 @@ class StoreUpdateInsideBloc
           await _storeRepository.changeManager(managerId, storeId, active);
       if (response == 'true') {
         yield StoreUpdateInsideLoaded();
-      } else if (response.contains("MSG-077")) {
-        yield StoreUpdateInsideError("Store and manager is not mapping");
       } else {
-        yield StoreUpdateInsideError("System can not finish this action");
+        yield StoreUpdateInsideError(response);
       }
     } catch (e) {
       yield StoreUpdateInsideError(e);
     }
   }
 
-  Stream<StoreUpdateInsideState> _userChangeStatus(
+  Stream<StoreUpdateInsideState> _storeChangeStatus(
       String userName, int statusId, String reasonInactive) async* {
     try {
       yield StoreUpdateInsideLoading();
@@ -52,7 +50,7 @@ class StoreUpdateInsideBloc
         yield StoreUpdateInsideError(response);
       }
     } catch (e) {
-      yield StoreUpdateInsideError(e);
+      yield StoreUpdateInsideError("System can not finish this action");
     }
   }
 }

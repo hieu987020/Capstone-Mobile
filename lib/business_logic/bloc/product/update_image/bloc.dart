@@ -38,10 +38,9 @@ class ProductUpdateImageBloc
         );
       }
       String result = await _productRepository.updateProduct(product);
-      print(result);
       if (result == 'true') {
         yield ProductUpdateImageLoaded();
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield ProductUpdateImageError(result);
       }
     } catch (e) {

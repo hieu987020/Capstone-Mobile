@@ -19,6 +19,10 @@ class StackUpdateInsideBloc
     if (event is StackMapCameraEvent) {
       yield* _mapCamera(event.stackId, event.cameraId, event.action);
     }
+    if (event is StackChangeStatus) {
+      yield* _stackChangeStatus(
+          event.stackId, event.statusId, event.reasonInactive);
+    }
   }
 
   Stream<StackUpdateInsideState> _mapProduct(
@@ -33,8 +37,6 @@ class StackUpdateInsideBloc
         yield StackUpdateInsideError(response);
       }
     } catch (e) {
-      print("error trong stack update_inside bloc , map product ");
-      print(e.toString());
       yield StackUpdateInsideError(e.toString());
     }
   }
@@ -51,9 +53,23 @@ class StackUpdateInsideBloc
         yield StackUpdateInsideError(response);
       }
     } catch (e) {
-      print("error trong stack update_inside bloc , map camera ");
-      print(e.toString());
       yield StackUpdateInsideError(e.toString());
+    }
+  }
+
+  Stream<StackUpdateInsideState> _stackChangeStatus(
+      String stackId, int statusId, String reasonInactive) async* {
+    try {
+      yield StackUpdateInsideLoading();
+      String response =
+          await stackRepository.changeStatus(stackId, statusId, reasonInactive);
+      if (response == 'true') {
+        yield StackUpdateInsideLoaded();
+      } else {
+        yield StackUpdateInsideError(response);
+      }
+    } catch (e) {
+      yield StackUpdateInsideError("System can not finish this action");
     }
   }
 }

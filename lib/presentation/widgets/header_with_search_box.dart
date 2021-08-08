@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HeaderWithSearchBox extends StatelessWidget {
-  HeaderWithSearchBox(this.size);
+  HeaderWithSearchBox({@required this.size, @required this.title});
 
   final Size size;
-
+  final String title;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,7 +32,7 @@ class HeaderWithSearchBox extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 Text(
-                  'Hi Admin!',
+                  title,
                   style: Theme.of(context).textTheme.headline5.copyWith(
                       color: Colors.white, fontWeight: FontWeight.bold),
                 ),

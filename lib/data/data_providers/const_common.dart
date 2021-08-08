@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:capstone/data/models/models.dart';
+
 class UrlBase {
   static const String baseUrl = "http://35.198.194.159:9091";
 }
@@ -46,6 +50,22 @@ class PageNumBase {
 
 class FetchNextBase {
   static const int Default = 0;
+}
+
+String parseJsonToMessage(String input) {
+  var result = jsonDecode(input);
+  ErrorMessage errorMess = ErrorMessage.fromJson(result);
+
+  if (errorMess == null) {
+    return "Something wrong";
+  } else {
+    String message = "";
+    errorMess.listMess.forEach((element) {
+      message += element.message;
+      message += "\n";
+    });
+    return message;
+  }
 }
 
 class ErrorCodeAndMessage {

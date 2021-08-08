@@ -217,8 +217,36 @@ class NoRecordWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+            height: 80,
+            child: Image.asset(
+              'assets/images/no_data.png',
+            ),
+          ),
+          SizedBox(height: 10),
           Text(
-            "No Record Found",
+            "No Data",
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class NoPermission extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: 20),
+          Text(
+            "You have no permission to access",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
@@ -227,7 +255,7 @@ class NoRecordWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
             height: 80,
-            child: Image.asset('assets/images/no_data.png'),
+            child: Image.asset('assets/icons/permission.png'),
           ),
         ],
       ),

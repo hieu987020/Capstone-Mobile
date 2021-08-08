@@ -10,6 +10,12 @@ class CameraFetchEvent extends CameraEvent {
   CameraFetchEvent(this.statusId);
 }
 
+class CameraAvailableEvent extends CameraEvent {
+  final int statusId;
+  final int typeId;
+  CameraAvailableEvent(this.statusId, this.typeId);
+}
+
 class CameraSearchEvent extends CameraEvent {
   final String cameraName;
   CameraSearchEvent(this.cameraName);

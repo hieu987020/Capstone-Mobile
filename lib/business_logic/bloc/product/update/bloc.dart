@@ -26,7 +26,7 @@ class ProductUpdateBloc extends Bloc<ProductUpdateEvent, ProductUpdateState> {
       print(result);
       if (result == 'true') {
         yield ProductUpdateLoaded();
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield ProductUpdateError(result);
       }
     } catch (e) {

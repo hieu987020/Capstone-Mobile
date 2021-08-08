@@ -28,15 +28,11 @@ class ShelfCreateBloc extends Bloc<ShelfCreateEvent, ShelfCreateState> {
 
       if (result == 'true') {
         yield ShelfCreateLoaded();
-      } else if (result.contains("MSG-061")) {
-        yield ShelfCreateDuplicatedName("RTSP String is existed");
-      } else if (result.contains('errorCodeAndMsg')) {
+      } else {
         yield ShelfCreateError(result);
       }
     } catch (e) {
-      print("error trong create shelf");
-      print(e.toString());
-      yield ShelfCreateError(e.toString());
+      yield ShelfCreateError("System can not finish this action");
     }
   }
 }

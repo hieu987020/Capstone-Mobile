@@ -78,9 +78,6 @@ _cameraCreateError(BuildContext context, CameraCreateError state) {
   );
 }
 
-// ignore: todo
-//TODO  View
-
 class CameraCreateForm extends StatefulWidget {
   @override
   CameraCreateFormState createState() {
@@ -100,10 +97,6 @@ class CameraCreateFormState extends State<CameraCreateForm> {
 
   @override
   Widget build(BuildContext context) {
-    var state = BlocProvider.of<CameraCreateBloc>(context).state;
-    if (state is CameraCreateLoading) {
-      return LoadingWidget();
-    }
     return Flexible(
       child: Padding(
         padding: const EdgeInsets.all(kDefaultPadding),
@@ -198,7 +191,7 @@ class CameraCreateFormState extends State<CameraCreateForm> {
                   return Text("");
                 },
               ),
-              CameraTypeRatio(controller: _type, defaultValue: 'Hotspot'),
+              CameraTypeRatio(controller: _type, defaultValue: 'Counter'),
               SizedBox(height: 15.0),
               PrimaryButton(
                 text: "Create",
