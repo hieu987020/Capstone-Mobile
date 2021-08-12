@@ -6,41 +6,64 @@ import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenShelfDetail extends StatelessWidget {
+class ScreenShelfDetail extends StatefulWidget {
+  final String shelfId;
+  ScreenShelfDetail({@required this.shelfId});
+  @override
+  _ScreenShelfDetailState createState() => _ScreenShelfDetailState(shelfId);
+}
+
+class _ScreenShelfDetailState extends State<ScreenShelfDetail> {
+  final String shelfId;
+  _ScreenShelfDetailState(this.shelfId);
+
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<ShelfDetailBloc>(context)
+        .add(ShelfDetailFetchEvent(shelfId));
+    BlocProvider.of<StackBloc>(context).add(StackFetchEvent(shelfId));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Shelf Detail'),
-        backgroundColor: kPrimaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: [
-          ShelfMenu(),
-        ],
-      ),
-      body: BlocListener<ShelfUpdateInsideBloc, ShelfUpdateInsideState>(
-        listener: (context, state) {
-          if (state is ShelfUpdateInsideLoading) {
-            loadingCommon(context);
-          } else if (state is ShelfUpdateInsideError) {
-            _shelfUpdateInsideError(context, state);
-          } else if (state is ShelfUpdateInsideLoaded) {
-            _shelfUpdateInsideLoaded(context);
-          }
-        },
-        child: MyScrollView(
-          listWidget: [
-            SizedBox(height: 10),
-            TitleWithNothing(title: "About"),
-            ShelfDetailInformation(size: size),
-            SizedBox(height: 10),
-            TitleWithNothing(title: "Counter Camera"),
-            CounterCameraInside1(),
-            CounterCameraInside2(),
-            TitleWithNothing(title: "Stack"),
-            StackContent(),
+    return RefreshIndicator(
+      onRefresh: () async => _onRefresh(context),
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppBarText('Shelf Detail'),
+          backgroundColor: kPrimaryColor,
+          iconTheme: IconThemeData(color: Colors.white),
+          actions: [
+            ShelfMenu(),
           ],
+        ),
+        body: BlocListener<ShelfUpdateInsideBloc, ShelfUpdateInsideState>(
+          listener: (context, state) {
+            if (state is ShelfUpdateInsideLoading) {
+              loadingCommon(context);
+            } else if (state is ShelfUpdateInsideError) {
+              _shelfUpdateInsideError(context, state);
+            } else if (state is ShelfUpdateInsideLoaded) {
+              _shelfUpdateInsideLoaded(context);
+            }
+          },
+          child: MyScrollView(
+            listWidget: [
+              SizedBox(height: 10),
+              TitleWithNothing(title: "About"),
+              ShelfDetailInformation(size: size),
+              SizedBox(height: 10),
+              TitleWithNothing(title: "Counting Camera"),
+              CountingCameraInside1(),
+              CountingCameraInside2(),
+              TitleWithNothing(title: "Stack"),
+              StackContent(),
+            ],
+          ),
         ),
       ),
     );
@@ -79,13 +102,14 @@ _shelfUpdateInsideLoaded(BuildContext context) {
   Navigator.pop(context);
 }
 
-_removeCounterCamera(BuildContext context, String cameraId, String cameraName) {
+_removeCountingCamera(
+    BuildContext context, String cameraId, String cameraName) {
   showDialog<String>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Remove Counter camera'),
+        title: Text('Remove Counting camera'),
         content: Text('Are you sure to remove camera $cameraName'),
         actions: <Widget>[
           TextButton(
@@ -215,7 +239,7 @@ class ShelfDetailInformation extends StatelessWidget {
   }
 }
 
-class CounterCameraInside1 extends StatelessWidget {
+class CountingCameraInside1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ShelfDetailBloc, ShelfDetailState>(
@@ -243,7 +267,7 @@ class CounterCameraInside1 extends StatelessWidget {
                           Expanded(
                             child: Container(
                               child: Text(
-                                ("Add Counter Camera"),
+                                ("Add Counting Camera"),
                                 style: TextStyle(
                                   color: Color.fromRGBO(69, 75, 102, 1),
                                   fontSize: 20,
@@ -261,9 +285,13 @@ class CounterCameraInside1 extends StatelessWidget {
                                 backgroundColor: kPrimaryColor.withOpacity(0.6),
                               ),
                               onPressed: () {
-                                BlocProvider.of<CameraBloc>(context).add(
-                                    CameraAvailableEvent(
-                                        StatusIntBase.Pending, 1));
+                                BlocProvider.of<CameraBloc>(context)
+                                    .add(CameraAvailableEvent(
+                                  cameraName: "",
+                                  pageNum: 0,
+                                  fetchNext: 100,
+                                  typeId: 1,
+                                ));
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -290,7 +318,7 @@ class CounterCameraInside1 extends StatelessWidget {
                 right: kDefaultPadding / 2,
                 top: kDefaultPadding / 2,
               ),
-              child: CounterListInkWell(
+              child: CountingListInkWell(
                 model: 'camera',
                 imageURL: camera.imageUrl,
                 title: camera.cameraName,
@@ -306,7 +334,7 @@ class CounterCameraInside1 extends StatelessWidget {
                       .add(CameraDetailFetchEvent(camera.cameraId));
                 },
                 onRemove: () {
-                  _removeCounterCamera(
+                  _removeCountingCamera(
                       context, camera.cameraId, camera.cameraName);
                 },
               ),
@@ -321,7 +349,7 @@ class CounterCameraInside1 extends StatelessWidget {
   }
 }
 
-class CounterCameraInside2 extends StatelessWidget {
+class CountingCameraInside2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ShelfDetailBloc, ShelfDetailState>(
@@ -354,7 +382,7 @@ class CounterCameraInside2 extends StatelessWidget {
                           Expanded(
                             child: Container(
                               child: Text(
-                                ("Add Counter Camera"),
+                                ("Add Counting Camera"),
                                 style: TextStyle(
                                   color: Color.fromRGBO(69, 75, 102, 1),
                                   fontSize: 20,
@@ -372,9 +400,13 @@ class CounterCameraInside2 extends StatelessWidget {
                                 backgroundColor: kPrimaryColor.withOpacity(0.6),
                               ),
                               onPressed: () {
-                                BlocProvider.of<CameraBloc>(context).add(
-                                    CameraAvailableEvent(
-                                        StatusIntBase.Pending, 1));
+                                BlocProvider.of<CameraBloc>(context)
+                                    .add(CameraAvailableEvent(
+                                  cameraName: "",
+                                  pageNum: 0,
+                                  fetchNext: 100,
+                                  typeId: 1,
+                                ));
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -398,7 +430,7 @@ class CounterCameraInside2 extends StatelessWidget {
             return Padding(
               padding: EdgeInsets.only(
                   left: kDefaultPadding / 2, right: kDefaultPadding / 2),
-              child: CounterListInkWell(
+              child: CountingListInkWell(
                 model: 'camera',
                 imageURL: camera.imageUrl,
                 title: camera.cameraName,
@@ -414,7 +446,7 @@ class CounterCameraInside2 extends StatelessWidget {
                       .add(CameraDetailFetchEvent(camera.cameraId));
                 },
                 onRemove: () {
-                  _removeCounterCamera(
+                  _removeCountingCamera(
                       context, camera.cameraId, camera.cameraName);
                 },
               ),
@@ -467,7 +499,9 @@ class StackContent extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ScreenStackDetail()),
+                                  builder: (context) => ScreenStackDetail(
+                                        stackId: lst[index].stackId,
+                                      )),
                             );
                             BlocProvider.of<StackDetailBloc>(context)
                                 .add(StackDetailFetchEvent(lst[index].stackId));

@@ -262,6 +262,11 @@ class ProductDetailInformation extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DetailFieldContainer(
+                  fieldName: 'Category',
+                  fieldValue: "Ipod",
+                ),
+                DetailDivider(size: size),
+                DetailFieldContainer(
                   fieldName: 'Description',
                   fieldValue: product.description,
                 ),
@@ -291,7 +296,7 @@ class ProductDetailInformation extends StatelessWidget {
         } else if (state is ProductDetailError) {
           return FailureStateWidget();
         }
-        return UnmappedStateWidget();
+        return LoadingContainer();
       },
     );
   }

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 abstract class UserState extends Equatable {}
 
-class UserFetchInitial extends UserState {
+class UserInitialState extends UserState {
   @override
   List<Object> get props => [];
 }
@@ -14,9 +14,19 @@ class UserLoading extends UserState {
 }
 
 class UserLoaded extends UserState {
-  UserLoaded(this.users);
+  UserLoaded(this.users, this.reachMax);
 
   final List<User> users;
+  final bool reachMax;
+  @override
+  List<Object> get props => [];
+}
+
+class UserLoadedMore extends UserState {
+  UserLoadedMore(this.users, this.reachMax);
+
+  final List<User> users;
+  final bool reachMax;
   @override
   List<Object> get props => [];
 }

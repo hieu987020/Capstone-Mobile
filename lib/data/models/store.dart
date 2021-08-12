@@ -1,4 +1,7 @@
+import 'package:capstone/data/models/video.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:capstone/data/models/shelf.dart';
 
 class Store extends Equatable {
   const Store({
@@ -19,6 +22,8 @@ class Store extends Equatable {
     this.reasonInactive,
     this.statusId,
     this.statusName,
+    this.shelves,
+    this.videos,
   });
 
   final String storeId;
@@ -38,7 +43,8 @@ class Store extends Equatable {
   final String reasonInactive;
   final int statusId;
   final String statusName;
-
+  final List<Shelf> shelves;
+  final List<Video> videos;
   @override
   List<Object> get props {
     return [
@@ -59,6 +65,8 @@ class Store extends Equatable {
       reasonInactive,
       statusId,
       statusName,
+      shelves,
+      videos,
     ];
   }
 
@@ -102,6 +110,23 @@ class Store extends Equatable {
         statusName: json["statusName"],
       );
 
+  factory Store.fromJsonCountingVideo(Map<String, dynamic> json) => Store(
+        storeId: json["storeId"],
+        storeName: json["storeName"],
+        shelves: (json['shelves'] as List<dynamic>)
+            ?.map((e) => e == null
+                ? null
+                : Shelf.fromJsonVideo(e as Map<String, dynamic>))
+            ?.toList(),
+      );
+  factory Store.fromJsonEmotionVideo(Map<String, dynamic> json) => Store(
+        storeId: json["storeId"],
+        storeName: json["storeName"],
+        videos: (json['videos'] as List<dynamic>)
+            ?.map((e) =>
+                e == null ? null : Video.fromJson(e as Map<String, dynamic>))
+            ?.toList(),
+      );
   Map<String, dynamic> toJson() => {
         "storeId": storeId,
         "storeName": storeName,
@@ -109,26 +134,27 @@ class Store extends Equatable {
         "address": address,
         "districtId": districtId,
       };
-  Store copyWith({
-    String storeId,
-    String storeName,
-    String imageUrl,
-    String managerName,
-    String managerUsername,
-    String managerId,
-    String managerImage,
-    String address,
-    int districtId,
-    String districtName,
-    int cityId,
-    String cityName,
-    String createdTime,
-    String updatedTime,
-    String reasonInactive,
-    String analyzedTime,
-    int statusId,
-    String statusName,
-  }) {
+  Store copyWith(
+      {String storeId,
+      String storeName,
+      String imageUrl,
+      String managerName,
+      String managerUsername,
+      String managerId,
+      String managerImage,
+      String address,
+      int districtId,
+      String districtName,
+      int cityId,
+      String cityName,
+      String createdTime,
+      String updatedTime,
+      String reasonInactive,
+      String analyzedTime,
+      int statusId,
+      String statusName,
+      List<Shelf> shelves,
+      List<Video> videos}) {
     return Store(
       storeId: storeId ?? this.storeId,
       storeName: storeName ?? this.storeName,
@@ -147,6 +173,8 @@ class Store extends Equatable {
       reasonInactive: reasonInactive ?? this.reasonInactive,
       statusId: statusId ?? this.statusId,
       statusName: statusName ?? this.statusName,
+      shelves: shelves ?? this.shelves,
+      videos: videos ?? this.videos,
     );
   }
 }

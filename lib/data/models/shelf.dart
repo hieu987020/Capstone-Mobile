@@ -12,6 +12,8 @@ class Shelf extends Equatable {
   final int statusId;
   final String statusName;
   final List<Camera> camera;
+  final List<Video> videos;
+
   Shelf({
     this.shelfId,
     this.shelfName,
@@ -23,6 +25,7 @@ class Shelf extends Equatable {
     this.statusId,
     this.statusName,
     this.camera,
+    this.videos,
   });
 
   @override
@@ -37,6 +40,7 @@ class Shelf extends Equatable {
         statusId,
         statusName,
         camera,
+        videos,
       ];
 
   Map<String, dynamic> toJson() {
@@ -51,6 +55,17 @@ class Shelf extends Equatable {
       'statusId': statusId,
       'statusName': statusName,
     };
+  }
+
+  factory Shelf.fromJsonVideo(Map<String, dynamic> json) {
+    return Shelf(
+      shelfId: json['shelfId'],
+      shelfName: json['shelfName'],
+      videos: (json['videos'] as List<dynamic>)
+          ?.map((e) =>
+              e == null ? null : Video.fromJson(e as Map<String, dynamic>))
+          ?.toList(),
+    );
   }
 
   factory Shelf.fromJsonLst(Map<String, dynamic> json) {
@@ -92,6 +107,7 @@ class Shelf extends Equatable {
     int statusId,
     String statusName,
     Camera camera,
+    List<Video> videos,
   }) {
     return Shelf(
       shelfId: shelfId ?? this.shelfId,
@@ -104,6 +120,7 @@ class Shelf extends Equatable {
       statusId: statusId ?? this.statusId,
       statusName: statusName ?? this.statusName,
       camera: camera ?? this.camera,
+      videos: videos ?? this.videos,
     );
   }
 }

@@ -89,6 +89,23 @@ class UserRepository {
     return response;
   }
 
+  Future<String> changePassword(String userName, String oldPassword,
+      String newPassword, String reType) async {
+    Map<String, dynamic> jsonChangePassword;
+    jsonChangePassword = {
+      "userName": userName,
+      "oldPassword": oldPassword,
+      "newPassword": newPassword,
+      "retypePassword": reType
+    };
+    var userCreateJson = jsonEncode(jsonChangePassword);
+    final String response = await _api.changePassword(userCreateJson);
+    if (response.contains("MSG")) {
+      return parseJsonToMessage(response);
+    }
+    return response;
+  }
+
   Future<String> postUser(User user) async {
     var userCreateJson = jsonEncode(user.toJson());
     final String response = await _api.postUser(userCreateJson);

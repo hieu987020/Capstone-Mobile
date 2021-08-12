@@ -141,3 +141,8 @@ export 'stack/update_inside/state.dart';
 export 'city/bloc.dart';
 export 'city/state.dart';
 export 'city/event.dart';
+
+//?video
+export 'video/view_all/bloc.dart';
+export 'video/view_all/state.dart';
+export 'video/view_all/event.dart';

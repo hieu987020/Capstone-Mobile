@@ -1,47 +1,110 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
-import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenCategoryManager extends StatelessWidget {
+class ScreenCategoryManager extends StatefulWidget {
+  @override
+  _ScreenCategoryManagerState createState() => _ScreenCategoryManagerState();
+}
+
+class _ScreenCategoryManagerState extends State<ScreenCategoryManager> {
+  TextEditingController _valueSearch = TextEditingController(text: "");
+  TextEditingController _statusId = TextEditingController(text: "");
+  String searchField = "categoryName";
+  String selectedValueStatus = "";
+
+  @override
+  void initState() {
+    selectedValueStatus = 'All';
+    _valueSearch.value = TextEditingValue(text: '');
+    _statusId.value = TextEditingValue(text: '0');
+    super.initState();
+  }
+
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<CategoryBloc>(context).add(CategoryFetchEvent(
+      searchValue: _valueSearch.text,
+      searchField: searchField,
+      fetchNext: 100,
+      pageNum: 0,
+      statusId: int.parse(_statusId.text),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () => outApp(context),
-      child: Scaffold(
-        appBar: buildAppBar(),
-        drawer: ManagerNavigator(
-          size: size,
-          selectedIndex: 'Category',
-        ),
-        body: MyScrollView(
-          listWidget: [
-            HeaderWithSearchBox(
-              size: size,
-              title: "Hi Manager",
-            ),
-            TitleWithMoreBtn(
-              title: 'Category',
-              model: 'category',
-              defaultStatus: StatusStringBase.All,
-            ),
-            BlocBuilder<CategoryBloc, CategoryState>(
-              // ignore: missing_return
-              builder: (context, state) {
-                if (state is CategoryLoaded) {
-                  return CategoryContentM();
-                } else if (state is CategoryError) {
-                  return FailureStateWidget();
-                } else if (state is CategoryLoading) {
-                  return LoadingWidget();
-                }
-              },
-            ),
-          ],
+      child: RefreshIndicator(
+        onRefresh: () async => _onRefresh(context),
+        child: Scaffold(
+          appBar: buildAppBar(),
+          drawer: ManagerNavigator(
+            size: size,
+            selectedIndex: 'Category',
+          ),
+          body: MyScrollView(
+            listWidget: [
+              HeaderWithSearchBox(
+                size: size,
+                title: "Hi Manager",
+                valueSearch: _valueSearch,
+                onSubmitted: (value) {
+                  setState(() {
+                    _valueSearch.value = TextEditingValue(text: value);
+                  });
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  callApi();
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _valueSearch.value = TextEditingValue(text: value);
+                  });
+                },
+                onTap: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  callApi();
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: <Widget>[
+                    TitleWithCustomUnderline(text: "Category"),
+                    Spacer(),
+                    StatusDropdown(
+                      model: 'category',
+                      defaultValue: selectedValueStatus,
+                      controller: _statusId,
+                      callFunc: () {
+                        callApi();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              BlocBuilder<CategoryBloc, CategoryState>(
+                // ignore: missing_return
+                builder: (context, state) {
+                  if (state is CategoryLoaded) {
+                    return CategoryContentM();
+                  } else if (state is CategoryError) {
+                    return FailureStateWidget();
+                  } else if (state is CategoryLoading) {
+                    return LoadingWidget();
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

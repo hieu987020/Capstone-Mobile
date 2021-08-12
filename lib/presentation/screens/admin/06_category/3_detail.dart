@@ -118,7 +118,7 @@ _categoryInactive(BuildContext context, int statusId) {
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text('Change to Inative'),
-        content: Text('The status will change to Inative, are you sure?'),
+        content: Text('The status will change to Inactive, are you sure?'),
         actions: <Widget>[
           TextButton(
             onPressed: () {

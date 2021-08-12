@@ -4,30 +4,83 @@ import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenStackMapProduct extends StatelessWidget {
+class ScreenStackMapProduct extends StatefulWidget {
+  @override
+  _ScreenStackMapProductState createState() => _ScreenStackMapProductState();
+}
+
+class _ScreenStackMapProductState extends State<ScreenStackMapProduct> {
+  TextEditingController _valueSearch = TextEditingController(text: "");
+  // TextEditingController _statusId = TextEditingController(text: "");
+  String searchField = "storeName";
+  // String selectedValueStatus = "";
+
+  @override
+  void initState() {
+    // selectedValueStatus = 'All';
+    _valueSearch.value = TextEditingValue(text: '');
+    // _statusId.value = TextEditingValue(text: '0');
+    super.initState();
+  }
+
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<ProductBloc>(context).add(ProductFetchEvent(
+      searchValue: _valueSearch.text,
+      searchField: "productName",
+      fetchNext: 100,
+      pageNum: 0,
+      categoryId: 0,
+      statusId: 1,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildNormalAppbar('Choose Product'),
-      body: MyScrollView(
-        listWidget: [
-          SizedBox(height: 10),
-          TitleWithNothing(
-            title: 'Product',
-          ),
-          BlocBuilder<ProductBloc, ProductState>(
-            builder: (context, state) {
-              if (state is ProductLoaded) {
-                return ProductMapContent();
-              } else if (state is ProductError) {
-                return FailureStateWidget();
-              } else if (state is ProductLoading) {
+    return RefreshIndicator(
+      onRefresh: () async => _onRefresh(context),
+      child: Scaffold(
+        appBar: buildNormalAppbar('Choose Product'),
+        body: MyScrollView(
+          listWidget: [
+            SearchBox(
+              onSubmitted: (value) {
+                setState(() {
+                  _valueSearch.value = TextEditingValue(text: value);
+                });
+                FocusScope.of(context).requestFocus(new FocusNode());
+                callApi();
+              },
+              onChanged: (value) {
+                setState(() {
+                  _valueSearch.value = TextEditingValue(text: value);
+                });
+              },
+              onTap: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                callApi();
+              },
+            ),
+            TitleWithNothing(
+              title: 'Product',
+            ),
+            BlocBuilder<ProductBloc, ProductState>(
+              builder: (context, state) {
+                if (state is ProductLoaded) {
+                  return ProductMapContent();
+                } else if (state is ProductError) {
+                  return FailureStateWidget();
+                } else if (state is ProductLoading) {
+                  return LoadingWidget();
+                }
                 return LoadingWidget();
-              }
-              return LoadingWidget();
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

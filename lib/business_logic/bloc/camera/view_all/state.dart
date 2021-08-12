@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 abstract class CameraState extends Equatable {}
 
-class CameraFetchInitial extends CameraState {
+class CameraInitialState extends CameraState {
   @override
   List<Object> get props => [];
 }

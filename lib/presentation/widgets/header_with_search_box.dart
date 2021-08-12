@@ -3,14 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HeaderWithSearchBox extends StatelessWidget {
-  HeaderWithSearchBox({@required this.size, @required this.title});
+  HeaderWithSearchBox({
+    @required this.size,
+    @required this.title,
+    @required this.valueSearch,
+    @required this.onSubmitted,
+    @required this.onChanged,
+    @required this.onTap,
+  });
 
   final Size size;
   final String title;
+  final TextEditingController valueSearch;
+  final void Function(String) onSubmitted;
+  final void Function(String) onChanged;
+  final void Function() onTap;
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: kDefaultPadding * 2.5),
+      //margin: EdgeInsets.only(bottom: kDefaultPadding),
       // It will cover 20% of our total height
       height: size.height * 0.2,
       child: Stack(
@@ -19,10 +30,10 @@ class HeaderWithSearchBox extends StatelessWidget {
             padding: EdgeInsets.only(
               left: kDefaultPadding,
               right: kDefaultPadding,
-              bottom: 36 + kDefaultPadding,
             ),
-            height: size.height * 0.2 - 27,
+            height: size.height * 0.2 - 50,
             decoration: BoxDecoration(
+              // color: kPrimaryColor,
               color: kPrimaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(36),
@@ -31,31 +42,40 @@ class HeaderWithSearchBox extends StatelessWidget {
             ),
             child: Row(
               children: <Widget>[
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.headline5.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 30),
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.headline5.copyWith(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 Spacer(),
-                Image.asset(
-                  "assets/images/cffe.png",
-                  color: kBackgroundColor,
+                Padding(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: Container(
+                    child: Image.asset(
+                      "assets/images/cffe.png",
+                      color: kBackgroundColor,
+                    ),
+                  ),
                 )
               ],
             ),
           ),
           Positioned(
-            bottom: 0,
+            bottom: 30,
             left: 0,
             right: 0,
             child: Container(
               alignment: Alignment.center,
               margin: EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              height: 54,
+              padding: EdgeInsets.only(
+                  left: kDefaultPadding, right: kDefaultPadding, bottom: 5),
+              height: 40,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
                     offset: Offset(0, 10),
@@ -68,7 +88,9 @@ class HeaderWithSearchBox extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: TextField(
-                      onChanged: (value) {},
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: onSubmitted,
+                      onChanged: onChanged,
                       decoration: InputDecoration(
                         hintText: "Search",
                         hintStyle: TextStyle(
@@ -76,21 +98,84 @@ class HeaderWithSearchBox extends StatelessWidget {
                         ),
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
-                        // surffix isn't working properly  with SVG
-                        // thats why we use row
-                        // suffixIcon: SvgPicture.asset("assets/icons/search.svg"),
                       ),
                     ),
                   ),
-                  SvgPicture.asset(
-                    "assets/icons/search.svg",
-                    color: kPrimaryColor,
+                  GestureDetector(
+                    onTap: onTap,
+                    child: SvgPicture.asset(
+                      "assets/icons/search.svg",
+                      color: kPrimaryColor,
+                      height: 15,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class SearchBox extends StatelessWidget {
+  final void Function(String) onSubmitted;
+  final void Function(String) onChanged;
+  final void Function() onTap;
+
+  const SearchBox({
+    @required this.onSubmitted,
+    @required this.onChanged,
+    @required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(kDefaultPadding / 2),
+      child: Container(
+        padding: EdgeInsets.only(left: 10, right: 10, bottom: 4),
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: kPrimaryColor.withOpacity(0.4),
+              spreadRadius: 0,
+              blurRadius: 8,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                textInputAction: TextInputAction.search,
+                onSubmitted: onSubmitted,
+                onChanged: onChanged,
+                decoration: InputDecoration(
+                  hintText: "Search",
+                  hintStyle: TextStyle(
+                    color: kPrimaryColor.withOpacity(0.5),
+                  ),
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: onTap,
+              child: SvgPicture.asset(
+                "assets/icons/search.svg",
+                color: kPrimaryColor,
+                height: 15,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

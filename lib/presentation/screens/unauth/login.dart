@@ -65,7 +65,13 @@ _loginError(BuildContext context, LoginError state) {
 }
 
 _loginAdminLoaded(BuildContext context) {
-  BlocProvider.of<UserBloc>(context).add(UserFetchEvent(StatusIntBase.All));
+  BlocProvider.of<UserBloc>(context).add(UserFetchEvent(
+    searchValue: "",
+    searchField: "",
+    fetchNext: 0,
+    pageNum: 0,
+    statusId: StatusIntBase.All,
+  ));
   Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (BuildContext context) => ScreenManager()),
     ModalRoute.withName('/'),
@@ -73,7 +79,13 @@ _loginAdminLoaded(BuildContext context) {
 }
 
 _loginManagerLoaded(BuildContext context) {
-  BlocProvider.of<ShelfBloc>(context).add(ShelfFetchEvent(StatusIntBase.All));
+  BlocProvider.of<ShelfBloc>(context).add(ShelfFetchEvent(
+    storeId: "",
+    shelfName: "",
+    fetchNext: 100,
+    pageNum: 0,
+    statusId: 0,
+  ));
   Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (BuildContext context) => ScreenShelf()),
     ModalRoute.withName('/'),

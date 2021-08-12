@@ -1,3 +1,4 @@
+import 'package:capstone/data/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 class ShelfEvent extends Equatable {
@@ -10,8 +11,20 @@ class ShelfFetchInitalEvent extends ShelfEvent {
 }
 
 class ShelfFetchEvent extends ShelfEvent {
+  ShelfFetchEvent({
+    this.storeId,
+    this.shelfName,
+    this.statusId,
+    this.pageNum,
+    this.fetchNext,
+    this.shelves,
+  });
+  final String storeId;
+  final String shelfName;
   final int statusId;
-  ShelfFetchEvent(this.statusId);
+  final int pageNum;
+  final int fetchNext;
+  final List<Shelf> shelves;
 }
 
 class ShelfSearchEvent extends ShelfEvent {

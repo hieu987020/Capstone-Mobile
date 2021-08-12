@@ -1,3 +1,4 @@
+import 'package:capstone/data/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 class StoreEvent extends Equatable {
@@ -5,9 +6,25 @@ class StoreEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class StoreFetchInitial extends StoreEvent {}
+
 class StoreFetchEvent extends StoreEvent {
+  StoreFetchEvent({
+    this.searchValue,
+    this.searchField,
+    this.pageNum,
+    this.fetchNext,
+    this.statusId,
+    this.cityId,
+    this.stores,
+  });
+  final String searchValue;
+  final String searchField;
+  final int pageNum;
+  final int fetchNext;
   final int statusId;
-  StoreFetchEvent(this.statusId);
+  final int cityId;
+  final List<Store> stores;
 }
 
 class StoreSearchEvent extends StoreEvent {

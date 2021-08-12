@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.capstone">
    <application
-        android:label="capstone"
+        android:label="cffe_app"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

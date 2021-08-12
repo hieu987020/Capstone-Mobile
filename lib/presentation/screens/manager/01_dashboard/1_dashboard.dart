@@ -1,5 +1,6 @@
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ScreenManagerDashboard extends StatelessWidget {
   @override
@@ -13,14 +14,10 @@ class ScreenManagerDashboard extends StatelessWidget {
           size: size,
           selectedIndex: 'Dashboard',
         ),
-        body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ScreenHeaderText('Dashboard'),
-              ScreenHeaderText('Dashboard'),
-              ScreenHeaderText('Dashboard'),
-            ]),
+        body: const WebView(
+          initialUrl: 'https://datastudio.google.com/s/sn0Uktbk6Wg',
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
       ),
     );
   }

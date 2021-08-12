@@ -341,6 +341,13 @@ class StoreDetailFooterWidget extends StatelessWidget {
                     child: PrimaryButton(
                       text: "Choose Manager",
                       onPressed: () {
+                        BlocProvider.of<UserBloc>(context).add(UserFetchEvent(
+                          searchValue: "",
+                          searchField: "",
+                          fetchNext: 100,
+                          pageNum: 0,
+                          statusId: 3,
+                        ));
                         Navigator.push(
                             context,
                             MaterialPageRoute(

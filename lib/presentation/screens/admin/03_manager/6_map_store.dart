@@ -1,36 +1,88 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
-import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenManagerMapStore extends StatelessWidget {
+class ScreenManagerMapStore extends StatefulWidget {
+  @override
+  _ScreenManagerMapStoreState createState() => _ScreenManagerMapStoreState();
+}
+
+class _ScreenManagerMapStoreState extends State<ScreenManagerMapStore> {
+  TextEditingController _valueSearch = TextEditingController(text: "");
+  // TextEditingController _statusId = TextEditingController(text: "");
+  String searchField = "storeName";
+  // String selectedValueStatus = "";
+
+  @override
+  void initState() {
+    // selectedValueStatus = 'All';
+    _valueSearch.value = TextEditingValue(text: '');
+    // _statusId.value = TextEditingValue(text: '0');
+    super.initState();
+  }
+
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<StoreBloc>(context).add(StoreFetchEvent(
+      searchValue: _valueSearch.text,
+      searchField: "storeName",
+      fetchNext: 100,
+      pageNum: 0,
+      statusId: 3,
+      cityId: 0,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<StoreBloc>(context)
-        .add(StoreFetchEvent(StatusIntBase.Pending));
-    return Scaffold(
-      appBar: buildNormalAppbar('Choose Store'),
-      body: MyScrollView(
-        listWidget: [
-          SizedBox(height: 10),
-          TitleWithNothing(
-            title: 'List Pending Stores',
-          ),
-          BlocBuilder<StoreBloc, StoreState>(
-            builder: (context, state) {
-              if (state is StoreLoaded) {
-                return UserLoadStoreContent();
-              } else if (state is StoreError) {
-                return FailureStateWidget();
-              } else if (state is StoreLoading) {
+    Size size = MediaQuery.of(context).size;
+
+    return RefreshIndicator(
+      onRefresh: () async => _onRefresh(context),
+      child: Scaffold(
+        appBar: buildNormalAppbar('Choose Store'),
+        body: MyScrollView(
+          listWidget: [
+            SearchBox(
+              onSubmitted: (value) {
+                setState(() {
+                  _valueSearch.value = TextEditingValue(text: value);
+                });
+                FocusScope.of(context).requestFocus(new FocusNode());
+                callApi();
+              },
+              onChanged: (value) {
+                setState(() {
+                  _valueSearch.value = TextEditingValue(text: value);
+                });
+              },
+              onTap: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                callApi();
+              },
+            ),
+            TitleWithNothing(
+              title: 'List Pending Stores',
+            ),
+            BlocBuilder<StoreBloc, StoreState>(
+              builder: (context, state) {
+                if (state is StoreLoaded) {
+                  return UserLoadStoreContent();
+                } else if (state is StoreError) {
+                  return FailureStateWidget();
+                } else if (state is StoreLoading) {
+                  return LoadingWidget();
+                }
                 return LoadingWidget();
-              }
-              return LoadingWidget();
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

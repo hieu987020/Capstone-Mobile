@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 abstract class CategoryState extends Equatable {}
 
-class CategoryFetchInitial extends CategoryState {
+class CategoryInitialState extends CategoryState {
   @override
   List<Object> get props => [];
 }

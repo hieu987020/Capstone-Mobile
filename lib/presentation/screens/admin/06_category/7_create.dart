@@ -42,8 +42,13 @@ _categoryCreateLoaded(BuildContext context, CategoryCreateLoaded state) {
     context,
     MaterialPageRoute(builder: (context) => ScreenCategory()),
   );
-  BlocProvider.of<CategoryBloc>(context)
-      .add(CategoryFetchEvent(StatusIntBase.All));
+  BlocProvider.of<CategoryBloc>(context).add(CategoryFetchEvent(
+    searchValue: "",
+    searchField: "",
+    fetchNext: 100,
+    pageNum: 0,
+    statusId: 0,
+  ));
   BlocProvider.of<CategoryCreateBloc>(context)
       .add(CategoryCreateInitialEvent());
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(

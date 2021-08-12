@@ -1,12 +1,43 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
-import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenCategory extends StatelessWidget {
+class ScreenCategory extends StatefulWidget {
+  @override
+  _ScreenCategoryState createState() => _ScreenCategoryState();
+}
+
+class _ScreenCategoryState extends State<ScreenCategory> {
+  TextEditingController _valueSearch = TextEditingController(text: "");
+  TextEditingController _statusId = TextEditingController(text: "");
+  String searchField = "categoryName";
+  String selectedValueStatus = "";
+
+  @override
+  void initState() {
+    selectedValueStatus = 'All';
+    _valueSearch.value = TextEditingValue(text: '');
+    _statusId.value = TextEditingValue(text: '0');
+    super.initState();
+  }
+
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<CategoryBloc>(context).add(CategoryFetchEvent(
+      searchValue: _valueSearch.text,
+      searchField: searchField,
+      fetchNext: 100,
+      pageNum: 0,
+      statusId: int.parse(_statusId.text),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -33,11 +64,40 @@ class ScreenCategory extends StatelessWidget {
             HeaderWithSearchBox(
               size: size,
               title: "Hi Admin",
+              valueSearch: _valueSearch,
+              onSubmitted: (value) {
+                setState(() {
+                  _valueSearch.value = TextEditingValue(text: value);
+                });
+                FocusScope.of(context).requestFocus(new FocusNode());
+                callApi();
+              },
+              onChanged: (value) {
+                setState(() {
+                  _valueSearch.value = TextEditingValue(text: value);
+                });
+              },
+              onTap: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                callApi();
+              },
             ),
-            TitleWithMoreBtn(
-              title: 'Category',
-              model: 'category',
-              defaultStatus: StatusStringBase.All,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: <Widget>[
+                  TitleWithCustomUnderline(text: "Category"),
+                  Spacer(),
+                  StatusDropdown(
+                    model: 'category',
+                    defaultValue: selectedValueStatus,
+                    controller: _statusId,
+                    callFunc: () {
+                      callApi();
+                    },
+                  ),
+                ],
+              ),
             ),
             BlocBuilder<CategoryBloc, CategoryState>(
               // ignore: missing_return

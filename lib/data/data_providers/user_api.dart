@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:capstone/data/data_providers/data_providers.dart';
@@ -36,7 +37,7 @@ class UserApi {
         "&pageNum=$pageNum" +
         "&fetchNext=$fetchNext" +
         "&statusId=$statusId";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -101,6 +102,24 @@ class UserApi {
     String token = prefs.getString('token');
     final response = await http.post(
       Uri.parse('$baseUrl/admin/manager/update-status'),
+      headers: {
+        'Content-Type': 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+      body: json,
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
+  Future<String> changePassword(String json) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    final response = await http.post(
+      Uri.parse('$baseUrl/admin/manager/change-password'),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',

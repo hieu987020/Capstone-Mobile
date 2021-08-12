@@ -94,6 +94,7 @@ class ProductUpdateFormState extends State<ProductUpdateForm> {
         TextEditingController(text: product.productName);
     final TextEditingController _description =
         TextEditingController(text: product.description);
+    final TextEditingController _category = TextEditingController(text: "Ipod");
     return Flexible(
       child: Padding(
         padding: const EdgeInsets.all(kDefaultPadding),
@@ -113,6 +114,11 @@ class ProductUpdateFormState extends State<ProductUpdateForm> {
                 ProductTextField(
                   hintText: "Description",
                   controller: _description,
+                ),
+                SizedBox(height: 15.0),
+                ProductTextField(
+                  hintText: "Category",
+                  controller: _category,
                 ),
                 SizedBox(height: 15.0),
                 // ProductTextField(

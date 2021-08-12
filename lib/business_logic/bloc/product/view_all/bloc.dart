@@ -1,47 +1,30 @@
-import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/repositories/repositories.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:capstone/business_logic/bloc/bloc.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
-  ProductBloc() : super(ProductFetchInitial());
+  ProductBloc() : super(ProductInitialState());
   final ProductRepository productRepository = new ProductRepository();
 
   @override
   Stream<ProductState> mapEventToState(ProductEvent event) async* {
     if (event is ProductFetchInitial) {
-      _getProducts(StatusIntBase.All);
+      yield ProductInitialState();
     } else if (event is ProductFetchEvent) {
-      yield* _getProducts(event.statusId);
-    } else if (event is ProductSearchEvent) {
-      yield* _searchProducts(event.productName);
+      yield* _getProducts(event.searchValue, event.searchField, event.pageNum,
+          event.fetchNext, event.categoryId, event.statusId);
     } else if (event is ProductAllEvent) {
       yield* _getAllProducts();
     }
   }
 
-  Stream<ProductState> _getProducts(int statusId) async* {
+  Stream<ProductState> _getProducts(String searchValue, String searchField,
+      int pageNum, int fetchNext, int categoryId, int statusId) async* {
     try {
       yield ProductLoading();
 
       final products = await productRepository.getProducts(
-          SearchValueBase.Default,
-          SearchFieldBase.Default,
-          PageNumBase.Default,
-          FetchNextBase.Default,
-          0,
-          statusId);
-      yield ProductLoaded(products);
-    } catch (e) {
-      yield ProductError();
-    }
-  }
-
-  Stream<ProductState> _searchProducts(String productName) async* {
-    try {
-      yield ProductLoading();
-      final products =
-          await productRepository.getProductsByProductName(productName);
+          searchValue, searchField, pageNum, fetchNext, categoryId, statusId);
       yield ProductLoaded(products);
     } catch (e) {
       yield ProductError();

@@ -1,24 +1,28 @@
-import 'package:capstone/business_logic/bloc/bloc.dart';
-import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StatusDropdown extends StatefulWidget {
-  final Function onChange;
   final String model;
   final String defaultValue;
-  StatusDropdown({this.onChange, this.model, this.defaultValue});
+  final TextEditingController controller;
+  final void Function() callFunc;
+  StatusDropdown({
+    @required this.model,
+    @required this.defaultValue,
+    @required this.controller,
+    @required this.callFunc,
+  });
 
   @override
   State<StatusDropdown> createState() =>
-      StatusDropdownState(onChange, model, defaultValue);
+      StatusDropdownState(model, defaultValue, controller, callFunc);
 }
 
 class StatusDropdownState extends State<StatusDropdown> {
-  final Function onChanged;
   final String model;
   final String defaultValue;
+  final TextEditingController controller;
+  final void Function() callFunc;
   String selectedValue = "";
   var _menu1 = ['All', 'Active', 'Pending', 'Inactive'];
 
@@ -32,7 +36,8 @@ class StatusDropdownState extends State<StatusDropdown> {
     super.initState();
   }
 
-  StatusDropdownState(this.onChanged, this.model, this.defaultValue);
+  StatusDropdownState(
+      this.model, this.defaultValue, this.controller, this.callFunc);
   @override
   Widget build(BuildContext context) {
     if (model == 'product' || model == 'category') {
@@ -49,92 +54,23 @@ class StatusDropdownState extends State<StatusDropdown> {
         height: 1,
         color: Colors.black,
       ),
-      onChanged: (String newValue) {
+      onChanged: (newValue) {
         setState(() {
           selectedValue = newValue;
         });
-        if (model == 'manager') {
-          if (newValue == "Active") {
-            BlocProvider.of<UserBloc>(context)
-                .add(UserFetchEvent(StatusIntBase.Active));
-          } else if (newValue == "Pending") {
-            BlocProvider.of<UserBloc>(context)
-                .add(UserFetchEvent(StatusIntBase.Pending));
-          } else if (newValue == "Inactive") {
-            BlocProvider.of<UserBloc>(context)
-                .add(UserFetchEvent(StatusIntBase.Inactive));
-          } else if (newValue == "All") {
-            BlocProvider.of<UserBloc>(context)
-                .add(UserFetchEvent(StatusIntBase.All));
-          }
-        } else if (model == 'store') {
-          if (newValue == "Active") {
-            BlocProvider.of<StoreBloc>(context)
-                .add(StoreFetchEvent(StatusIntBase.Active));
-          } else if (newValue == "Pending") {
-            BlocProvider.of<StoreBloc>(context)
-                .add(StoreFetchEvent(StatusIntBase.Pending));
-          } else if (newValue == "Inactive") {
-            BlocProvider.of<StoreBloc>(context)
-                .add(StoreFetchEvent(StatusIntBase.Inactive));
-          } else if (newValue == "All") {
-            BlocProvider.of<StoreBloc>(context)
-                .add(StoreFetchEvent(StatusIntBase.All));
-          }
-        } else if (model == 'product') {
-          if (newValue == "Active") {
-            BlocProvider.of<ProductBloc>(context)
-                .add(ProductFetchEvent(StatusIntBase.Active));
-          } else if (newValue == "Inactive") {
-            BlocProvider.of<ProductBloc>(context)
-                .add(ProductFetchEvent(StatusIntBase.Inactive));
-          } else if (newValue == "All") {
-            BlocProvider.of<ProductBloc>(context)
-                .add(ProductFetchEvent(StatusIntBase.All));
-          }
-        } else if (model == 'camera') {
-          if (newValue == "Active") {
-            BlocProvider.of<CameraBloc>(context)
-                .add(CameraFetchEvent(StatusIntBase.Active));
-          } else if (newValue == "Pending") {
-            BlocProvider.of<CameraBloc>(context)
-                .add(CameraFetchEvent(StatusIntBase.Pending));
-          } else if (newValue == "Inactive") {
-            BlocProvider.of<CameraBloc>(context)
-                .add(CameraFetchEvent(StatusIntBase.Inactive));
-          } else if (newValue == "All") {
-            BlocProvider.of<CameraBloc>(context)
-                .add(CameraFetchEvent(StatusIntBase.All));
-          }
-        } else if (model == 'category') {
-          if (newValue == "Active") {
-            BlocProvider.of<CategoryBloc>(context)
-                .add(CategoryFetchEvent(StatusIntBase.Active));
-          } else if (newValue == "Pending") {
-            BlocProvider.of<CategoryBloc>(context)
-                .add(CategoryFetchEvent(StatusIntBase.Pending));
-          } else if (newValue == "Inactive") {
-            BlocProvider.of<CategoryBloc>(context)
-                .add(CategoryFetchEvent(StatusIntBase.Inactive));
-          } else if (newValue == "All") {
-            BlocProvider.of<CategoryBloc>(context)
-                .add(CategoryFetchEvent(StatusIntBase.All));
-          }
-        } else if (model == 'shelf') {
-          if (newValue == "Active") {
-            BlocProvider.of<ShelfBloc>(context)
-                .add(ShelfFetchEvent(StatusIntBase.Active));
-          } else if (newValue == "Pending") {
-            BlocProvider.of<ShelfBloc>(context)
-                .add(ShelfFetchEvent(StatusIntBase.Pending));
-          } else if (newValue == "Inactive") {
-            BlocProvider.of<ShelfBloc>(context)
-                .add(ShelfFetchEvent(StatusIntBase.Inactive));
-          } else if (newValue == "All") {
-            BlocProvider.of<ShelfBloc>(context)
-                .add(ShelfFetchEvent(StatusIntBase.All));
-          }
+        if (newValue == "All") {
+          controller.value = TextEditingValue(text: "0");
         }
+        if (newValue == "Active") {
+          controller.value = TextEditingValue(text: "1");
+        }
+        if (newValue == "Pending") {
+          controller.value = TextEditingValue(text: "3");
+        }
+        if (newValue == "Inactive") {
+          controller.value = TextEditingValue(text: "2");
+        }
+        callFunc();
       },
       items: _menu1.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(

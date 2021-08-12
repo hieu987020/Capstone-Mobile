@@ -4,26 +4,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:capstone/business_logic/bloc/bloc.dart';
 
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
-  CategoryBloc() : super(CategoryFetchInitial());
+  CategoryBloc() : super(CategoryInitialState());
   final CategoryRepository categoryRepository = new CategoryRepository();
 
   @override
   Stream<CategoryState> mapEventToState(CategoryEvent event) async* {
     if (event is CategoryFetchInitial) {
-      _getCategorys(StatusIntBase.All);
+      yield CategoryInitialState();
     } else if (event is CategoryFetchEvent) {
-      yield* _getCategorys(event.statusId);
+      yield* _getCategorys(event.searchValue, event.searchField,
+          event.fetchNext, event.pageNum, event.statusId);
     }
   }
 
-  Stream<CategoryState> _getCategorys(int statusId) async* {
+  Stream<CategoryState> _getCategorys(String searchValue, String searchField,
+      int pageNum, int fetchNext, int statusId) async* {
     try {
       yield CategoryLoading();
       final categories = await categoryRepository.getCategories(
-        SearchValueBase.Default,
-        SearchFieldBase.Default,
-        PageNumBase.Default,
-        FetchNextBase.Default,
+        searchValue,
+        searchField,
+        pageNum,
+        fetchNext,
         statusId,
       );
 

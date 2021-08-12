@@ -41,7 +41,13 @@ _shelfCreateLoaded(BuildContext context, ShelfCreateLoaded state) {
     context,
     MaterialPageRoute(builder: (context) => ScreenShelf()),
   );
-  BlocProvider.of<ShelfBloc>(context).add(ShelfFetchEvent(StatusIntBase.All));
+  BlocProvider.of<ShelfBloc>(context).add(ShelfFetchEvent(
+    storeId: "",
+    shelfName: "",
+    fetchNext: 100,
+    pageNum: 0,
+    statusId: 0,
+  ));
   BlocProvider.of<ShelfCreateBloc>(context).add(ShelfCreateInitialEvent());
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text("Create Successfully"),

@@ -70,64 +70,6 @@ _userUpdateInsideError(BuildContext context, UserUpdateInsideError state) {
   );
 }
 
-_userRemoveStoreDialog(BuildContext context, User user) {
-  showDialog<String>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Remove Store'),
-        content: Text('Are you sure to remove this store?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              BlocProvider.of<UserUpdateInsideBloc>(context)
-                  .add(UserMapStoreEvent(user.storeId, user.userId, 2));
-              Navigator.pop(context);
-            },
-            child: const Text('Yes'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-_userResetPasswordDialog(BuildContext context, User user) {
-  showDialog<String>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Reset Password'),
-        content: Text('Are you sure to reset password for this manager?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              BlocProvider.of<UserUpdateInsideBloc>(context)
-                  .add(UserResetPassword(user.userName, user.email));
-              Navigator.pop(context);
-            },
-            child: const Text('Yes'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
 class ProfileMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -142,12 +84,8 @@ class ProfileMenu extends StatelessWidget {
                   builder: (context) => ScreenManagerUpdateInformation()));
           break;
         case 'Change Password':
-          // User user;
-          // var state = BlocProvider.of<UserDetailBloc>(context).state;
-          // if (state is UserDetailLoaded) {
-          //   user = state.user;
-          // }
-          // _userResetPasswordDialog(context, user);
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ScreenChangePassword()));
           break;
         case 'Change Avatar':
           Navigator.push(

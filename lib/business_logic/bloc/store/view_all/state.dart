@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 abstract class StoreState extends Equatable {}
 
-class StoreFetchInitial extends StoreState {
+class StoreInitialState extends StoreState {
   @override
   List<Object> get props => [];
 }

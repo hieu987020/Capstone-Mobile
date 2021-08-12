@@ -49,7 +49,13 @@ _cameraCreateLoaded(BuildContext context, CameraCreateLoaded state) {
     context,
     MaterialPageRoute(builder: (context) => ScreenCamera()),
   );
-  BlocProvider.of<CameraBloc>(context).add(CameraFetchEvent(StatusIntBase.All));
+  BlocProvider.of<CameraBloc>(context).add(CameraFetchEvent(
+    storeId: "",
+    cameraName: "",
+    statusId: 0,
+    fetchNext: 100,
+    pageNum: 0,
+  ));
   BlocProvider.of<CameraCreateBloc>(context).add(CameraCreateInitialEvent());
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text("Create Successfully"),
@@ -191,7 +197,7 @@ class CameraCreateFormState extends State<CameraCreateForm> {
                   return Text("");
                 },
               ),
-              CameraTypeRatio(controller: _type, defaultValue: 'Counter'),
+              CameraTypeRatio(controller: _type, defaultValue: 'Counting'),
               SizedBox(height: 15.0),
               PrimaryButton(
                 text: "Create",

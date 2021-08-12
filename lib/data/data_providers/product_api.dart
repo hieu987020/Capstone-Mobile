@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:capstone/data/data_providers/data_providers.dart';
@@ -36,7 +37,7 @@ class ProductApi {
           "&categoryId=$categoryId" +
           "&fetchNext=$fetchNext" +
           "&statusId=$statusId";
-      print(uri);
+      log("API: " + uri);
       final response = await http.get(
         Uri.parse(uri),
         headers: {

@@ -196,6 +196,10 @@ class ManagerMenu extends StatelessWidget {
         case 'Change to Pending':
           _userChangeStatusDialog(context, StatusIntBase.Pending);
           break;
+        case 'Change Password':
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ScreenChangePassword()));
+          break;
       }
     }
 
@@ -209,6 +213,7 @@ class ManagerMenu extends StatelessWidget {
                 return {
                   'Update Information',
                   'Change Avatar',
+                  'Change Password'
                 }.map((String choice) {
                   return PopupMenuItem<String>(
                     value: choice,
@@ -377,10 +382,10 @@ class ManagerDetailInformation extends StatelessWidget {
                   fieldName: 'Address',
                   fieldValue: user.address,
                 ),
-                (user.reasonInactive == null)
+                (user.status != "Inactive")
                     ? SizedBox(height: 0)
                     : DetailDivider(size: size),
-                (user.reasonInactive == null)
+                (user.status != "Inactive")
                     ? SizedBox(height: 0)
                     : DetailFieldContainer(
                         fieldName: 'Reason Inactive',
@@ -433,6 +438,14 @@ class ManagerDetailFooterWidget extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ScreenManagerMapStore()));
+                        BlocProvider.of<StoreBloc>(context).add(StoreFetchEvent(
+                          searchValue: "",
+                          searchField: "",
+                          fetchNext: 100,
+                          pageNum: 0,
+                          statusId: 3,
+                          cityId: 0,
+                        ));
                       },
                     ),
                   ),

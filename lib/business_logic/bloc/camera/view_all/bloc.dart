@@ -4,28 +4,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:capstone/business_logic/bloc/bloc.dart';
 
 class CameraBloc extends Bloc<CameraEvent, CameraState> {
-  CameraBloc() : super(CameraFetchInitial());
+  CameraBloc() : super(CameraInitialState());
   final CameraRepository cameraRepository = new CameraRepository();
 
   @override
   Stream<CameraState> mapEventToState(CameraEvent event) async* {
     if (event is CameraFetchInitial) {
-      _getCameras(StatusIntBase.All);
+      yield CameraInitialState();
     } else if (event is CameraFetchEvent) {
-      yield* _getCameras(event.statusId);
-    } else if (event is CameraSearchEvent) {
-      yield* _searchCameras(event.cameraName);
+      yield* _getCameras(event.storeId, event.cameraName, event.statusId,
+          event.pageNum, event.fetchNext);
     } else if (event is CameraAvailableEvent) {
-      yield* _getAvailableCameras(event.statusId, event.typeId);
+      yield* _getAvailableCameras(
+          event.cameraName, event.pageNum, event.fetchNext, event.typeId);
     }
   }
 
-  Stream<CameraState> _getCameras(int statusId) async* {
+  Stream<CameraState> _getCameras(String storeId, String cameraName,
+      int statusId, int pageNum, int fetchNext) async* {
     try {
       yield CameraLoading();
 
       final cameras = await cameraRepository.getCameras(
-          "", "", statusId, PageNumBase.Default, FetchNextBase.Default);
+          storeId, cameraName, statusId, pageNum, fetchNext);
 
       yield CameraLoaded(cameras);
     } catch (e) {
@@ -33,24 +34,14 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     }
   }
 
-  Stream<CameraState> _getAvailableCameras(int statusId, int typeId) async* {
+  Stream<CameraState> _getAvailableCameras(
+      String cameraName, int pageNum, int fetchNext, int typeId) async* {
     try {
       yield CameraLoading();
 
       final cameras = await cameraRepository.getAvailableCameras(
-          "", PageNumBase.Default, FetchNextBase.Default, typeId);
+          cameraName, pageNum, fetchNext, typeId);
 
-      yield CameraLoaded(cameras);
-    } catch (e) {
-      yield CameraError();
-    }
-  }
-
-  Stream<CameraState> _searchCameras(String cameraName) async* {
-    try {
-      yield CameraLoading();
-      final cameras = await cameraRepository.getCameras(
-          "", cameraName, 0, PageNumBase.Default, FetchNextBase.Default);
       yield CameraLoaded(cameras);
     } catch (e) {
       yield CameraError();

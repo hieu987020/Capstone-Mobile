@@ -45,7 +45,13 @@ _userCreateLoaded(BuildContext context, UserCreateLoaded state) {
     context,
     MaterialPageRoute(builder: (context) => ScreenManager()),
   );
-  BlocProvider.of<UserBloc>(context).add(UserFetchEvent(StatusIntBase.All));
+  BlocProvider.of<UserBloc>(context).add(UserFetchEvent(
+    searchValue: "",
+    searchField: "",
+    fetchNext: 0,
+    pageNum: 0,
+    statusId: StatusIntBase.All,
+  ));
   BlocProvider.of<UserCreateBloc>(context).add(UserCreateInitialEvent());
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text("Create Successfully"),

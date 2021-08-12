@@ -1,35 +1,38 @@
-import 'package:capstone/data/data_providers/const_common.dart';
+import 'package:capstone/data/models/models.dart';
 import 'package:capstone/data/repositories/repositories.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:capstone/business_logic/bloc/bloc.dart';
 
 class StoreBloc extends Bloc<StoreEvent, StoreState> {
-  StoreBloc() : super(StoreFetchInitial());
+  StoreBloc() : super(StoreInitialState());
   final StoreRepository storeRepository = new StoreRepository();
 
   @override
   Stream<StoreState> mapEventToState(StoreEvent event) async* {
     if (event is StoreFetchInitial) {
-      _getStores(StatusIntBase.All);
+      yield StoreInitialState();
     } else if (event is StoreFetchEvent) {
-      yield* _getStores(event.statusId);
-    } else if (event is StoreSearchEvent) {
-      yield* _searchStores(event.storeName);
+      yield* _getStores(event.searchValue, event.searchField, event.pageNum,
+          event.fetchNext, event.statusId, event.cityId, event.stores);
     } else if (event is StoreGetOperationEvent) {
       yield* _getOperationStores();
     }
   }
 
-  Stream<StoreState> _getStores(int statusId) async* {
+  Stream<StoreState> _getStores(
+    String searchValue,
+    String searchField,
+    int pageNum,
+    int fetchNext,
+    int statusId,
+    int cityId,
+    List<Store> stores,
+  ) async* {
     try {
       yield StoreLoading();
 
       final stores = await storeRepository.getStores(
-          SearchValueBase.Default,
-          SearchFieldBase.Default,
-          PageNumBase.Default,
-          FetchNextBase.Default,
-          statusId);
+          searchValue, searchField, pageNum, fetchNext, statusId, cityId);
 
       yield StoreLoaded(stores);
     } catch (e) {
@@ -41,16 +44,6 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
     try {
       yield StoreLoading();
       final stores = await storeRepository.getOperationStores();
-      yield StoreLoaded(stores);
-    } catch (e) {
-      yield StoreError();
-    }
-  }
-
-  Stream<StoreState> _searchStores(String storeName) async* {
-    try {
-      yield StoreLoading();
-      final stores = await storeRepository.getStoresByStoreName(storeName);
       yield StoreLoaded(stores);
     } catch (e) {
       yield StoreError();

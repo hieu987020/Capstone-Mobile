@@ -266,7 +266,7 @@ class CameraDetailInformation extends StatelessWidget {
                 (camera.typeDetect == 1)
                     ? DetailFieldContainer(
                         fieldName: 'Type Detect',
-                        fieldValue: 'Counter',
+                        fieldValue: 'Counting',
                       )
                     : DetailFieldContainer(
                         fieldName: 'Type Detect',

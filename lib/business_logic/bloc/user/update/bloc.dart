@@ -17,6 +17,10 @@ class UserUpdateBloc extends Bloc<UserUpdateEvent, UserUpdateState> {
     if (event is UserUpdateSubmit) {
       yield* _updateUser(event.user);
     }
+    if (event is UserChangePassword) {
+      yield* _changePassword(event.userName, event.oldPassword,
+          event.oldPassword, event.retypePassword);
+    }
   }
 
   Stream<UserUpdateState> _updateUser(User user) async* {
@@ -28,14 +32,22 @@ class UserUpdateBloc extends Bloc<UserUpdateEvent, UserUpdateState> {
       } else {
         yield UserUpdateError(result);
       }
+    } catch (e) {
+      yield UserUpdateError("System can not finish this action");
+    }
+  }
 
-      // else if (result.contains('MSG-055')) {
-      //   yield UserUpdateDuplicatedEmail('Email is existed');
-      // } else if (result.contains('MSG-056')) {
-      //   yield UserUpdateDuplicateIdentifyCard('IdentifyCard is existed');
-      // } else if (result.contains('errorCodeAndMsg')) {
-      //   yield UserUpdateError(result);
-      // }
+  Stream<UserUpdateState> _changePassword(String userName, String oldPassword,
+      String newPassword, String reType) async* {
+    try {
+      yield UserUpdateLoading();
+      String result = await _usersRepository.changePassword(
+          userName, oldPassword, newPassword, reType);
+      if (result == 'true') {
+        yield UserUpdateLoaded();
+      } else {
+        yield UserUpdateError(result);
+      }
     } catch (e) {
       yield UserUpdateError("System can not finish this action");
     }

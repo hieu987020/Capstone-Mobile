@@ -42,7 +42,14 @@ _storeCreateLoaded(BuildContext context, StoreCreateLoaded state) {
     ModalRoute.withName('/'),
   );
   BlocProvider.of<StoreCreateBloc>(context).add(StoreCreateInitialEvent());
-  BlocProvider.of<StoreBloc>(context).add(StoreFetchEvent(StatusIntBase.All));
+  BlocProvider.of<StoreBloc>(context).add(StoreFetchEvent(
+    searchValue: "",
+    searchField: "",
+    fetchNext: 100,
+    pageNum: 0,
+    statusId: 0,
+    cityId: 0,
+  ));
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text("Create Successfully"),
     duration: Duration(milliseconds: 2000),

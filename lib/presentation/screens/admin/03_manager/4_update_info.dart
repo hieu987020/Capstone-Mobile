@@ -10,7 +10,7 @@ class ScreenManagerUpdateInformation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: buildNormalAppbar('Update Manager'),
+      appBar: buildNormalAppbar('Update Information'),
       body: BlocListener<UserUpdateBloc, UserUpdateState>(
         listener: (context, state) {
           if (state is UserUpdateLoaded) {

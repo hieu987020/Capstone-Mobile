@@ -3,7 +3,6 @@ import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/repositories/repositories.dart';
 import 'package:capstone/data/repositories/product_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CategoryDetailBloc
     extends Bloc<CategoryDetailEvent, CategoryDetailState> {

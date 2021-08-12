@@ -37,8 +37,14 @@ _productCreateLoaded(BuildContext context, ProductCreateLoaded state) {
     context,
     MaterialPageRoute(builder: (context) => ScreenProduct()),
   );
-  BlocProvider.of<ProductBloc>(context)
-      .add(ProductFetchEvent(StatusIntBase.All));
+  BlocProvider.of<ProductBloc>(context).add(ProductFetchEvent(
+    searchValue: "",
+    searchField: "",
+    fetchNext: 100,
+    pageNum: 0,
+    categoryId: 0,
+    statusId: 0,
+  ));
   BlocProvider.of<ProductCreateBloc>(context).add(ProductCreateInitialEvent());
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text("Create Successfully"),

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:http/http.dart' as http;
@@ -22,8 +23,34 @@ class StoreApi {
     }
   }
 
+  Future<String> getVideos(String dateStart, String dateEnd, int videoType,
+      String storeId, String shelfId, String productId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String uri = "$baseUrl" +
+        "/admin/videos?" +
+        "dayStart=$dateStart" +
+        "&dayEnd=$dateEnd" +
+        "&videoType=$videoType" +
+        "&storeId=$storeId" +
+        "&shelfId=$shelfId" +
+        "&productId=$productId";
+    log("API: " + uri);
+    final response = await http.get(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
   Future<String> getStores(String searchValue, String searchField, int pageNum,
-      int fetchNext, int statusId) async {
+      int fetchNext, int statusId, int cityId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = "$baseUrl" +
@@ -32,7 +59,9 @@ class StoreApi {
         "&searchField=$searchField" +
         "&pageNum=$pageNum" +
         "&fetchNext=$fetchNext" +
-        "&statusId=$statusId";
+        "&statusId=$statusId" +
+        "&cityId=$cityId";
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {

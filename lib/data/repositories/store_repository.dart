@@ -13,15 +13,33 @@ class StoreRepository {
   }
 
   Future<List<Store>> getStores(String searchValue, String searchField,
-      int pageNum, int fetchNext, int statusId) async {
+      int pageNum, int fetchNext, int statusId, int cityId) async {
     final String rawBody = await _api.getStores(
-        searchValue, searchField, pageNum, fetchNext, statusId);
+        searchValue, searchField, pageNum, fetchNext, statusId, cityId);
     var jsonResponse = json.decode(rawBody);
     if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
       return null;
     }
     return (jsonResponse['stores'] as List)
         .map((e) => Store.fromJsonLst(e))
+        .toList();
+  }
+
+  Future<List<Store>> getVideos(String dateStart, String dateEnd, int videoType,
+      String storeId, String shelfId, String productId) async {
+    final String rawBody = await _api.getVideos(
+        dateStart, dateEnd, videoType, storeId, shelfId, productId);
+    var jsonResponse = json.decode(rawBody);
+    if (rawBody.contains(ErrorCodeAndMessage.errorCodeAndMessage)) {
+      return null;
+    }
+    if (videoType == 1) {
+      return (jsonResponse['stores'] as List)
+          .map((e) => Store.fromJsonCountingVideo(e))
+          .toList();
+    }
+    return (jsonResponse['stores'] as List)
+        .map((e) => Store.fromJsonEmotionVideo(e))
         .toList();
   }
 

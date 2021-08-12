@@ -1,47 +1,111 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
-import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenProductManager extends StatelessWidget {
+class ScreenProductManager extends StatefulWidget {
+  @override
+  _ScreenProductManagerState createState() => _ScreenProductManagerState();
+}
+
+class _ScreenProductManagerState extends State<ScreenProductManager> {
+  TextEditingController _valueSearch = TextEditingController(text: "");
+  TextEditingController _statusId = TextEditingController(text: "");
+  String searchField = "productName";
+  String selectedValueStatus = "";
+
+  @override
+  void initState() {
+    selectedValueStatus = 'All';
+    _valueSearch.value = TextEditingValue(text: '');
+    _statusId.value = TextEditingValue(text: '0');
+    super.initState();
+  }
+
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<ProductBloc>(context).add(ProductFetchEvent(
+      searchValue: _valueSearch.text,
+      searchField: searchField,
+      fetchNext: 100,
+      pageNum: 0,
+      categoryId: 0,
+      statusId: int.parse(_statusId.text),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () => outApp(context),
-      child: Scaffold(
-        appBar: buildAppBar(),
-        drawer: ManagerNavigator(
-          size: size,
-          selectedIndex: 'Product',
-        ),
-        body: MyScrollView(
-          listWidget: [
-            HeaderWithSearchBox(
-              size: size,
-              title: "Hi Manager",
-            ),
-            TitleWithMoreBtn(
-              title: 'Product',
-              model: 'product',
-              defaultStatus: StatusStringBase.All,
-            ),
-            BlocBuilder<ProductBloc, ProductState>(
-              builder: (context, state) {
-                if (state is ProductLoaded) {
-                  return ProductContentM();
-                } else if (state is ProductError) {
-                  return FailureStateWidget();
-                } else if (state is ProductLoading) {
+      child: RefreshIndicator(
+        onRefresh: () async => _onRefresh(context),
+        child: Scaffold(
+          appBar: buildAppBar(),
+          drawer: ManagerNavigator(
+            size: size,
+            selectedIndex: 'Product',
+          ),
+          body: MyScrollView(
+            listWidget: [
+              HeaderWithSearchBox(
+                size: size,
+                title: "Hi Manager",
+                valueSearch: _valueSearch,
+                onSubmitted: (value) {
+                  setState(() {
+                    _valueSearch.value = TextEditingValue(text: value);
+                  });
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  callApi();
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _valueSearch.value = TextEditingValue(text: value);
+                  });
+                },
+                onTap: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  callApi();
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: <Widget>[
+                    TitleWithCustomUnderline(text: "Product"),
+                    Spacer(),
+                    StatusDropdown(
+                      model: 'product',
+                      defaultValue: selectedValueStatus,
+                      controller: _statusId,
+                      callFunc: () {
+                        callApi();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              BlocBuilder<ProductBloc, ProductState>(
+                builder: (context, state) {
+                  if (state is ProductLoaded) {
+                    return ProductContentM();
+                  } else if (state is ProductError) {
+                    return FailureStateWidget();
+                  } else if (state is ProductLoading) {
+                    return LoadingWidget();
+                  }
                   return LoadingWidget();
-                }
-                return LoadingWidget();
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

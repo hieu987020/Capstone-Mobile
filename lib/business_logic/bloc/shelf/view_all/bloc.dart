@@ -1,4 +1,3 @@
-import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:capstone/data/repositories/repositories.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:capstone/business_logic/bloc/bloc.dart';
@@ -13,27 +12,25 @@ class ShelfBloc extends Bloc<ShelfEvent, ShelfState> {
     if (event is ShelfFetchInitalEvent) {
       yield ShelfFetchInitial();
     } else if (event is ShelfFetchEvent) {
-      yield* _getShelves(event.statusId);
+      yield* _getShelves(event.storeId, event.shelfName, event.statusId,
+          event.pageNum, event.fetchNext);
     } else if (event is FetchShelfByStoreIdEvent) {
       yield* _getShelvesByAdmin(event.storeId);
     }
-
-    // else if (event is ShelfSearchEvent) {
-    //   yield* _searchShelfs(event.storeName);
-    // }
   }
 
-  Stream<ShelfState> _getShelves(int statusId) async* {
+  Stream<ShelfState> _getShelves(String storeId, String shelfName, int statusId,
+      int pageNum, int fetchNext) async* {
     try {
       yield ShelfLoading();
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String storeId = prefs.getString('storeId');
+      storeId = prefs.getString('storeId');
       final shelves = await shelfRepository.getShelves(
         storeId,
-        "",
+        shelfName,
         statusId,
-        PageNumBase.Default,
-        FetchNextBase.Default,
+        pageNum,
+        fetchNext,
       );
       yield ShelfLoaded(shelves);
     } catch (e) {
@@ -45,19 +42,9 @@ class ShelfBloc extends Bloc<ShelfEvent, ShelfState> {
     try {
       yield ShelfLoading();
       final shelves = await shelfRepository.getShelvesByStoreId(storeId);
-      print(shelves.length);
       yield ShelfLoaded(shelves);
     } catch (e) {
       yield ShelfError();
     }
   }
-  // Stream<ShelfState> _searchShelfs(String storeName) async* {
-  //   try {
-  //     yield ShelfLoading();
-  //     final stores = await storeRepository.getShelfsByShelfName(storeName);
-  //     yield ShelfLoaded(stores);
-  //   } catch (e) {
-  //     yield ShelfError();
-  //   }
-  // }
 }

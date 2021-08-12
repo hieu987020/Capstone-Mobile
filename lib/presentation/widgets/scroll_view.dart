@@ -11,6 +11,7 @@ class MyScrollView extends StatelessWidget {
         FocusScope.of(context).requestFocus(new FocusNode());
       },
       child: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
         child: SafeArea(
           minimum: EdgeInsets.only(bottom: 200),
           child: Container(

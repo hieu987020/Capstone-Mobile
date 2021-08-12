@@ -241,15 +241,20 @@ class _StoreDropDownState extends State<StoreDropDown> {
 
   _StoreDropDownState(this.controller, this.defaultStore);
 
-  List<String> stores = [];
+  List<Store> stores = [];
+  List<String> storeMenu = [];
   String selectedStore;
   @override
   void initState() {
     var storeState = BlocProvider.of<StoreBloc>(context).state;
     if (storeState is StoreLoaded) {
       if (storeState.stores != null || storeState.stores.isNotEmpty) {
+        stores = storeState.stores;
+        storeMenu.add("All Stores");
+        controller.value = TextEditingValue(text: "All");
+        selectedStore = "All Stores";
         storeState.stores.forEach((element) {
-          stores.add(element.storeName);
+          storeMenu.add(element.storeName);
         });
       }
     }
@@ -292,7 +297,7 @@ class _StoreDropDownState extends State<StoreDropDown> {
           color: Colors.black,
         ),
         isExpanded: true,
-        items: stores.map((String value) {
+        items: storeMenu.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(value),
@@ -302,18 +307,30 @@ class _StoreDropDownState extends State<StoreDropDown> {
           setState(() {
             selectedStore = value;
           });
-          var storeState = BlocProvider.of<StoreBloc>(context).state;
-          if (storeState is StoreLoaded) {
-            if (storeState.stores != null || storeState.stores.isNotEmpty) {
-              storeState.stores.forEach((element) {
-                if (element.storeName == value) {
-                  controller.value = TextEditingValue(text: element.storeId);
-                  BlocProvider.of<ShelfBloc>(context)
-                      .add(FetchShelfByStoreIdEvent(element.storeId));
-                  return;
-                }
-              });
-            }
+          // var storeState = BlocProvider.of<StoreBloc>(context).state;
+          // if (storeState is StoreLoaded) {
+          //   if (storeState.stores != null || storeState.stores.isNotEmpty) {
+          //     storeState.stores.forEach((element) {
+          //       if (element.storeName == value) {
+          //         controller.value = TextEditingValue(text: element.storeId);
+          //         BlocProvider.of<ShelfBloc>(context)
+          //             .add(FetchShelfByStoreIdEvent(element.storeId));
+          //         return;
+          //       }
+          //     });
+          //   }
+          // }
+          if (value == "All stores") {
+            controller.value = TextEditingValue(text: "All");
+          } else if (stores != null || stores.isNotEmpty) {
+            stores.forEach((element) {
+              if (element.storeName == value) {
+                controller.value = TextEditingValue(text: element.storeId);
+                BlocProvider.of<ShelfBloc>(context)
+                    .add(FetchShelfByStoreIdEvent(element.storeId));
+                return;
+              }
+            });
           }
         },
       ),
@@ -340,15 +357,22 @@ class _ShelfDropDownState extends State<ShelfDropDown> {
 
   _ShelfDropDownState(this.controller, this.defaulShelf);
 
-  List<String> shelves = [];
+  List<Shelf> shelves;
+  List<String> shelveMenu = [];
   String selectedShelf;
   @override
   void initState() {
     var shelfState = BlocProvider.of<ShelfBloc>(context).state;
     if (shelfState is ShelfLoaded) {
       if (shelfState.shelves != null || shelfState.shelves.isNotEmpty) {
+        // Set default
+        shelves = shelfState.shelves;
+        shelveMenu.add("All shelves");
+        controller.value = TextEditingValue(text: "All");
+        selectedShelf = "All shelves";
+
         shelfState.shelves.forEach((element) {
-          shelves.add(element.shelfName);
+          shelveMenu.add(element.shelfName);
         });
       }
     }
@@ -391,7 +415,7 @@ class _ShelfDropDownState extends State<ShelfDropDown> {
           color: Colors.black,
         ),
         isExpanded: true,
-        items: shelves.map((String value) {
+        items: shelveMenu.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(value),
@@ -401,6 +425,27 @@ class _ShelfDropDownState extends State<ShelfDropDown> {
           setState(() {
             selectedShelf = shelf;
           });
+          var shelfState = BlocProvider.of<ShelfBloc>(context).state;
+          if (shelfState is ShelfLoaded) {
+            if (shelfState.shelves != null || shelfState.shelves.isNotEmpty) {
+              shelfState.shelves.forEach((element) {
+                if (element.shelfName == shelf) {
+                  controller.value = TextEditingValue(text: element.shelfId);
+                  return;
+                }
+              });
+            }
+          }
+          if (shelf == "All shelves") {
+            controller.value = TextEditingValue(text: "All");
+          } else if (shelves != null || shelves.isNotEmpty) {
+            shelves.forEach((element) {
+              if (element.shelfName == shelf) {
+                controller.value = TextEditingValue(text: element.shelfId);
+                return;
+              }
+            });
+          }
         },
       ),
     );
@@ -430,11 +475,15 @@ class _ProductDropDownState extends State<ProductDropDown> {
   String selectedStore;
   @override
   void initState() {
-    var storeState = BlocProvider.of<StoreBloc>(context).state;
-    if (storeState is StoreLoaded) {
-      if (storeState.stores != null || storeState.stores.isNotEmpty) {
-        storeState.stores.forEach((element) {
-          stores.add(element.storeName);
+    var productState = BlocProvider.of<ProductBloc>(context).state;
+    if (productState is ProductLoaded) {
+      if (productState.products != null || productState.products.isNotEmpty) {
+        productState.products.forEach((element) {
+          stores.add(element.productName);
+          if (productState.products.first.productName == element.productName) {
+            selectedStore = element.productName;
+            controller.value = TextEditingValue(text: element.productId);
+          }
         });
       }
     }
@@ -487,14 +536,13 @@ class _ProductDropDownState extends State<ProductDropDown> {
           setState(() {
             selectedStore = value;
           });
-          var storeState = BlocProvider.of<StoreBloc>(context).state;
-          if (storeState is StoreLoaded) {
-            if (storeState.stores != null || storeState.stores.isNotEmpty) {
-              storeState.stores.forEach((element) {
-                if (element.storeName == value) {
-                  controller.value = TextEditingValue(text: element.storeId);
-                  BlocProvider.of<ShelfBloc>(context)
-                      .add(FetchShelfByStoreIdEvent(element.storeId));
+          var productState = BlocProvider.of<ProductBloc>(context).state;
+          if (productState is ProductLoaded) {
+            if (productState.products != null ||
+                productState.products.isNotEmpty) {
+              productState.products.forEach((element) {
+                if (element.productName == value) {
+                  controller.value = TextEditingValue(text: element.productId);
                   return;
                 }
               });

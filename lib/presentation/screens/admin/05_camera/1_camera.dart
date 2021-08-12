@@ -1,12 +1,46 @@
 import 'package:capstone/business_logic/bloc/bloc.dart';
-import 'package:capstone/data/data_providers/data_providers.dart';
 import 'package:capstone/data/models/models.dart';
 import 'package:capstone/presentation/screens/screens.dart';
 import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenCamera extends StatelessWidget {
+class ScreenCamera extends StatefulWidget {
+  @override
+  _ScreenCameraState createState() => _ScreenCameraState();
+}
+
+class _ScreenCameraState extends State<ScreenCamera> {
+  TextEditingController _valueSearch = TextEditingController(text: "");
+
+  TextEditingController _statusId = TextEditingController(text: "");
+
+  // String searchField = "fullName";
+
+  String selectedValueStatus = "";
+
+  @override
+  void initState() {
+    selectedValueStatus = 'All';
+    _valueSearch.value = TextEditingValue(text: '');
+    _statusId.value = TextEditingValue(text: '0');
+    super.initState();
+  }
+
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<CameraBloc>(context).add(CameraFetchEvent(
+      storeId: "",
+      cameraName: _valueSearch.text,
+      statusId: int.parse(_statusId.text),
+      fetchNext: 100,
+      pageNum: 0,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     // It will provie us total height  and width of our screen
@@ -14,44 +48,78 @@ class ScreenCamera extends StatelessWidget {
     // it enable scrolling on small device
     return WillPopScope(
       onWillPop: () => outApp(context),
-      child: Scaffold(
-        appBar: buildAppBar(),
-        drawer: AdminNavigator(
-          size: size,
-          selectedIndex: 'Camera',
-        ),
-        floatingActionButton: AddFloatingButton(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ScreenCameraCreate()));
-          },
-        ),
-        floatingActionButtonLocation:
-            FloatingActionButtonLocation.miniCenterFloat,
-        body: MyScrollView(
-          listWidget: [
-            HeaderWithSearchBox(
-              size: size,
-              title: "Hi Admin",
-            ),
-            TitleWithMoreBtn(
-              title: 'Camera',
-              model: 'camera',
-              defaultStatus: StatusStringBase.All,
-            ),
-            BlocBuilder<CameraBloc, CameraState>(
-              builder: (context, state) {
-                if (state is CameraLoaded) {
-                  return CameraContent();
-                } else if (state is CameraError) {
-                  return FailureStateWidget();
-                } else if (state is CameraLoading) {
+      child: RefreshIndicator(
+        onRefresh: () async => _onRefresh(context),
+        child: Scaffold(
+          appBar: buildAppBar(),
+          drawer: AdminNavigator(
+            size: size,
+            selectedIndex: 'Camera',
+          ),
+          floatingActionButton: AddFloatingButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ScreenCameraCreate()));
+            },
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniCenterFloat,
+          body: MyScrollView(
+            listWidget: [
+              HeaderWithSearchBox(
+                size: size,
+                title: "Hi Admin",
+                valueSearch: _valueSearch,
+                onSubmitted: (value) {
+                  setState(() {
+                    _valueSearch.value = TextEditingValue(text: value);
+                  });
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  callApi();
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _valueSearch.value = TextEditingValue(text: value);
+                  });
+                },
+                onTap: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  callApi();
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: <Widget>[
+                    TitleWithCustomUnderline(text: "Camera"),
+                    Spacer(),
+                    StatusDropdown(
+                      model: 'manager',
+                      defaultValue: selectedValueStatus,
+                      controller: _statusId,
+                      callFunc: () {
+                        callApi();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              BlocBuilder<CameraBloc, CameraState>(
+                builder: (context, state) {
+                  if (state is CameraLoaded) {
+                    return CameraContent();
+                  } else if (state is CameraError) {
+                    return FailureStateWidget();
+                  } else if (state is CameraLoading) {
+                    return LoadingWidget();
+                  }
                   return LoadingWidget();
-                }
-                return LoadingWidget();
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

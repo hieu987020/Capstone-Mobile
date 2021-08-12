@@ -145,10 +145,14 @@ class App extends StatelessWidget {
         BlocProvider<CityBloc>(
           create: (context) => CityBloc(),
         ),
+//! Video
+        BlocProvider<VideoBloc>(
+          create: (context) => VideoBloc(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'CFFE App',
+        title: 'cffe_app',
         theme: ThemeData(
           scaffoldBackgroundColor: kBackgroundColor,
           primaryColor: kPrimaryColor,

@@ -1,3 +1,4 @@
+import 'package:capstone/data/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 class UserEvent extends Equatable {
@@ -6,6 +7,19 @@ class UserEvent extends Equatable {
 }
 
 class UserFetchEvent extends UserEvent {
+  UserFetchEvent({
+    this.searchValue,
+    this.searchField,
+    this.pageNum,
+    this.fetchNext,
+    this.statusId,
+    this.users,
+  });
+
+  final String searchValue;
+  final String searchField;
+  final int pageNum;
+  final int fetchNext;
   final int statusId;
-  UserFetchEvent(this.statusId);
+  final List<User> users;
 }

@@ -121,6 +121,14 @@ class AdminNavigator extends StatelessWidget {
               BlocProvider.of<StoreBloc>(context).add(StoreGetOperationEvent());
               BlocProvider.of<ShelfBloc>(context).add(ShelfFetchInitalEvent());
               BlocProvider.of<ProductBloc>(context).add(ProductAllEvent());
+              BlocProvider.of<VideoBloc>(context).add(VideoFetchEvent(
+                dateStart: "",
+                dateEnd: "",
+                videoType: 1,
+                storeId: "all",
+                shelfId: "all",
+                productId: "all",
+              ));
             },
           ),
           DrawerItem(
@@ -130,8 +138,14 @@ class AdminNavigator extends StatelessWidget {
             iconAsset: 'assets/icons/store.png',
             onTap: () {
               Navigator.pushReplacementNamed(context, "/store");
-              BlocProvider.of<StoreBloc>(context)
-                  .add(StoreFetchEvent(StatusIntBase.All));
+              BlocProvider.of<StoreBloc>(context).add(StoreFetchEvent(
+                searchValue: "",
+                searchField: "",
+                fetchNext: 100,
+                pageNum: 0,
+                statusId: 0,
+                cityId: 0,
+              ));
             },
           ),
           DrawerItem(
@@ -141,8 +155,13 @@ class AdminNavigator extends StatelessWidget {
             iconAsset: 'assets/icons/manager.png',
             onTap: () {
               Navigator.pushReplacementNamed(context, "/manager");
-              BlocProvider.of<UserBloc>(context)
-                  .add(UserFetchEvent(StatusIntBase.All));
+              BlocProvider.of<UserBloc>(context).add(UserFetchEvent(
+                searchValue: "",
+                searchField: "",
+                fetchNext: 100,
+                pageNum: 0,
+                statusId: StatusIntBase.All,
+              ));
             },
           ),
           DrawerItem(
@@ -152,8 +171,13 @@ class AdminNavigator extends StatelessWidget {
             iconAsset: 'assets/icons/category.png',
             onTap: () {
               Navigator.pushReplacementNamed(context, "/category");
-              BlocProvider.of<CategoryBloc>(context)
-                  .add(CategoryFetchEvent(StatusIntBase.All));
+              BlocProvider.of<CategoryBloc>(context).add(CategoryFetchEvent(
+                searchValue: "",
+                searchField: "",
+                fetchNext: 100,
+                pageNum: 0,
+                statusId: 0,
+              ));
             },
           ),
           DrawerItem(
@@ -163,8 +187,14 @@ class AdminNavigator extends StatelessWidget {
             iconAsset: 'assets/icons/product.png',
             onTap: () {
               Navigator.pushReplacementNamed(context, "/product");
-              BlocProvider.of<ProductBloc>(context)
-                  .add(ProductFetchEvent(StatusIntBase.All));
+              BlocProvider.of<ProductBloc>(context).add(ProductFetchEvent(
+                searchValue: "",
+                searchField: "",
+                fetchNext: 100,
+                pageNum: 0,
+                categoryId: 0,
+                statusId: 0,
+              ));
             },
           ),
           DrawerItem(
@@ -174,8 +204,13 @@ class AdminNavigator extends StatelessWidget {
             iconAsset: 'assets/icons/camera.png',
             onTap: () {
               Navigator.pushReplacementNamed(context, "/camera");
-              BlocProvider.of<CameraBloc>(context)
-                  .add(CameraFetchEvent(StatusIntBase.All));
+              BlocProvider.of<CameraBloc>(context).add(CameraFetchEvent(
+                storeId: "",
+                cameraName: "",
+                statusId: 0,
+                fetchNext: 100,
+                pageNum: 0,
+              ));
             },
           ),
           Divider(
@@ -380,7 +415,7 @@ class ManagerNavigator extends StatelessWidget {
             indexName: 'Dashboard',
             iconAsset: 'assets/icons/dashboard.png',
             onTap: () {
-              Navigator.pushReplacementNamed(context, "/admin_dashboard");
+              Navigator.pushReplacementNamed(context, "/manager_dashboard");
             },
           ),
           DrawerItem(
@@ -390,8 +425,22 @@ class ManagerNavigator extends StatelessWidget {
             iconAsset: 'assets/icons/video.png',
             onTap: () {
               Navigator.pushReplacementNamed(context, "/manager_video");
-              BlocProvider.of<UserBloc>(context)
-                  .add(UserFetchEvent(StatusIntBase.All));
+              BlocProvider.of<ShelfBloc>(context).add(ShelfFetchEvent(
+                storeId: "",
+                shelfName: "",
+                fetchNext: 100,
+                pageNum: 0,
+                statusId: 0,
+              ));
+              BlocProvider.of<ProductBloc>(context).add(ProductAllEvent());
+              BlocProvider.of<VideoBloc>(context).add(VideoFetchEvent(
+                dateStart: "",
+                dateEnd: "",
+                videoType: 1,
+                storeId: loginModel.storeId,
+                shelfId: "all",
+                productId: "all",
+              ));
             },
           ),
           DrawerItem(
@@ -400,8 +449,15 @@ class ManagerNavigator extends StatelessWidget {
             indexName: 'Shelf',
             iconAsset: 'assets/icons/shelf.png',
             onTap: () {
-              BlocProvider.of<ShelfBloc>(context)
-                  .add(ShelfFetchEvent(StatusIntBase.All));
+              BlocProvider.of<ShelfBloc>(context).add(ShelfFetchEvent(
+                storeId: "",
+                shelfName: "",
+                fetchNext: 100,
+                pageNum: 0,
+                statusId: 0,
+              ));
+              BlocProvider.of<StoreDetailBloc>(context)
+                  .add(StoreDetailFetchEvent(loginModel.storeId));
               Navigator.pushReplacementNamed(context, "/shelf");
             },
           ),
@@ -411,8 +467,13 @@ class ManagerNavigator extends StatelessWidget {
             indexName: 'Camera',
             iconAsset: 'assets/icons/camera.png',
             onTap: () {
-              BlocProvider.of<CameraBloc>(context)
-                  .add(CameraFetchEvent(StatusIntBase.All));
+              BlocProvider.of<CameraBloc>(context).add(CameraFetchEvent(
+                storeId: "",
+                cameraName: "",
+                statusId: 0,
+                fetchNext: 100,
+                pageNum: 0,
+              ));
               Navigator.pushReplacementNamed(context, "/manager_camera");
             },
           ),
@@ -423,8 +484,14 @@ class ManagerNavigator extends StatelessWidget {
             iconAsset: 'assets/icons/product.png',
             onTap: () {
               Navigator.pushReplacementNamed(context, "/manager_product");
-              BlocProvider.of<ProductBloc>(context)
-                  .add(ProductFetchEvent(StatusIntBase.All));
+              BlocProvider.of<ProductBloc>(context).add(ProductFetchEvent(
+                searchValue: "",
+                searchField: "",
+                fetchNext: 100,
+                pageNum: 0,
+                categoryId: 0,
+                statusId: 0,
+              ));
             },
           ),
           DrawerItem(
@@ -433,8 +500,13 @@ class ManagerNavigator extends StatelessWidget {
             indexName: 'Category',
             iconAsset: 'assets/icons/category.png',
             onTap: () {
-              BlocProvider.of<CategoryBloc>(context)
-                  .add(CategoryFetchEvent(StatusIntBase.All));
+              BlocProvider.of<CategoryBloc>(context).add(CategoryFetchEvent(
+                searchValue: "",
+                searchField: "",
+                fetchNext: 100,
+                pageNum: 0,
+                statusId: 0,
+              ));
               Navigator.pushReplacementNamed(context, "/manager_category");
             },
           ),

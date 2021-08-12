@@ -7,39 +7,61 @@ import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScreenStackDetail extends StatelessWidget {
+class ScreenStackDetail extends StatefulWidget {
+  final String stackId;
+  ScreenStackDetail({this.stackId});
+
+  @override
+  _ScreenStackDetailState createState() => _ScreenStackDetailState(stackId);
+}
+
+class _ScreenStackDetailState extends State<ScreenStackDetail> {
+  final String stackId;
+  _ScreenStackDetailState(this.stackId);
+  Future<Null> _onRefresh(BuildContext context) async {
+    callApi();
+  }
+
+  callApi() {
+    BlocProvider.of<StackDetailBloc>(context)
+        .add(StackDetailFetchEvent(stackId));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        title: AppBarText('Stack Detail'),
-        backgroundColor: kPrimaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: [
-          StackMenu(),
-        ],
-      ),
-      body: BlocListener<StackUpdateInsideBloc, StackUpdateInsideState>(
-        listener: (context, state) {
-          if (state is StackUpdateInsideLoading) {
-            loadingCommon(context);
-          } else if (state is StackUpdateInsideError) {
-            _stackUpdateInsideError(context, state);
-          } else if (state is StackUpdateInsideLoaded) {
-            _stackUpdateInsideLoaded(context);
-          }
-        },
-        child: MyScrollView(
-          listWidget: [
-            SizedBox(height: 10),
-            TitleWithNothing(title: "About"),
-            StackDetailInformation(size: size),
-            TitleWithNothing(title: "Product"),
-            ProductInside(),
-            TitleWithNothing(title: "Emotion Camera"),
-            CameraInside(),
+    return RefreshIndicator(
+      onRefresh: () async => _onRefresh(context),
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppBarText('Stack Detail'),
+          backgroundColor: kPrimaryColor,
+          iconTheme: IconThemeData(color: Colors.white),
+          actions: [
+            StackMenu(),
           ],
+        ),
+        body: BlocListener<StackUpdateInsideBloc, StackUpdateInsideState>(
+          listener: (context, state) {
+            if (state is StackUpdateInsideLoading) {
+              loadingCommon(context);
+            } else if (state is StackUpdateInsideError) {
+              _stackUpdateInsideError(context, state);
+            } else if (state is StackUpdateInsideLoaded) {
+              _stackUpdateInsideLoaded(context);
+            }
+          },
+          child: MyScrollView(
+            listWidget: [
+              SizedBox(height: 10),
+              TitleWithNothing(title: "About"),
+              StackDetailInformation(size: size),
+              TitleWithNothing(title: "Product"),
+              ProductInside(),
+              TitleWithNothing(title: "Emotion Camera"),
+              CameraInside(),
+            ],
+          ),
         ),
       ),
     );
@@ -279,8 +301,15 @@ class ProductInside extends StatelessWidget {
                                 backgroundColor: kPrimaryColor.withOpacity(0.6),
                               ),
                               onPressed: () {
-                                BlocProvider.of<ProductBloc>(context).add(
-                                    ProductFetchEvent(StatusIntBase.Active));
+                                BlocProvider.of<ProductBloc>(context)
+                                    .add(ProductFetchEvent(
+                                  searchValue: "",
+                                  searchField: "",
+                                  fetchNext: 100,
+                                  pageNum: 0,
+                                  categoryId: 0,
+                                  statusId: 1,
+                                ));
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -307,7 +336,7 @@ class ProductInside extends StatelessWidget {
                 right: kDefaultPadding / 2,
                 top: kDefaultPadding / 2,
               ),
-              child: CounterListInkWell(
+              child: CountingListInkWell(
                 model: 'camera',
                 imageURL: product.imageUrl,
                 title: product.productName,
@@ -385,9 +414,13 @@ class CameraInside extends StatelessWidget {
                                 backgroundColor: kPrimaryColor.withOpacity(0.6),
                               ),
                               onPressed: () {
-                                BlocProvider.of<CameraBloc>(context).add(
-                                    CameraAvailableEvent(
-                                        StatusIntBase.Pending, 2));
+                                BlocProvider.of<CameraBloc>(context)
+                                    .add(CameraAvailableEvent(
+                                  cameraName: "",
+                                  pageNum: 0,
+                                  fetchNext: 100,
+                                  typeId: 2,
+                                ));
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -414,7 +447,7 @@ class CameraInside extends StatelessWidget {
                 right: kDefaultPadding / 2,
                 top: kDefaultPadding / 2,
               ),
-              child: CounterListInkWell(
+              child: CountingListInkWell(
                 model: 'camera',
                 imageURL: camera.imageUrl,
                 title: camera.cameraName,
@@ -426,8 +459,8 @@ class CameraInside extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) => ScreenCameraDetailManager()),
                   );
-                  BlocProvider.of<ProductDetailBloc>(context)
-                      .add(ProductDetailFetchEvent(camera.cameraId));
+                  BlocProvider.of<CameraDetailBloc>(context)
+                      .add(CameraDetailFetchEvent(camera.cameraId));
                 },
                 onRemove: () {
                   _removeEmotionCamera(context, state.stack.stackId,

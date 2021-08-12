@@ -2,15 +2,18 @@ import 'package:capstone/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class TitleWithMoreBtn extends StatelessWidget {
-  const TitleWithMoreBtn({
-    Key key,
-    this.title,
-    this.model,
-    this.defaultStatus,
-  }) : super(key: key);
+  TitleWithMoreBtn({
+    @required this.title,
+    @required this.model,
+    @required this.defaultStatus,
+    @required this.searchValue,
+    @required this.searchField,
+  });
   final String title;
   final String model;
   final String defaultStatus;
+  final String searchValue;
+  final String searchField;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -19,10 +22,12 @@ class TitleWithMoreBtn extends StatelessWidget {
         children: <Widget>[
           TitleWithCustomUnderline(text: title),
           Spacer(),
-          StatusDropdown(
-            model: model,
-            defaultValue: defaultStatus,
-          ),
+          // StatusDropdown(
+          //   model: model,
+          //   defaultValue: defaultStatus,
+          //   searchValue: searchValue,
+          //   searchField: searchField,
+          // ),
         ],
       ),
     );
@@ -77,6 +82,58 @@ class TitleWithNothing extends StatelessWidget {
       child: Row(
         children: <Widget>[
           TitleWithCustomUnderline(text: title),
+          Spacer(),
+        ],
+      ),
+    );
+  }
+}
+
+class TitleWithColor extends StatelessWidget {
+  TitleWithColor({
+    this.title,
+    this.color,
+  });
+  final String title;
+  final Color color;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0),
+      child: Row(
+        children: <Widget>[
+          Container(
+            height: 24,
+            child: Stack(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: kDefaultPadding / 4),
+                  child: Text(
+                    title,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    margin: EdgeInsets.only(right: kDefaultPadding / 4),
+                    height: 7,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Text(
+          //   title.toUpperCase(),
+          //   style: TextStyle(
+          //     fontSize: 20,
+          //     fontWeight: FontWeight.bold,
+          //     color: color,
+          //   ),
+          // ),
           Spacer(),
         ],
       ),

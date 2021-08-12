@@ -184,6 +184,21 @@ class ManagerTextField extends StatelessWidget {
                 return "1 - 250 characters";
               }
               break;
+            case 'Old password':
+              if (value.length < 1 || value.length > 250) {
+                return "1 - 250 characters";
+              }
+              break;
+            case 'New password':
+              if (value.length < 1 || value.length > 250) {
+                return "1 - 250 characters";
+              }
+              break;
+            case 'Retype password':
+              if (value.length < 1 || value.length > 250) {
+                return "1 - 250 characters";
+              }
+              break;
             default:
           }
           return null;
