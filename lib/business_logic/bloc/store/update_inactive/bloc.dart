@@ -29,7 +29,7 @@ class StoreInactiveBloc extends Bloc<StoreInactiveEvent, StoreInactiveState> {
         yield StoreInactiveError(response);
       }
     } catch (e) {
-      yield StoreInactiveError(e);
+      yield StoreInactiveError("System can not finish this action");
     }
   }
 }

@@ -40,6 +40,10 @@ _categoryUpdateLoaded(BuildContext context, CategoryUpdateLoaded state) {
       .add(CategoryDetailFetchEvent(cameraId));
   Navigator.pop(context);
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _categoryUpdateError(BuildContext context, CategoryUpdateError state) {

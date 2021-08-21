@@ -32,15 +32,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if (roleName == StatusStringAuth.Admin) {
           yield LoginAdminLoaded(loginmodel);
         } else if (roleName == StatusStringAuth.Manager) {
-          prefs.setString('storeId', loginmodel.storeId);
-          yield LoginManagerLoaded(loginmodel);
+          if (loginmodel.statusId == 1) {
+            prefs.setString('storeId', loginmodel.storeId);
+            yield LoginManagerLoaded(loginmodel);
+          } else if (loginmodel.statusId == 3) {
+            yield LoginError("Oops! Something wrong happen");
+          }
         }
       } else if (loginmodel == null) {
         yield LoginInvalid("Invalid username or password");
       }
     } catch (e) {
       print(e.toString());
-      yield LoginError("Oops! Something wrong happen");
+      yield LoginError("System can not finish this action");
     }
   }
 }

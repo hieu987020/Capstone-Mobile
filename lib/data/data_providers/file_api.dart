@@ -13,7 +13,6 @@ class ImageApi {
 
     var stream = new http.ByteStream((imageFile.openRead()));
     stream.cast();
-
     var length = await imageFile.length();
     var uri = Uri.parse(
       "$baseUrl/file/upload-image",

@@ -29,7 +29,7 @@ class CameraUpdateBloc extends Bloc<CameraUpdateEvent, CameraUpdateState> {
         yield CameraUpdateError(result);
       }
     } catch (e) {
-      yield CameraUpdateError(e);
+      yield CameraUpdateError("System can not finish this action");
     }
   }
 }

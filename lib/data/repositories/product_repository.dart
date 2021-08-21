@@ -85,7 +85,7 @@ class ProductRepository {
     Map<String, dynamic> productCreate = {
       "imageUrl": product.imageUrl,
       "description": product.description,
-      "categories": [2],
+      "categories": [5],
       "productName": product.productName,
     };
     var json = jsonEncode(productCreate);

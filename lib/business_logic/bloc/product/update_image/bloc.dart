@@ -44,7 +44,7 @@ class ProductUpdateImageBloc
         yield ProductUpdateImageError(result);
       }
     } catch (e) {
-      yield ProductUpdateImageError(e);
+      yield ProductUpdateImageError("System can not finish this action");
     }
   }
 }

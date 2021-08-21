@@ -52,6 +52,10 @@ _categoryUpdateInsideLoaded(
   BlocProvider.of<CategoryDetailBloc>(context)
       .add(CategoryDetailFetchEvent(cateId));
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _categoryUpdateInsideError(

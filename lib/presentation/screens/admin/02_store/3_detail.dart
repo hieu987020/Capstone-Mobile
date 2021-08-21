@@ -50,6 +50,10 @@ _storeUpdateInsideLoaded(BuildContext context, StoreUpdateInsideLoaded state) {
   }
   BlocProvider.of<StoreDetailBloc>(context).add(StoreDetailFetchEvent(storeId));
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _storeUpdateInsideError(BuildContext context, StoreUpdateInsideError state) {

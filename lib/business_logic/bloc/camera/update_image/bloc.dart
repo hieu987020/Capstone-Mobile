@@ -39,14 +39,13 @@ class CameraUpdateImageBloc
         );
       }
       String result = await _cameraRepository.updateCamera(camera);
-      print(result);
       if (result == 'true') {
         yield CameraUpdateImageLoaded();
       } else if (result.contains('errorCodeAndMsg')) {
         yield CameraUpdateImageError(result);
       }
     } catch (e) {
-      yield CameraUpdateImageError(e);
+      yield CameraUpdateImageError("System can not finish this action");
     }
   }
 }

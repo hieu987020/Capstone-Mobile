@@ -26,7 +26,6 @@ class CameraDetailBloc extends Bloc<CameraDetailEvent, CameraDetailState> {
         yield CameraDetailLoaded(camera);
       }
     } catch (e) {
-      print(e);
       yield CameraDetailError();
     }
   }

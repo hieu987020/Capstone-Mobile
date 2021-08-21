@@ -19,7 +19,7 @@ class UserUpdateBloc extends Bloc<UserUpdateEvent, UserUpdateState> {
     }
     if (event is UserChangePassword) {
       yield* _changePassword(event.userName, event.oldPassword,
-          event.oldPassword, event.retypePassword);
+          event.newPassword, event.retypePassword);
     }
   }
 
@@ -41,6 +41,9 @@ class UserUpdateBloc extends Bloc<UserUpdateEvent, UserUpdateState> {
       String newPassword, String reType) async* {
     try {
       yield UserUpdateLoading();
+      print("old= " + oldPassword);
+      print("new= " + newPassword);
+      print("retype= " + reType);
       String result = await _usersRepository.changePassword(
           userName, oldPassword, newPassword, reType);
       if (result == 'true') {

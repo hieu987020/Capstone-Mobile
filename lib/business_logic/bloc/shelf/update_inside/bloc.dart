@@ -35,7 +35,7 @@ class ShelfUpdateInsideBloc
         yield ShelfUpdateInsideError(response);
       }
     } catch (e) {
-      yield ShelfUpdateInsideError(null);
+      yield ShelfUpdateInsideError("System can not finish this action");
     }
   }
 

@@ -42,6 +42,10 @@ _cameraUpdateLoaded(BuildContext context, CameraUpdateLoaded state) {
       .add(CameraDetailFetchEvent(cameraId));
   Navigator.pop(context);
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _cameraUpdateError(BuildContext context, CameraUpdateError state) {

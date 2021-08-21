@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:capstone/data/data_providers/data_providers.dart';
@@ -12,7 +13,7 @@ class StackApi {
     String token = prefs.getString('token');
     String uri =
         "$baseUrl" + "/admin/manager/store/shelf/stack?" + "stackId=$stackId";
-
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -27,35 +28,32 @@ class StackApi {
   }
 
   Future<String> getStacks(String shelfId) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String token = prefs.getString('token');
-      String uri = "$baseUrl" +
-          "/admin/manager/store/shelf/stacks-by-shelf?" +
-          "shelfId=$shelfId";
-
-      final response = await http.get(
-        Uri.parse(uri),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $token',
-        },
-      );
-      if (response.statusCode == 200) {
-        return response.body;
-      } else {
-        throw Exception('error at get stacks!');
-      }
-    } catch (e) {
-      print(e.toString());
-      throw Exception('error at get stacks');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String uri = "$baseUrl" +
+        "/admin/manager/store/shelf/stacks-by-shelf?" +
+        "shelfId=$shelfId";
+    log("API: " + uri);
+    final response = await http.get(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Unexpected error occured!');
     }
   }
 
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/manager/store/shelf/stack/update-status";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/store/shelf/stack/update-status'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -73,8 +71,7 @@ class StackApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = '$baseUrl/admin/manager/store/shelf/stack/update-product';
-    print(json);
-    print(uri);
+    log("API: " + uri);
     final response = await http.post(
       Uri.parse(uri),
       headers: <String, String>{
@@ -94,8 +91,7 @@ class StackApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = '$baseUrl/admin/manager/store/shelf/stack/update-camera';
-    print(json);
-    print(uri);
+    log("API: " + uri);
     final response = await http.post(
       Uri.parse(uri),
       headers: <String, String>{
@@ -110,40 +106,4 @@ class StackApi {
       throw Exception('Unexpected error occured!');
     }
   }
-
-  // Future<String> updateStack(String json) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String token = prefs.getString('token');
-  //   final response = await http.post(
-  //     Uri.parse('$baseUrl/admin/manager/update'),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       HttpHeaders.authorizationHeader: 'Bearer $token',
-  //     },
-  //     body: json,
-  //   );
-  //   if (response.statusCode == 200) {
-  //     return response.body;
-  //   } else {
-  //     throw Exception('Unexpected error occured!');
-  //   }
-  // }
-
-  // Future<String> postStack(String json) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String token = prefs.getString('token');
-  //   final response = await http.post(
-  //     Uri.parse('$baseUrl/admin/manager/create'),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       HttpHeaders.authorizationHeader: 'Bearer $token',
-  //     },
-  //     body: json,
-  //   );
-  //   if (response.statusCode == 200) {
-  //     return response.body;
-  //   } else {
-  //     throw Exception('Unexpected error occured!');
-  //   }
-  // }
 }

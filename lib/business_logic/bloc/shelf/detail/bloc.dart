@@ -21,8 +21,6 @@ class ShelfDetailBloc extends Bloc<ShelfDetailEvent, ShelfDetailState> {
       final shelf = await _shelfRepository.getShelf(shelfId);
       yield ShelfDetailLoaded(shelf);
     } catch (e) {
-      print("error trong shelf detail bloc\n");
-      print(e.toString());
       yield ShelfDetailError();
     }
   }

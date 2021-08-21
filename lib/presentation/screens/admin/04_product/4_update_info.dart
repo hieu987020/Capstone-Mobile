@@ -40,6 +40,10 @@ _productUpdateLoaded(BuildContext context, ProductUpdateLoaded state) {
       .add(ProductDetailFetchEvent(productId));
   Navigator.pop(context);
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _productUpdateError(BuildContext context, ProductUpdateError state) {

@@ -21,7 +21,6 @@ class StackBloc extends Bloc<StackEvent, StackState> {
       final stacks = await stackRepository.getStacks(shelfId);
       yield StackLoaded(stacks);
     } catch (e) {
-      print(e.toString());
       yield StackError();
     }
   }

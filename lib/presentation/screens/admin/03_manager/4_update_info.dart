@@ -40,6 +40,10 @@ _userUpdateLoaded(BuildContext context) {
   BlocProvider.of<UserDetailBloc>(context).add(UserDetailFetchEvent(userName));
   Navigator.pop(context);
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _userUpdateError(BuildContext context, UserUpdateError state) {

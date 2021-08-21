@@ -12,7 +12,7 @@ class CameraApi {
     String token = prefs.getString('token');
 
     String uri = "$baseUrl/admin/camera?cameraId=$cameraId";
-
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -61,7 +61,7 @@ class CameraApi {
         "&pageNum=$pageNum" +
         "&fetchNext=$fetchNext" +
         "&typeDetect=$typeDetect";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -78,8 +78,10 @@ class CameraApi {
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/camera/update-status";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/camera/update-status'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -96,9 +98,10 @@ class CameraApi {
   Future<String> updateCamera(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
-
+    String uri = "$baseUrl/admin/camera/update";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/camera/update'),
+      Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -115,8 +118,10 @@ class CameraApi {
   Future<String> postCamera(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/camera/create";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/camera/create'),
+      Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',

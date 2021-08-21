@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:capstone/data/data_providers/data_providers.dart';
@@ -12,7 +13,7 @@ class ShelfApi {
     String token = prefs.getString('token');
     String uri =
         "$baseUrl" + "/admin/manager/store/shelf?" + "shelfId=$shelfId";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -37,7 +38,7 @@ class ShelfApi {
         "&statusId=$statusId" +
         "&pageNum=$pageNum" +
         "&fetchNext=$fetchNext";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -58,7 +59,7 @@ class ShelfApi {
     String uri = "$baseUrl" +
         "/admin/manager/store/shelves-by-storeid?" +
         "storeId=$storeId";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -76,8 +77,10 @@ class ShelfApi {
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/manager/store/shelf/update-status";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/store/shelf/update-status'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -95,7 +98,7 @@ class ShelfApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = '$baseUrl/admin/manager/store/shelf/change-shelf-camera';
-    print(uri);
+    log("API: " + uri);
     final response = await http.post(
       Uri.parse(uri),
       headers: <String, String>{
@@ -114,8 +117,10 @@ class ShelfApi {
   Future<String> updateShelf(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/manager/store/shelf/update";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/store/shelf/update'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -133,7 +138,7 @@ class ShelfApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = '$baseUrl/admin/manager/store/shelf/create';
-    print(uri);
+    log("API: " + uri);
     final response = await http.post(
       Uri.parse(uri),
       headers: {
@@ -142,6 +147,7 @@ class ShelfApi {
       },
       body: json,
     );
+    log("response");
     if (response.statusCode == 200) {
       return response.body;
     } else {

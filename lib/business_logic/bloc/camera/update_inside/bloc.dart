@@ -30,7 +30,7 @@ class CameraUpdateInsideBloc
         yield CameraUpdateInsideError(response);
       }
     } catch (e) {
-      yield CameraUpdateInsideError(e);
+      yield CameraUpdateInsideError("System can not finish this action");
     }
   }
 }

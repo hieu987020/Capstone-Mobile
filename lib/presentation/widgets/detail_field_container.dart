@@ -70,6 +70,53 @@ class DetailFieldContainer extends StatelessWidget {
   }
 }
 
+class DescriptionFieldContainer extends StatelessWidget {
+  DescriptionFieldContainer({
+    this.suffixIcon,
+    @required this.fieldName,
+    @required this.fieldValue,
+  });
+  final Widget suffixIcon;
+  final String fieldName;
+  final String fieldValue;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: 100,
+            //color: Colors.blue,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              fieldName,
+              style: TextStyle(
+                color: kTextColor,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
+            width: 200,
+            alignment: Alignment.centerRight,
+            child: Text(
+              fieldValue,
+              style: TextStyle(
+                color: kTextColor,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class DetailFieldContainerStatus extends StatelessWidget {
   DetailFieldContainerStatus({
     this.suffixIcon,

@@ -40,7 +40,6 @@ class ScreenManagerCreate extends StatelessWidget {
 }
 
 _userCreateLoaded(BuildContext context, UserCreateLoaded state) {
-  // Navigator.pushReplacementNamed(context, "/manager");
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => ScreenManager()),

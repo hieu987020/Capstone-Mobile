@@ -22,14 +22,14 @@ class UserRepository {
       return null;
     }
 
-    print("======================================\n");
-    String total;
-    for (var entry in jsonResponse.entries) {
-      if (entry.key.toString().contains('totalOfRecord')) {
-        total = entry.value.toString();
-      }
-    }
-    log(total);
+    // print("======================================\n");
+    // String total;
+    // for (var entry in jsonResponse.entries) {
+    //   if (entry.key.toString().contains('totalOfRecord')) {
+    //     total = entry.value.toString();
+    //   }
+    // }
+    // log(total);
 
     return (jsonResponse['managers'] as List)
         .map((e) => User.fromJsonLst(e))
@@ -96,8 +96,9 @@ class UserRepository {
       "userName": userName,
       "oldPassword": oldPassword,
       "newPassword": newPassword,
-      "retypePassword": reType
+      "retypePassword": reType,
     };
+    print(jsonChangePassword);
     var userCreateJson = jsonEncode(jsonChangePassword);
     final String response = await _api.changePassword(userCreateJson);
     if (response.contains("MSG")) {

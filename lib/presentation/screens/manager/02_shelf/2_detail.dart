@@ -100,6 +100,10 @@ _shelfUpdateInsideLoaded(BuildContext context) {
   }
   BlocProvider.of<ShelfDetailBloc>(context).add(ShelfDetailFetchEvent(shelfId));
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _removeCountingCamera(
@@ -202,7 +206,7 @@ class ShelfDetailInformation extends StatelessWidget {
                     fieldValue: shelf.shelfName,
                   ),
                   DetailDivider(size: size),
-                  DetailFieldContainer(
+                  DescriptionFieldContainer(
                     fieldName: 'Description',
                     fieldValue: shelf.description,
                   ),

@@ -98,6 +98,10 @@ _stackUpdateInsideLoaded(BuildContext context) {
   }
   BlocProvider.of<StackDetailBloc>(context).add(StackDetailFetchEvent(stackId));
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _removeProduct(BuildContext context, String stackId, String productId,

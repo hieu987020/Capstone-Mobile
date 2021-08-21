@@ -29,7 +29,7 @@ class UserInactiveBloc extends Bloc<UserInactiveEvent, UserInactiveState> {
         yield UserInactiveError(response);
       }
     } catch (e) {
-      yield UserInactiveError(e);
+      yield UserInactiveError("System can not finish this action");
     }
   }
 }

@@ -69,9 +69,9 @@ class ChangePasswordFormState extends State<ChangePasswordForm> {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    final TextEditingController _old = TextEditingController();
-    final TextEditingController _new = TextEditingController();
-    final TextEditingController _retype = TextEditingController();
+    final _old = TextEditingController();
+    final _new = TextEditingController();
+    final _retype = TextEditingController();
     return Flexible(
       child: Padding(
         padding: const EdgeInsets.all(kDefaultPadding),
@@ -82,19 +82,22 @@ class ChangePasswordFormState extends State<ChangePasswordForm> {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               children: [
-                ManagerTextField(
-                  hintText: "Old password",
+                PasswordTextField(
+                  hintText: "Old Password",
                   controller: _old,
+                  obscureText: true,
                 ),
                 SizedBox(height: 15.0),
-                ManagerTextField(
-                  hintText: "New password",
+                PasswordTextField(
+                  hintText: "New Password",
                   controller: _new,
+                  obscureText: true,
                 ),
                 SizedBox(height: 15.0),
-                ManagerTextField(
-                  hintText: "Retype password",
+                PasswordTextField(
+                  hintText: "Retype Password",
                   controller: _retype,
+                  obscureText: true,
                 ),
                 SizedBox(height: 15.0),
                 PrimaryButton(
@@ -107,12 +110,14 @@ class ChangePasswordFormState extends State<ChangePasswordForm> {
                       if (state is UserDetailLoaded) {
                         userName = state.user.userName;
                       }
-                      BlocProvider.of<UserUpdateBloc>(context).add(
-                          UserChangePassword(
-                              userName: userName,
-                              oldPassword: _old.text,
-                              newPassword: _new.text,
-                              retypePassword: _retype.text));
+
+                      BlocProvider.of<UserUpdateBloc>(context)
+                          .add(UserChangePassword(
+                        userName: userName,
+                        oldPassword: _old.text,
+                        newPassword: _new.text,
+                        retypePassword: _retype.text,
+                      ));
                     }
                   },
                 ),

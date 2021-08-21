@@ -2,7 +2,115 @@ import 'package:capstone/presentation/widgets/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class BorderTextField extends StatelessWidget {
+class PasswordTextField extends StatefulWidget {
+  final String hintText;
+  final bool obscureText;
+  final Icon suffixIcon;
+  final Widget prefixIcon;
+  final double borderRadius;
+  final TextEditingController controller;
+
+  final String Function(String) validator;
+  PasswordTextField({
+    this.hintText,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.borderRadius = 8.0,
+    this.controller,
+    this.validator,
+  });
+
+  @override
+  _PasswordTextFieldState createState() => _PasswordTextFieldState();
+}
+
+class _PasswordTextFieldState extends State<PasswordTextField> {
+  bool obscure = true;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _toggle() {
+    setState(() {
+      obscure = !obscure;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(this.widget.borderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withOpacity(0.4),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: TextFormField(
+        obscureText: obscure,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: widget.controller,
+        decoration: InputDecoration(
+          prefixIcon: this.widget.prefixIcon,
+          prefixIconConstraints: BoxConstraints(minWidth: 0.0),
+          suffixIcon: IconButton(
+            icon: Icon(
+              Icons.remove_red_eye,
+              color: kPrimaryColor,
+            ),
+            onPressed: () {
+              _toggle();
+            },
+          ),
+          border: InputBorder.none,
+          hintText: this.widget.hintText,
+          hintStyle: TextStyle(
+            fontSize: 14.0,
+            color: Color.fromRGBO(169, 176, 185, 1),
+          ),
+        ),
+        validator: (value) {
+          switch (widget.hintText) {
+            case 'Old Password':
+              if (value.isEmpty) {
+                return "Old Password is required";
+              }
+              break;
+            case 'New Password':
+              if (value.isEmpty) {
+                return "New Password is required";
+              }
+              break;
+            case 'Retype Password':
+              if (value.isEmpty) {
+                return "Retype Password is required";
+              }
+              break;
+            case 'Password':
+              if (value.isEmpty) {
+                return "Password is required";
+              }
+              break;
+            default:
+          }
+          return null;
+        },
+      ),
+    );
+  }
+}
+
+class LoginTextField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final Icon suffixIcon;
@@ -10,9 +118,9 @@ class BorderTextField extends StatelessWidget {
   final double borderRadius;
   final TextEditingController controller;
   final String Function(String) validator;
-  BorderTextField({
+  LoginTextField({
     this.hintText,
-    this.obscureText = false,
+    this.obscureText,
     this.suffixIcon,
     this.prefixIcon,
     this.borderRadius = 8.0,
@@ -41,6 +149,10 @@ class BorderTextField extends StatelessWidget {
         obscureText: this.obscureText,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         controller: controller,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
         decoration: InputDecoration(
           prefixIcon: this.prefixIcon,
           prefixIconConstraints: BoxConstraints(minWidth: 0.0),
@@ -63,34 +175,6 @@ class BorderTextField extends StatelessWidget {
               if (value.isEmpty) {
                 return "Password is required";
               }
-              break;
-            case 'Fullname':
-              if (value.length < 2 || value.length > 100) {
-                return "2 - 100 characters'";
-              }
-              break;
-            case 'Identify Card':
-              if (value.length < 9 || value.length > 12) {
-                return "'9 - 12 digits";
-              }
-              break;
-            case 'Phone':
-              if (value.length != 10 || value.length > 12) {
-                return "0xxxxxxxxx(x is a digits)";
-              }
-              break;
-            case 'Email':
-              if (RegExp(r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$')
-                      .hasMatch(value) ==
-                  false) {
-                return "exp: name@gmail.com";
-              }
-              break;
-            case 'Address':
-              if (value.length < 1 || value.length > 250) {
-                return "1 - 250 characters";
-              }
-              break;
               break;
             default:
           }

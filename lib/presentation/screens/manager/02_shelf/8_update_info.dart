@@ -35,6 +35,10 @@ _shelfUpdateLoaded(BuildContext context, ShelfUpdateLoaded state) {
   BlocProvider.of<ShelfDetailBloc>(context).add(ShelfDetailFetchEvent(shelfId));
   Navigator.pop(context);
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _shelfUpdateError(BuildContext context, ShelfUpdateError state) {

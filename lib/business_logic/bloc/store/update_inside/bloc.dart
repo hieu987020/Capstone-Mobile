@@ -34,7 +34,7 @@ class StoreUpdateInsideBloc
         yield StoreUpdateInsideError(response);
       }
     } catch (e) {
-      yield StoreUpdateInsideError(e);
+      yield StoreUpdateInsideError("System can not finish this action");
     }
   }
 

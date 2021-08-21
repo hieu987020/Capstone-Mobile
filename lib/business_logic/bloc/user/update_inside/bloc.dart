@@ -37,7 +37,7 @@ class UserUpdateInsideBloc
         yield UserUpdateInsideError(response);
       }
     } catch (e) {
-      yield UserUpdateInsideError(e);
+      yield UserUpdateInsideError("System can not finish this action");
     }
   }
 
@@ -53,7 +53,7 @@ class UserUpdateInsideBloc
         yield UserUpdateInsideError(response);
       }
     } catch (e) {
-      yield UserUpdateInsideError(e.toString());
+      yield UserUpdateInsideError("System can not finish this action");
     }
   }
 

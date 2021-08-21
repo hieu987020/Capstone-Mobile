@@ -30,7 +30,7 @@ class ProductUpdateInsideBloc
         yield ProductUpdateInsideError(response);
       }
     } catch (e) {
-      yield ProductUpdateInsideError(e);
+      yield ProductUpdateInsideError("System can not finish this action");
     }
   }
 }

@@ -29,7 +29,7 @@ class ShelfUpdateBloc extends Bloc<ShelfUpdateEvent, ShelfUpdateState> {
         yield ShelfUpdateError(result);
       }
     } catch (e) {
-      yield ShelfUpdateError(e);
+      yield ShelfUpdateError("System can not finish this action");
     }
   }
 }

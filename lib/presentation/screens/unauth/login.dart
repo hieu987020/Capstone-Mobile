@@ -9,9 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ScreenLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // It will provie us total height  and width of our screen
     Size size = MediaQuery.of(context).size;
-    // it enable scrolling on small device
     return Scaffold(
       body: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
@@ -126,7 +124,6 @@ class LoginFormState extends State<LoginForm> {
                 child: Image.asset(
                   "assets/images/cffe.png",
                   color: kPrimaryColor,
-                  //width: size.width * 0.4,
                   height: size.width * 0.4,
                 ),
               ),
@@ -141,21 +138,18 @@ class LoginFormState extends State<LoginForm> {
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         children: [
-                          BorderTextField(
+                          LoginTextField(
                             hintText: "Username",
                             controller: _username,
+                            obscureText: false,
                           ),
                           SizedBox(
                             height: 15.0,
                           ),
-                          BorderTextField(
+                          PasswordTextField(
                             hintText: 'Password',
                             controller: _password,
                             obscureText: true,
-                            suffixIcon: Icon(
-                              Icons.remove_red_eye,
-                              color: kPrimaryColor,
-                            ),
                           ),
                           SizedBox(
                             height: 10.0,
@@ -189,7 +183,7 @@ class LoginFormState extends State<LoginForm> {
                             height: 15.0,
                           ),
                           Text(
-                            "If you don't have an account , contact your Master",
+                            "If you don't have an account , contact your Admin",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14.0,
@@ -210,100 +204,67 @@ class LoginFormState extends State<LoginForm> {
   }
 }
 
-class PasswordTextField extends StatefulWidget {
-  PasswordTextField(this._validate, this._labelText, this._controller);
-  final String _validate;
-  final String _labelText;
-  final TextEditingController _controller;
-  @override
-  _PasswordTextFieldState createState() => _PasswordTextFieldState(
-      this._validate, this._labelText, this._controller);
-}
+// class PasswordTextField extends StatefulWidget {
+//   PasswordTextField(this._validate, this._labelText, this._controller);
+//   final String _validate;
+//   final String _labelText;
+//   final TextEditingController _controller;
+//   @override
+//   _PasswordTextFieldState createState() => _PasswordTextFieldState(
+//       this._validate, this._labelText, this._controller);
+// }
 
-class _PasswordTextFieldState extends State<PasswordTextField> {
-  _PasswordTextFieldState(this._validate, this._labelText, this._controller);
-  final String _validate;
-  final String _labelText;
-  final TextEditingController _controller;
+// class _PasswordTextFieldState extends State<PasswordTextField> {
+//   _PasswordTextFieldState(this._validate, this._labelText, this._controller);
+//   final String _validate;
+//   final String _labelText;
+//   final TextEditingController _controller;
 
-  bool _obscureText = true;
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
+//   bool _obscureText = true;
+//   void _toggle() {
+//     setState(() {
+//       _obscureText = !_obscureText;
+//     });
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controller,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: _labelText,
-              contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
-            ),
-            obscureText: _obscureText,
-            validator: (value) {
-              switch (_labelText) {
-                case 'Password':
-                  if (value.isEmpty) {
-                    return _validate;
-                  }
-                  break;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       child: Column(
+//         children: [
+//           TextFormField(
+//             controller: _controller,
+//             autovalidateMode: AutovalidateMode.onUserInteraction,
+//             decoration: InputDecoration(
+//               border: OutlineInputBorder(),
+//               labelText: _labelText,
+//               contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
+//             ),
+//             obscureText: _obscureText,
+//             validator: (value) {
+//               switch (_labelText) {
+//                 case 'Password':
+//                   if (value.isEmpty) {
+//                     return _validate;
+//                   }
+//                   break;
 
-                default:
-              }
-              return null;
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.remove_red_eye),
-            onPressed: () {
-              _toggle();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LoginTextField extends StatelessWidget {
-  LoginTextField(this._validate, this._labelText, this._controller);
-  final String _validate;
-  final String _labelText;
-  final TextEditingController _controller;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // padding: const EdgeInsets.fromLTRB(20, 0, 20, 5),
-      child: TextFormField(
-        controller: _controller,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: _labelText,
-          contentPadding: EdgeInsets.fromLTRB(5, 0, 10, 0),
-        ),
-        validator: (value) {
-          switch (_labelText) {
-            case 'Username':
-              if (value.isEmpty) {
-                return _validate;
-              }
-              break;
-            default:
-          }
-          return null;
-        },
-      ),
-    );
-  }
-}
+//                 default:
+//               }
+//               return null;
+//             },
+//           ),
+//           IconButton(
+//             icon: Icon(Icons.remove_red_eye),
+//             onPressed: () {
+//               _toggle();
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class LoginInvalidTextField extends StatelessWidget {
   final String message;

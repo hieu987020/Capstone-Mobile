@@ -73,7 +73,7 @@ class ProductDetailInformationM extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DetailFieldContainer(
+                DescriptionFieldContainer(
                   fieldName: 'Description',
                   fieldValue: product.description,
                 ),

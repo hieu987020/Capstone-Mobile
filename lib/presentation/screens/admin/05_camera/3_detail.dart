@@ -62,6 +62,10 @@ _cameraUpdateInsideLoaded(
   BlocProvider.of<CameraDetailBloc>(context)
       .add(CameraDetailFetchEvent(cameraId));
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _cameraUpdateInsideError(BuildContext context, CameraUpdateInsideError state) {

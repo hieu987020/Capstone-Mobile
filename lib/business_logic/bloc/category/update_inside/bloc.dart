@@ -28,7 +28,7 @@ class CategoryUpdateInsideBloc
         yield CategoryUpdateInsideError(response);
       }
     } catch (e) {
-      yield CategoryUpdateInsideError(e);
+      yield CategoryUpdateInsideError("System can not finish this action");
     }
   }
 }

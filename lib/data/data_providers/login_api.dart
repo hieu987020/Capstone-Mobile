@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:capstone/data/data_providers/const_common.dart';
 import 'package:http/http.dart' as http;
 
@@ -5,7 +7,7 @@ class LoginApi {
   static const String baseUrl = UrlBase.baseUrl;
   Future<String> login(String json) async {
     String uri = "$baseUrl/login";
-
+    log("API: " + uri);
     final response = await http.post(
       Uri.parse(uri),
       headers: <String, String>{

@@ -40,7 +40,7 @@ class ProductCreateBloc extends Bloc<ProductCreateEvent, ProductCreateState> {
         yield ProductCreateError(result);
       }
     } catch (e) {
-      yield ProductCreateError(e.toString());
+      yield ProductCreateError("System can not finish this action");
     }
   }
 }

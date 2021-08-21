@@ -12,6 +12,7 @@ class CategoryApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = "$baseUrl/admin/category?categoryId=$categoryId";
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -53,8 +54,10 @@ class CategoryApi {
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/category/update-status";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/category/update-status'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -71,9 +74,10 @@ class CategoryApi {
   Future<String> updateCategory(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
-
+    String uri = "$baseUrl/admin/category/update";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/category/update'),
+      Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -90,9 +94,10 @@ class CategoryApi {
   Future<String> postCategory(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
-
+    String uri = "$baseUrl/admin/category/create";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/category/create'),
+      Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',

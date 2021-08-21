@@ -30,7 +30,7 @@ class StoreUpdateBloc extends Bloc<StoreUpdateEvent, StoreUpdateState> {
         yield StoreUpdateError(result);
       }
     } catch (e) {
-      yield StoreUpdateError(e);
+      yield StoreUpdateError("System can not finish this action");
     }
   }
 }

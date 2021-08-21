@@ -12,7 +12,7 @@ class UserApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = "$baseUrl" + "/admin/manager?" + "userName=$userName";
-
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -62,7 +62,7 @@ class UserApi {
         "&pageNum=0" +
         "&fetchNext=0" +
         "&statusId=0";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -83,7 +83,7 @@ class UserApi {
         "/admin/manager/reset-password?" +
         "userName=$username" +
         "&email=$email";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -100,8 +100,10 @@ class UserApi {
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/manager/update-status";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/update-status'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -118,14 +120,17 @@ class UserApi {
   Future<String> changePassword(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/manager/change-password";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/change-password'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
       },
       body: json,
     );
+    print(response.body);
     if (response.statusCode == 200) {
       return response.body;
     } else {
@@ -136,8 +141,10 @@ class UserApi {
   Future<String> updateUser(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/manager/update";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/update'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -154,8 +161,10 @@ class UserApi {
   Future<String> postUser(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/manager/create";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/manager/create'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',

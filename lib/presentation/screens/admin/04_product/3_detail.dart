@@ -64,6 +64,10 @@ _productUpdateInsideLoaded(
   BlocProvider.of<ProductDetailBloc>(context)
       .add(ProductDetailFetchEvent(productId));
   Navigator.pop(context);
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text("Update Successfully"),
+    duration: Duration(milliseconds: 2000),
+  ));
 }
 
 _productUpdateInsideError(
@@ -266,7 +270,7 @@ class ProductDetailInformation extends StatelessWidget {
                   fieldValue: "Ipod",
                 ),
                 DetailDivider(size: size),
-                DetailFieldContainer(
+                DescriptionFieldContainer(
                   fieldName: 'Description',
                   fieldValue: product.description,
                 ),

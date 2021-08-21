@@ -32,7 +32,7 @@ class CategoryUpdateBloc
         yield CategoryUpdateError(result);
       }
     } catch (e) {
-      yield CategoryUpdateError(e);
+      yield CategoryUpdateError("System can not finish this action");
     }
   }
 }

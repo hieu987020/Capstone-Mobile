@@ -30,7 +30,7 @@ class ProductUpdateBloc extends Bloc<ProductUpdateEvent, ProductUpdateState> {
         yield ProductUpdateError(result);
       }
     } catch (e) {
-      yield ProductUpdateError("Cannot finish this action");
+      yield ProductUpdateError("System can not finish this action");
     }
   }
 }

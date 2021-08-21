@@ -37,7 +37,7 @@ class StackUpdateInsideBloc
         yield StackUpdateInsideError(response);
       }
     } catch (e) {
-      yield StackUpdateInsideError(e.toString());
+      yield StackUpdateInsideError("System can not finish this action");
     }
   }
 
@@ -53,7 +53,7 @@ class StackUpdateInsideBloc
         yield StackUpdateInsideError(response);
       }
     } catch (e) {
-      yield StackUpdateInsideError(e.toString());
+      yield StackUpdateInsideError("System can not finish this action");
     }
   }
 

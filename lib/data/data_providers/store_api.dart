@@ -10,6 +10,7 @@ class StoreApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = "$baseUrl/admin/store?storeId=$storeId";
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -79,6 +80,7 @@ class StoreApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = "$baseUrl" + "/admin/operation-stores?all=true";
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -104,6 +106,7 @@ class StoreApi {
         "&fetchNext=$fetchNext" +
         "&statusId=$statusId" +
         "&productId=$productId";
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -120,8 +123,10 @@ class StoreApi {
   Future<String> changeStatus(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/store/update-status";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/store/update-status'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -145,7 +150,7 @@ class StoreApi {
         "&pageNum=0" +
         "&fetchNext=0" +
         "&statusId=0";
-    print(uri);
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
@@ -162,8 +167,10 @@ class StoreApi {
   Future<String> changeManager(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/store/change-manager";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/store/change-manager'),
+      Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -180,8 +187,10 @@ class StoreApi {
   Future<String> updateStore(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/store/update";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/store/update'),
+      Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -198,8 +207,10 @@ class StoreApi {
   Future<String> postStore(String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+    String uri = "$baseUrl/admin/store/create";
+    log("API: " + uri);
     final response = await http.post(
-      Uri.parse('$baseUrl/admin/store/create'),
+      Uri.parse(uri),
       headers: <String, String>{
         'Content-Type': 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',

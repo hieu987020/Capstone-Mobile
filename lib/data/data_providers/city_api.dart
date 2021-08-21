@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:capstone/data/data_providers/data_providers.dart';
@@ -11,7 +12,7 @@ class CityApi {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String uri = "$baseUrl" + "/city/city-district-lst";
-
+    log("API: " + uri);
     final response = await http.get(
       Uri.parse(uri),
       headers: {
