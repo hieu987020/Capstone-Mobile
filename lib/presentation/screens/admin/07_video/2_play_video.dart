@@ -191,6 +191,10 @@ class EmotionCapture extends StatelessWidget {
   final Size size;
   @override
   Widget build(BuildContext context) {
+    double length = 0;
+    if (total != 0) {
+      length = MediaQuery.of(context).size.width * (count / total);
+    }
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -204,10 +208,15 @@ class EmotionCapture extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      width:
-                          MediaQuery.of(context).size.width * (count / total),
+                      width: length,
                       color: kPrimaryColor,
                     ),
+                    // length == 0
+                    //     ? SizedBox()
+                    //     : Container(
+                    //         width: length,
+                    //         color: kPrimaryColor,
+                    //       ),
                   ],
                 ),
               ),
