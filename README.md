@@ -1,3 +1,3 @@
 A flutter project to manage manager, store, product, camera, ...
 
-![alt text](https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/list_manager.jpg?raw=true){:width="200px"}
+![alt text](https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/list_manager.jpg?raw=true){:height="50%" width="50%"}
