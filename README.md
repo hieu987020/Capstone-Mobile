@@ -4,10 +4,11 @@ Database: MySQL(Java backend) </br>
 Cloud: Google Storage </br>
 Package: http,...
 ### Example
-<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/list_manager.jpg?raw=true" width="200">  | 
-<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/drawer.jpg?raw=true" width="200">  | 
-<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/shelf_detail.jpg?raw=true" width="200">  | 
-<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/stack_detail.jpg?raw=true" width="200"> 
+[<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/list_manager.jpg?raw=true" width="200">]()
+[<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/drawer.jpg?raw=true" width="200">]()
+[<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/shelf_detail.jpg?raw=true" width="200">]()
+[<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/stack_detail.jpg?raw=true" width="200">]()
+[<img src="https://github.com/hieu987020/Capstone-Mobile/blob/master/raw/play_video.jpg?raw=true" width="200">]()
 ### Call update image api via http package
 ```dart
 import 'dart:io';
